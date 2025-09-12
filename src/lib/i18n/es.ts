@@ -70,6 +70,16 @@ const es = {
   footer: {
     rights: "Todos los derechos reservados - Licencia MIT",
     designedBy: "Diseño y desarrollo por"
+  },
+  support: {
+    title: "Apoya el Proyecto",
+    description: "¡Gracias por usar WeatherWise! Este es un proyecto gratuito y de código abierto mantenido con pasión. Si te resulta útil, hay muchas maneras de apoyar su desarrollo y mantenerlo en línea:",
+    share_button: "¡Comparte la app!",
+    link_copied: "¡Link copiado al portapapeles!",
+    button_donate: "Invítame un café",
+    button_portfolio: "Ver mi Portfolio",
+    button_github: "Explorar en GitHub",
+    close: "Cerrar"
   }
 };
 

@@ -72,7 +72,7 @@ Sigue estas instrucciones para obtener una copia local del proyecto y ponerla en
     ```
 
 3.  **Configura las variables de entorno:**
-    Crea un archivo llamado `.env.local` en la raíz de tu proyecto. Necesitarás una API Key de Google AI para la generación de imágenes. Puedes obtenerla gratis en [Google AI Studio](https://aistudio.google.com/app/apikey).
+    Crea un archivo llamado `.env.local` en la raíz de tu proyecto y copia el contenido de `.env.local.example`. Necesitarás una API Key de Google AI para la generación de imágenes. Puedes obtenerla gratis en [Google AI Studio](https://aistudio.google.com/app/apikey).
 
     ```.env.local
     # Clave de API de Google AI Studio para Gemini
@@ -81,7 +81,12 @@ Sigue estas instrucciones para obtener una copia local del proyecto y ponerla en
     # URL de tu aplicación (opcional para desarrollo, recomendado para producción)
     # Por defecto, se usará http://localhost:9002 si no se especifica.
     # Para producción, cámbiala a tu dominio. Ejemplo:
-    # APP_URL=https://clima.clancig.com.ar
+    NEXT_PUBLIC_APP_URL=https://clima.clancig.com.ar
+
+    # URLs for the support dialog
+    NEXT_PUBLIC_DONATION_URL=https://cafecito.app/damianclancig
+    NEXT_PUBLIC_PORTFOLIO_URL=https://www.clancig.com.ar
+    NEXT_PUBLIC_GITHUB_URL=https://github.com/damianclancig/weather-wise
     ```
 
 ### Ejecutar la Aplicación

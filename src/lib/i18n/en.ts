@@ -58,6 +58,7 @@ const en = {
     waxing_gibbous: "Waxing Gibbous",
     full_moon: "Full Moon",
     waning_gibbous: "Waning Gibbous",
+gibbous: "Waning Gibbous",
     third_quarter: "Third Quarter",
     waning_crescent: "Waning Crescent",
   },
@@ -70,6 +71,16 @@ const en = {
   footer: {
     rights: "All rights reserved - MIT License",
     designedBy: "Design and development by"
+  },
+  support: {
+    title: "Support the Project",
+    description: "Thank you for using WeatherWise! This is a free, open-source project maintained with passion. If you find it useful, there are many ways you can support its development and keep it running:",
+    share_button: "Share the app!",
+    link_copied: "Link copied to clipboard!",
+    button_donate: "Buy me a coffee",
+    button_portfolio: "See my Portfolio",
+    button_github: "Explore on GitHub",
+    close: "Close"
   }
 };
 

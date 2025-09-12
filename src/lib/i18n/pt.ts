@@ -64,12 +64,22 @@ const pt = {
   attribution: {
     weather: "Dados meteorológicos fornecidos por",
     geocoding: "Geocodificação por",
-    images: "Imagens de fundo geradas por",
+images: "Imagens de fundo geradas por",
     moon: "Os cálculos das fases da lua são realizados localmente."
   },
   footer: {
     rights: "Todos os direitos reservados - Licença MIT",
     designedBy: "Design e desenvolvimento por"
+  },
+  support: {
+    title: "Apoie o Projeto",
+    description: "Obrigado por usar o WeatherWise! Este é um projeto gratuito e de código aberto, mantido com paixão. Se você o considera útil, há muitas maneiras de apoiar seu desenvolvimento e mantê-lo funcionando:",
+    share_button: "Compartilhe o app!",
+    link_copied: "Link copiado para a área de transferência!",
+    button_donate: "Pague-me um café",
+    button_portfolio: "Veja meu Portfólio",
+    button_github: "Explorar no GitHub",
+    close: "Fechar"
   }
 };
 
