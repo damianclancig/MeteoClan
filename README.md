@@ -104,4 +104,4 @@ Este proyecto se distribuye bajo la Licencia MIT. Consulta el archivo `LICENSE` 
 
 ## 👨‍💻 Autor
 
-- **Clancig** - [Sitio Web](https://clancig.com.ar) | [GitHub](https://github.com/damianclancig)
+- **Clancig FullstackDev** - [Sitio Web](https://www.clancig.com.ar) | [GitHub](https://github.com/damianclancig)

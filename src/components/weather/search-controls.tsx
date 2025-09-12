@@ -37,25 +37,17 @@ export function SearchControls({ formAction, onRefreshLocation, locale }: Search
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
   const handleSuggestionClick = (suggestion: CitySuggestion) => {
-    if (formRef.current) {
-      const form = formRef.current;
-      // Get all the inputs
-      const locationInput = form.elements.namedItem('location') as HTMLInputElement;
-      const latInput = form.elements.namedItem('latitude') as HTMLInputElement;
-      const lonInput = form.elements.namedItem('longitude') as HTMLInputElement;
+    if (!formRef.current) return;
 
-      // Set the values
-      locationInput.value = suggestion.name;
-      latInput.value = suggestion.lat.toString();
-      lonInput.value = suggestion.lon.toString();
-      
-      // Submit the form
-      form.requestSubmit();
+    const formData = new FormData(formRef.current);
+    formData.set('location', suggestion.name);
+    formData.set('latitude', suggestion.lat.toString());
+    formData.set('longitude', suggestion.lon.toString());
+    
+    formAction(formData);
 
-      // Clean up
-      setShowSuggestions(false);
-      setQuery('');
-    }
+    setQuery('');
+    setShowSuggestions(false);
   };
   
   const handleRefresh = () => {
@@ -79,7 +71,6 @@ export function SearchControls({ formAction, onRefreshLocation, locale }: Search
 
     const debounceTimeout = setTimeout(async () => {
       const newSuggestions = await getCitySuggestions(query, locale);
-      console.log('[City Suggestions Response]:', newSuggestions);
       setSuggestions(newSuggestions);
       setShowSuggestions(newSuggestions.length > 0);
     }, 300);
@@ -103,7 +94,7 @@ export function SearchControls({ formAction, onRefreshLocation, locale }: Search
 
   return (
     <div ref={searchContainerRef} className="flex items-center space-x-2 w-full">
-      <Button variant="ghost" size="icon" onClick={handleRefresh} disabled={pending} aria-label="Use my location">
+      <Button variant="ghost" size="icon" onClick={handleRefresh} disabled={pending} aria-label={t('useMyLocationTooltip')}>
         <MapPin />
       </Button>
       <form ref={formRef} action={handleFormAction} className="relative flex flex-grow items-center space-x-2">
@@ -117,7 +108,7 @@ export function SearchControls({ formAction, onRefreshLocation, locale }: Search
           onFocus={() => query.length >=3 && setShowSuggestions(true)}
           autoComplete="off"
         />
-        {/* Hidden fields for lat/lon */}
+        {/* Hidden fields for lat/lon, they are populated by suggestion click or refresh */}
         <input type="hidden" name="latitude" />
         <input type="hidden" name="longitude" />
         

@@ -43,6 +43,43 @@ const initialState: FormState = {
 // We combine properties from CurrentWeather and DailyForecast.
 type DisplayWeather = CurrentWeather | (DailyForecast & Pick<CurrentWeather, 'location' | 'timezone' | 'latitude'>);
 
+
+const MainContentWrapper = ({ visible, children, onClick }: { visible: boolean; children: React.ReactNode, onClick: (e: React.MouseEvent<HTMLElement>) => void }) => (
+    <main className="w-full flex-grow px-4 py-8 flex flex-col justify-center" onClick={onClick}>
+        <div className={cn("w-full", !visible && "hidden")}>
+            {children}
+        </div>
+    </main>
+);
+
+const ErrorDisplay = ({ error, t }: { error: FormState, t: (key: string) => string }) => (
+    <GlassCard className="mt-20 p-6">
+        <div className="flex flex-col items-center justify-center text-destructive-foreground gap-4">
+            <AlertTriangle className="w-12 h-12 text-destructive" />
+            <h2 className="text-2xl font-bold">{t('errorTitle')}</h2>
+            <p>{t(error.message)}</p>
+            {error.errorDetail && (
+                <Accordion type="single" collapsible className="w-full text-foreground/80">
+                    <AccordionItem value="item-1">
+                        <AccordionTrigger>Ver detalles técnicos</AccordionTrigger>
+                        <AccordionContent className="bg-black/20 p-2 rounded-md font-mono text-xs">
+                            {error.errorDetail}
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
+            )}
+        </div>
+    </GlassCard>
+);
+
+const LoadingDisplay = ({ t }: { t: (key: string) => string }) => (
+    <div className="flex flex-col items-center justify-center text-foreground/80 gap-4 mt-20">
+        <Loader className="w-12 h-12 animate-spin" />
+        <p className="text-xl">{t('loading')}</p>
+    </div>
+);
+
+
 export default function Home() {
   const [state, formAction] = useActionState(getWeather, initialState);
   const { toast } = useToast();
@@ -70,7 +107,6 @@ export default function Home() {
     }
   };
 
-
   useEffect(() => {
     // Set the current date once on component mount
     setCurrentDate(new Date());
@@ -84,11 +120,9 @@ export default function Home() {
         const locInput = form.elements.namedItem('location') as HTMLInputElement;
 
         if (lat && lon) {
-          // New flow with BigDataCloud
           latInput.value = lat.toString();
           lonInput.value = lon.toString();
-          // We leave location empty, the server will figure it out
-          locInput.value = '';
+          locInput.value = ''; // Let server action resolve name
         } else {
           // Fallback to a default location if geolocation fails
           locInput.value = 'New York';
@@ -100,13 +134,11 @@ export default function Home() {
     }
   }, []);
 
-  const handleDaySelect = (day: DailyForecast) => {
+  const handleDaySelect = useCallback((day: DailyForecast) => {
     if (!weatherData) return;
   
-    // Create a complete DisplayWeather object for the selected forecast day
     const newDisplayData: DisplayWeather = {
       ...day,
-      // Inherit properties from the current weather data that are not in the daily forecast
       location: weatherData.current.location, 
       timezone: weatherData.current.timezone,
       latitude: weatherData.current.latitude
@@ -116,23 +148,22 @@ export default function Home() {
     setHourlyData(day.hourly);
     setSelectedDayId(day.dt);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }, [weatherData]);
   
-  const handleShowToday = () => {
+  const handleShowToday = useCallback(() => {
     if (weatherData) {
       setDisplayData(weatherData.current);
       setHourlyData(weatherData.hourly);
       setSelectedDayId('today');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  }
+  }, [weatherData]);
 
   const handleRefreshLocation = useCallback(() => {
     setIsLoading(true);
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        const { latitude, longitude } = position.coords;
-        submitInitialForm(latitude, longitude);
+        submitInitialForm(position.coords.latitude, position.coords.longitude);
       },
       (error) => {
         setIsLoading(false);
@@ -145,14 +176,14 @@ export default function Home() {
     );
   }, [submitInitialForm, t, toast]);
 
+  // Effect for initial data fetch based on geolocation
   useEffect(() => {
     if (isInitialFetchDone.current) return;
     isInitialFetchDone.current = true;
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        const { latitude, longitude } = position.coords;
-        submitInitialForm(latitude, longitude);
+        submitInitialForm(position.coords.latitude, position.coords.longitude);
       },
       () => {
         toast({
@@ -164,9 +195,9 @@ export default function Home() {
         submitInitialForm();
       }
     );
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [submitInitialForm, t, toast]);
   
+  // Effect to handle state changes from server action
   useEffect(() => {
     if (state.success && state.weatherData) {
       setWeatherData(state.weatherData);
@@ -177,9 +208,9 @@ export default function Home() {
       setIsLoading(false);
     } else if (!state.success && state.message) {
       if (state.message === 'noLocationProvided' && weatherData) {
-         return;
+         return; // Ignore if we already have some data
       }
-      setError(state); // Store the entire state object on error
+      setError(state);
       toast({
         variant: "destructive",
         title: t('errorTitle'),
@@ -191,7 +222,7 @@ export default function Home() {
 
   // Effect to generate background image after weather data is loaded
   useEffect(() => {
-    if (weatherData) {
+    if (weatherData?.current) {
       const generate = async () => {
         try {
           const bgImage = await generateAndSetBackground({
@@ -207,17 +238,14 @@ export default function Home() {
       };
       generate();
     }
-  }, [weatherData]);
+  }, [weatherData?.current]);
 
   const latitudeForMoon = weatherData?.latitude;
-
 
   return (
     <>
       {/* Background Layer */}
-      <div 
-        className="fixed inset-0 z-[-1] bg-background"
-      >
+      <div className="fixed inset-0 z-[-1] bg-background">
         {backgroundImage ? (
           <img
             src={backgroundImage}
@@ -231,47 +259,22 @@ export default function Home() {
       </div>
 
       {/* Content Layer */}
-      <div className={cn(
-          "relative z-0 flex min-h-screen flex-col"
-      )}>
+      <div className={cn("relative z-0 flex min-h-screen flex-col")}>
         <Header />
           <form ref={initialFetchFormRef} action={formAction} className="hidden">
             <input type="hidden" name="latitude" />
             <input type="hidden" name="longitude" />
             <input type="hidden" name="location" />
         </form>
-        <main className="w-full flex-grow px-4 py-8 flex flex-col justify-center" onClick={toggleContent}>
-           <div className={cn(
-             "w-full",
-             !contentVisible && "hidden"
-           )}>
+        <MainContentWrapper visible={contentVisible} onClick={toggleContent}>
             <div className="w-full max-w-4xl mx-auto mb-8 relative">
               <SearchControls formAction={formAction} onRefreshLocation={handleRefreshLocation} locale={locale} />
             </div>
             <div className="flex justify-center items-start h-full">
               {isLoading ? (
-                <div className="flex flex-col items-center justify-center text-foreground/80 gap-4 mt-20">
-                  <Loader className="w-12 h-12 animate-spin" />
-                  <p className="text-xl">{t('loading')}</p>
-                </div>
+                <LoadingDisplay t={t} />
               ) : error && !weatherData ? (
-                  <GlassCard className="mt-20 p-6">
-                    <div className="flex flex-col items-center justify-center text-destructive-foreground gap-4">
-                      <AlertTriangle className="w-12 h-12 text-destructive" />
-                      <h2 className="text-2xl font-bold">{t('errorTitle')}</h2>
-                      <p>{t(error.message)}</p>
-                      {error.errorDetail && (
-                         <Accordion type="single" collapsible className="w-full text-foreground/80">
-                           <AccordionItem value="item-1">
-                             <AccordionTrigger>Ver detalles técnicos</AccordionTrigger>
-                             <AccordionContent className="bg-black/20 p-2 rounded-md font-mono text-xs">
-                               {error.errorDetail}
-                             </AccordionContent>
-                           </AccordionItem>
-                         </Accordion>
-                      )}
-                    </div>
-                  </GlassCard>
+                  <ErrorDisplay error={error} t={t} />
               ) : weatherData && displayData ? (
                 <div className="w-full max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 animate-in fade-in">
                   <GlassCard className="lg:col-span-3" id="current-weather">
@@ -285,7 +288,7 @@ export default function Home() {
                       selectedDayId={selectedDayId}
                     />
                   </GlassCard>
-                  {weatherData && currentDate && latitudeForMoon !== undefined && !isNaN(currentDate.getTime()) && (
+                  {currentDate && latitudeForMoon !== undefined && !isNaN(currentDate.getTime()) && (
                     <GlassCard className="lg:col-span-3" id="moon-calendar">
                         <MoonCalendar date={currentDate} latitude={latitudeForMoon} />
                     </GlassCard>
@@ -293,8 +296,7 @@ export default function Home() {
                 </div>
               ) : null}
             </div>
-          </div>
-        </main>
+        </MainContentWrapper>
         <ApiAttribution />
         <Footer />
       </div>

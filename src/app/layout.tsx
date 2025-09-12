@@ -20,8 +20,8 @@ export const metadata: Metadata = {
   metadataBase: APP_URL,
   applicationName: 'WeatherWise',
   keywords: ['clima', 'tiempo', 'pronóstico', 'temperatura', 'weather', 'forecast', 'ia', 'ai', 'inteligencia artificial', 'gemini', 'multilenguaje', 'multi-idioma', 'fases lunares', 'direccion del viento'],
-  authors: [{ name: 'Clancig', url: new URL('https://github.com/damianclancig/weather-wise') }],
-  creator: 'Clancig',
+  authors: [{ name: 'Clancig FullstackDev', url: new URL('https://www.clancig.com.ar') }],
+  creator: 'Clancig FullstackDev',
   openGraph: {
     type: 'website',
     url: APP_URL,
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     siteName: 'WeatherWise',
     images: [
       {
-        url: '/og-image.png',
+        url: '/og-image.webp',
         width: 1200,
         height: 630,
         alt: 'WeatherWise App con fondo de IA',
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'WeatherWise - Pronóstico del Tiempo con IA',
     description: 'El pronóstico del tiempo más visual: datos precisos y fondos generados por IA.',
-    images: ['/og-image.png'],
+    images: ['/og-image.webp'],
   },
   appleWebApp: {
     capable: true,
@@ -66,7 +66,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html className="dark" suppressHydrationWarning>
       <body className={cn('font-sans antialiased', inter.variable)}>
         {children}
         <Toaster />

@@ -17,7 +17,7 @@ export function Footer() {
            <p>© {currentYear} {t('footer.rights')}</p>
            <p>
             {t('footer.designedBy')}{' '}
-            <Link href="https://clancig.com.ar" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground/80">
+            <Link href="https://www.clancig.com.ar" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground/80">
                 clancig.com.ar
             </Link>
            </p>

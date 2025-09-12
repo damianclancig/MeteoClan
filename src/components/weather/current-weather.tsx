@@ -4,6 +4,7 @@
 import type { CurrentWeather as CurrentWeatherType, DailyForecast, HourlyForecast as HourlyForecastType } from '@/lib/types';
 import type { Locale } from '@/lib/i18n';
 import { useTranslation } from '@/hooks/use-translation';
+import { isNightTime } from '@/lib/weather-utils';
 import { AnimatedWeatherIcon } from '@/components/icons/animated-weather-icon';
 import { HourlyForecast } from '@/components/weather/hourly-forecast';
 import { Thermometer, Droplets, Wind, MapPin, Umbrella } from 'lucide-react';
@@ -11,12 +12,10 @@ import { SunriseSunset } from './sunrise-sunset';
 import { DetailItem } from './detail-item';
 import { WindArrow } from './wind-arrow';
 
-
 // This new type will hold the data for the main display card.
 // It must include all properties needed by child components.
 // We combine properties from CurrentWeather and DailyForecast.
 type DisplayWeather = (CurrentWeatherType | DailyForecast) & { location: string; timezone: string, latitude: number };
-
 
 interface CurrentWeatherProps {
   data: DisplayWeather;
@@ -24,21 +23,20 @@ interface CurrentWeatherProps {
   locale: Locale;
 }
 
+const parseDateString = (dt: string | number) => {
+  // If it's just a date 'YYYY-MM-DD', replace dashes to avoid UTC parsing issues.
+  // If it's a full ISO string, it can be parsed directly.
+  const dtStr = String(dt);
+  if (!dtStr.includes('T')) {
+    return new Date(dtStr.replace(/-/g, '/'));
+  }
+  return new Date(dtStr);
+}
+
 export function CurrentWeather({ data, hourlyData, locale }: CurrentWeatherProps) {
   const { t } = useTranslation();
   
   const weatherDescriptionKey = `weather.${data.description}`;
-
-  const parseDateString = (dt: string | number) => {
-    // If it's just a date 'YYYY-MM-DD', replace dashes to avoid UTC parsing issues.
-    // If it's a full ISO string, it can be parsed directly.
-    const dtStr = String(dt);
-    if (!dtStr.includes('T')) {
-      return new Date(dtStr.replace(/-/g, '/'));
-    }
-    return new Date(dtStr);
-  }
-
   const date = parseDateString(data.dt);
   
   const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -51,16 +49,9 @@ export function CurrentWeather({ data, hourlyData, locale }: CurrentWeatherProps
   
   const hasSunData = 'sunrise' in data && data.sunrise && 'sunset' in data && data.sunset && 'timezone' in data;
   
-  let isNight = false;
   // This is the crucial check: Only determine night for *current* weather, not for future forecast days.
   // We identify current weather because its `dt` is a full ISO string (containing 'T').
-  if (hasSunData && typeof data.dt === 'string' && data.dt.includes('T')) {
-    const sunriseTimestamp = new Date(data.sunrise).getTime();
-    const sunsetTimestamp = new Date(data.sunset).getTime();
-    const nowTimestamp = new Date().getTime();
-
-    isNight = nowTimestamp < sunriseTimestamp || nowTimestamp > sunsetTimestamp;
-  }
+  const isNight = typeof data.dt === 'string' && data.dt.includes('T') ? isNightTime(data.sunrise, data.sunset) : false;
 
   return (
     <>
@@ -78,11 +69,11 @@ export function CurrentWeather({ data, hourlyData, locale }: CurrentWeatherProps
       {/* Temperature and Icon/Description */}
       <div className="flex flex-col items-center justify-center text-center">
         <p className="text-2xl capitalize">{t(weatherDescriptionKey)}</p>
-        <div className="flex items-center justify-center">
+        <div className="flex items-center justify-center gap-4">
             <div className='flex flex-col items-center'>
               <div className="text-5xl md:text-7xl font-bold">{Math.round(temp)}°C</div>
-              <div className="text-sm text-foreground/80 -mt-2">
-                Máx: {Math.round(data.temp_max)}° / Mín: {Math.round(data.temp_min)}°
+              <div className="text-base text-foreground/80 mt-1">
+                {t('max')}: {Math.round(data.temp_max)}° / {t('min')}: {Math.round(data.temp_min)}°
               </div>
             </div>
             <AnimatedWeatherIcon
@@ -105,7 +96,7 @@ export function CurrentWeather({ data, hourlyData, locale }: CurrentWeatherProps
       )}
 
       {/* Details Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 text-center">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-left">
         <DetailItem
           icon={Thermometer}
           label={t('feelsLike')}
@@ -120,7 +111,7 @@ export function CurrentWeather({ data, hourlyData, locale }: CurrentWeatherProps
             icon={Wind}
             label={t('wind')}
             value={
-                <div className="flex items-center justify-center gap-2">
+                <div className="flex items-center gap-2">
                     <span>{`${Math.round(data.wind_speed)} km/h`}</span>
                     {data.wind_speed > 0 && <WindArrow degrees={data.wind_direction} locale={locale} />}
                 </div>
