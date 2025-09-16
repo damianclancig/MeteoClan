@@ -1,4 +1,3 @@
-
 const es = {
   appName: "WeatherWise",
   searchPlaceholder: "Buscar una ciudad...",
@@ -72,14 +71,16 @@ const es = {
     designedBy: "Diseño y desarrollo por"
   },
   support: {
-    title: "Apoya el Proyecto",
-    description: "¡Gracias por usar WeatherWise! Este es un proyecto gratuito y de código abierto mantenido con pasión. Si te resulta útil, hay muchas maneras de apoyar su desarrollo y mantenerlo en línea:",
-    share_button: "¡Comparte la app!",
-    link_copied: "¡Link copiado al portapapeles!",
-    button_donate: "Invítame un café",
-    button_portfolio: "Ver mi Portfolio",
-    button_github: "Explorar en GitHub",
-    close: "Cerrar"
+    title: "Apoyá el Proyecto",
+    message1: "¡Gracias por usar WeatherWise! Este es un proyecto gratuito y de código abierto mantenido con pasión.",
+    message2: "Si te resulta útil, considera compartirla.",
+    message3: "Si deseas colaborar, puedes hacerlo desde estos enlaces.",
+    copied: "¡Copiado!",
+    copy_link: "Copiar Enlace de la App",
+    button_donate: "Invitame un 'Cafecito'",
+    button_paypal: "Colaborar con PayPal",
+    button_portfolio: "Visitar mi Portfolio",
+    button_github: "Ver en GitHub",
   }
 };
 

@@ -93,20 +93,26 @@ export default {
           from: {
             transform: 'rotate(0deg)',
           },
-          to: {
+to: {
             transform: 'rotate(360deg)',
           },
         },
-        'pulse-heart': {
-          '0%, 100%': { transform: 'scale(1)', opacity: '0.7' },
-          '50%': { transform: 'scale(1.2)', opacity: '1' },
+        'pulse-subtle': {
+          '0%, 100%': { 
+            transform: 'scale(1)', 
+            filter: 'drop-shadow(0 0 2px rgba(239, 68, 68, 0.4))' 
+          },
+          '50%': { 
+            transform: 'scale(1.2)', 
+            filter: 'drop-shadow(0 0 6px rgba(239, 68, 68, 0.8))' 
+          },
         }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'spin-slow': 'spin-slow 5s linear infinite',
-        'pulse-heart': 'pulse-heart 2s ease-in-out infinite',
+        'pulse-subtle': 'pulse-subtle 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
     },
   },

@@ -1,4 +1,3 @@
-
 const en = {
   appName: "WeatherWise",
   searchPlaceholder: "Search for a city...",
@@ -74,13 +73,15 @@ gibbous: "Waning Gibbous",
   },
   support: {
     title: "Support the Project",
-    description: "Thank you for using WeatherWise! This is a free, open-source project maintained with passion. If you find it useful, there are many ways you can support its development and keep it running:",
-    share_button: "Share the app!",
-    link_copied: "Link copied to clipboard!",
-    button_donate: "Buy me a coffee",
-    button_portfolio: "See my Portfolio",
-    button_github: "Explore on GitHub",
-    close: "Close"
+    message1: "Thank you for using WeatherWise! This is a free and open-source project maintained with passion.",
+    message2: "If you find it useful, please consider sharing it.",
+    message3: "If you wish to collaborate, you can do so from these links.",
+    copied: "Copied!",
+    copy_link: "Copy App Link",
+    button_donate: "Buy me a 'Cafecito'",
+    button_paypal: "Support with PayPal",
+    button_portfolio: "Visit my Portfolio",
+    button_github: "See on GitHub",
   }
 };
 
