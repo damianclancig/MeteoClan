@@ -115,23 +115,17 @@ const CurrentMoonIcon = ({ age, latitude }: { age: number; latitude: number }) =
     const isSouthernHemisphere = latitude < 0;
     const phase = age / SYNODIC_MONTH; // Progress from 0 (new) to 1 (new)
     
-    // Constants for our SVG
     const cx = 12, cy = 12, r = 10;
-
-    // The angle of the terminator (the line between light and shadow)
     const angle = phase * 2 * Math.PI;
-    
-    // The x-radius of the ellipse that forms the terminator
-    // It's `r` at full/new moon and `0` at quarter moons
     const terminatorXRadius = r * Math.cos(angle);
-
-    // Determine the sweep-flag for the SVG arc path. This controls the curve's direction.
-    // For waxing phases (0 to 0.5), we draw the lit part. For waning (0.5 to 1), we draw the lit part.
-    const sweepFlag = phase < 0.5 ? 1 : 0;
     
-    // The core logic: A single path that draws the lit portion.
-    // It starts at the top of the moon, draws a half-circle, then draws the terminator ellipse back to the top.
-    const path = `
+    // Sweep flag determines the direction of the arc.
+    // For waxing phases (0 to 0.5) we draw the dark part over the light.
+    // For waning phases (0.5 to 1) we also draw the dark part.
+    const sweepFlag = phase < 0.5 ? 0 : 1;
+
+    // A path that draws the terminator (the shadow part).
+    const shadowPath = `
         M ${cx}, ${cy - r}
         A ${r},${r} 0 1,${sweepFlag} ${cx},${cy + r}
         A ${terminatorXRadius},${r} 0 1,${sweepFlag} ${cx},${cy - r}
@@ -144,8 +138,10 @@ const CurrentMoonIcon = ({ age, latitude }: { age: number; latitude: number }) =
     return (
         <svg viewBox="0 0 24 24" className="w-24 h-24 text-foreground">
             <g transform={transform}>
-                <circle cx={cx} cy={cy} r={r} fill="black" stroke="white" strokeWidth="0.2" />
-                <path d={path} fill="currentColor" />
+                {/* Lit part of the moon (always a full circle) */}
+                <circle cx={cx} cy={cy} r={r} fill="currentColor" />
+                {/* The shadow overlay */}
+                <path d={shadowPath} fill="black" />
             </g>
         </svg>
     );
