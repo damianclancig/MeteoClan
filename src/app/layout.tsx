@@ -6,11 +6,13 @@ import { cn } from '@/lib/utils';
 import { Toaster } from "@/components/ui/toaster"
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import Script from 'next/script';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 // Use the production URL as the base for SEO, but allow override via environment variable.
 const APP_URL = new URL(process.env.APP_URL || 'https://clima.clancig.com.ar');
+const GOOGLE_ADSENSE_PUB_ID = process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_PUB_ID;
 
 export const metadata: Metadata = {
   title: {
@@ -68,6 +70,16 @@ export default function RootLayout({
 }>) {
   return (
     <html className="dark" suppressHydrationWarning>
+       <head>
+        {GOOGLE_ADSENSE_PUB_ID && (
+          <Script
+            async
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${GOOGLE_ADSENSE_PUB_ID}`}
+            crossOrigin="anonymous"
+            strategy="afterInteractive"
+          />
+        )}
+      </head>
       <body className={cn('font-sans antialiased', inter.variable)}>
         {children}
         <Toaster />

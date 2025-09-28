@@ -17,6 +17,7 @@ import { Forecast } from '@/components/weather/forecast';
 import { Loader, AlertTriangle } from 'lucide-react';
 import { GlassCard } from '@/components/ui/glass-card';
 import { MoonCalendar } from '@/components/weather/moon-calendar';
+import { AdBanner } from '@/components/ads/ad-banner';
 import {
   Accordion,
   AccordionContent,
@@ -280,6 +281,11 @@ export default function Home() {
                   <GlassCard className="lg:col-span-3" id="current-weather">
                     <CurrentWeatherComponent data={displayData} hourlyData={hourlyData} locale={locale} />
                   </GlassCard>
+                  
+                  <div className="lg:col-span-3">
+                    <AdBanner />
+                  </div>
+                  
                   <GlassCard className="lg:col-span-3" id="forecast">
                     <Forecast 
                       data={weatherData.forecast} 
@@ -288,6 +294,7 @@ export default function Home() {
                       selectedDayId={selectedDayId}
                     />
                   </GlassCard>
+                  
                   {currentDate && latitudeForMoon !== undefined && !isNaN(currentDate.getTime()) && (
                     <GlassCard className="lg:col-span-3" id="moon-calendar">
                         <MoonCalendar date={currentDate} latitude={latitudeForMoon} />
