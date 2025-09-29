@@ -1,4 +1,5 @@
 
+
 import type { WeatherData, DailyForecast, HourlyForecast, OpenMeteoWeatherData, WeatherCodeInfo } from "@/lib/types";
 import { weatherCodes } from "@/lib/weather-codes";
 
@@ -166,6 +167,7 @@ export function processWeatherData(apiData: OpenMeteoWeatherData, locationName: 
       forecast: forecastData,
       hourly: todayHourlyForecast,
       latitude: apiLatitude,
+      lastUpdated: currentData.time,
     };
 
     return weatherData;

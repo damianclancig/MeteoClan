@@ -13,6 +13,7 @@ const es = {
   today: "Hoy",
   sunrise: "Amanecer",
   sunset: "Atardecer",
+  lastUpdated: "Actualizado: {time}",
   errorTitle: "Error",
   fetchError: "No se pudieron obtener los datos del tiempo. Inténtalo de nuevo.",
   geolocationError: "No se pudo obtener tu ubicación. Activa los servicios de ubicación o usa la barra de búsqueda.",

@@ -13,6 +13,7 @@ const pt = {
   today: "Hoje",
   sunrise: "Nascer do sol",
   sunset: "Pôr do sol",
+  lastUpdated: "Atualizado: {time}",
   errorTitle: "Erro",
   fetchError: "Não foi possível obter os dados meteorológicos. Por favor, tente novamente.",
   geolocationError: "Não foi possível obter a sua localização. Ative os serviços de localização ou use a barra de pesquisa.",

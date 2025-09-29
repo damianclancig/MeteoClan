@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import type { CurrentWeather as CurrentWeatherType, DailyForecast, HourlyForecast as HourlyForecastType } from '@/lib/types';
@@ -7,7 +8,7 @@ import { useTranslation } from '@/hooks/use-translation';
 import { isNightTime } from '@/lib/weather-utils';
 import { AnimatedWeatherIcon } from '@/components/icons/animated-weather-icon';
 import { HourlyForecast } from '@/components/weather/hourly-forecast';
-import { Thermometer, Droplets, Wind, MapPin, Umbrella } from 'lucide-react';
+import { Thermometer, Droplets, Wind, MapPin, Umbrella, History } from 'lucide-react';
 import { SunriseSunset } from './sunrise-sunset';
 import { DetailItem } from './detail-item';
 import { WindArrow } from './wind-arrow';
@@ -21,6 +22,7 @@ interface CurrentWeatherProps {
   data: DisplayWeather;
   hourlyData: HourlyForecastType[];
   locale: Locale;
+  lastUpdated: string;
 }
 
 const parseDateString = (dt: string | number) => {
@@ -33,15 +35,19 @@ const parseDateString = (dt: string | number) => {
   return new Date(dtStr);
 }
 
-export function CurrentWeather({ data, hourlyData, locale }: CurrentWeatherProps) {
+export function CurrentWeather({ data, hourlyData, locale, lastUpdated }: CurrentWeatherProps) {
   const { t } = useTranslation();
   
   const weatherDescriptionKey = `weather.${data.description}`;
   const date = parseDateString(data.dt);
+  const updatedDate = new Date(lastUpdated);
   
   const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  const timeOptions: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit' };
+  
   if ('timezone' in data && data.timezone) {
       dateOptions.timeZone = data.timezone;
+      timeOptions.timeZone = data.timezone;
   }
 
   // Get temp from CurrentWeather or DailyForecast
@@ -63,6 +69,16 @@ export function CurrentWeather({ data, hourlyData, locale }: CurrentWeatherProps
             <h2 className="text-xl md:text-2xl font-bold">{data.location}</h2>
           </div>
           <p className="text-sm text-foreground/80">{new Intl.DateTimeFormat(undefined, dateOptions).format(date)}</p>
+          {/* Last updated for mobile */}
+          <div className="md:hidden flex items-center gap-1.5 text-xs text-foreground/60 mt-1">
+              <History className="w-3 h-3" />
+              <span>{t('lastUpdated', { time: new Intl.DateTimeFormat(undefined, timeOptions).format(updatedDate) })}</span>
+          </div>
+        </div>
+        {/* Last updated for desktop */}
+        <div className="hidden md:flex items-center gap-1.5 text-xs text-foreground/60 whitespace-nowrap mt-1">
+            <History className="w-3 h-3" />
+            <span>{t('lastUpdated', { time: new Intl.DateTimeFormat(undefined, timeOptions).format(updatedDate) })}</span>
         </div>
       </div>
       

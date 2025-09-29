@@ -13,6 +13,7 @@ const en = {
   today: "Today",
   sunrise: "Sunrise",
   sunset: "Sunset",
+  lastUpdated: "Updated: {time}",
   errorTitle: "Error",
   fetchError: "Could not fetch weather data. Please try again.",
   geolocationError: "Could not get your location. Please enable location services or use the search bar.",

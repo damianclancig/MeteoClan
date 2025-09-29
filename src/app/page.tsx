@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useCallback, useActionState, useRef } from 'react';
@@ -83,7 +84,6 @@ const LoadingDisplay = ({ t }: { t: (key: string) => string }) => (
 
 export default function Home() {
   const [state, formAction] = useActionState(getWeather, initialState);
-  const { toast } = useToast();
   const { t, locale } = useTranslation();
 
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
@@ -96,6 +96,7 @@ export default function Home() {
   const [backgroundImage, setBackgroundImage] = useState<string>('');
   
   const [currentDate, setCurrentDate] = useState<Date | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<string>('');
   const [contentVisible, setContentVisible] = useState(true);
 
   const initialFetchFormRef = useRef<HTMLFormElement>(null);
@@ -168,14 +169,9 @@ export default function Home() {
       },
       (error) => {
         setIsLoading(false);
-        toast({
-          variant: "destructive",
-          title: t('errorTitle'),
-          description: t('geolocationError'),
-        });
       }
     );
-  }, [submitInitialForm, t, toast]);
+  }, [submitInitialForm, t]);
 
   // Effect for initial data fetch based on geolocation
   useEffect(() => {
@@ -187,16 +183,11 @@ export default function Home() {
         submitInitialForm(position.coords.latitude, position.coords.longitude);
       },
       () => {
-        toast({
-          variant: "destructive",
-          title: t('errorTitle'),
-          description: t('geolocationError'),
-        })
         // Fallback if user denies geolocation
         submitInitialForm();
       }
     );
-  }, [submitInitialForm, t, toast]);
+  }, [submitInitialForm, t]);
   
   // Effect to handle state changes from server action
   useEffect(() => {
@@ -206,20 +197,16 @@ export default function Home() {
       setHourlyData(state.weatherData.hourly);
       setSelectedDayId('today');
       setError(null);
+      setLastUpdated(state.weatherData.lastUpdated);
       setIsLoading(false);
     } else if (!state.success && state.message) {
       if (state.message === 'noLocationProvided' && weatherData) {
          return; // Ignore if we already have some data
       }
       setError(state);
-      toast({
-        variant: "destructive",
-        title: t('errorTitle'),
-        description: t(state.message === 'fetchError' ? 'fetchError' : 'geolocationError'),
-      })
       setIsLoading(false);
     }
-  }, [state, t, toast, weatherData]);
+  }, [state, t, weatherData]);
 
   // Effect to generate background image after weather data is loaded
   useEffect(() => {
@@ -279,7 +266,12 @@ export default function Home() {
               ) : weatherData && displayData ? (
                 <div className="w-full max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 animate-in fade-in">
                   <GlassCard className="lg:col-span-3" id="current-weather">
-                    <CurrentWeatherComponent data={displayData} hourlyData={hourlyData} locale={locale} />
+                    <CurrentWeatherComponent 
+                      data={displayData} 
+                      hourlyData={hourlyData} 
+                      locale={locale} 
+                      lastUpdated={lastUpdated}
+                    />
                   </GlassCard>
                   
                   <div className="lg:col-span-3">

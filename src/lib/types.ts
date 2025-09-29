@@ -1,4 +1,5 @@
 
+
 // Our app's internal weather data structure
 export interface CurrentWeather {
   location: string;
@@ -51,6 +52,7 @@ export interface WeatherData {
   forecast: DailyForecast[];
   hourly: HourlyForecast[];
   latitude: number;
+  lastUpdated: string; // ISO string of when the data was generated
 }
 
 export interface CitySuggestion {
