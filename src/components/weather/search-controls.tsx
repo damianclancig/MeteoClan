@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useTransition } from 'react';
 import { useFormStatus } from 'react-dom';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -29,6 +29,7 @@ interface SearchControlsProps {
 
 export function SearchControls({ formAction, onRefreshLocation, locale }: SearchControlsProps) {
   const { t } = useTranslation();
+  const [isPending, startTransition] = useTransition();
   const { pending } = useFormStatus();
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<CitySuggestion[]>([]);
@@ -44,7 +45,9 @@ export function SearchControls({ formAction, onRefreshLocation, locale }: Search
     formData.set('latitude', suggestion.lat.toString());
     formData.set('longitude', suggestion.lon.toString());
     
-    formAction(formData);
+    startTransition(() => {
+      formAction(formData);
+    });
 
     setQuery('');
     setShowSuggestions(false);
@@ -94,7 +97,7 @@ export function SearchControls({ formAction, onRefreshLocation, locale }: Search
 
   return (
     <div ref={searchContainerRef} className="flex items-center space-x-2 w-full">
-      <Button variant="ghost" size="icon" onClick={handleRefresh} disabled={pending} aria-label={t('useMyLocationTooltip')}>
+      <Button variant="ghost" size="icon" onClick={handleRefresh} disabled={pending || isPending} aria-label={t('useMyLocationTooltip')}>
         <MapPin />
       </Button>
       <form ref={formRef} action={handleFormAction} className="relative flex flex-grow items-center space-x-2">

@@ -112,40 +112,61 @@ const PhaseIcon = ({ phaseName, latitude }: { phaseName: string, latitude: numbe
 
 
 const CurrentMoonIcon = ({ age, latitude }: { age: number; latitude: number }) => {
-    const isSouthernHemisphere = latitude < 0;
-    const phase = age / SYNODIC_MONTH; // Progress from 0 (new) to 1 (new)
-    
-    const cx = 12, cy = 12, r = 10;
-    const angle = phase * 2 * Math.PI;
-    const terminatorXRadius = r * Math.cos(angle);
-    
-    // Sweep flag determines the direction of the arc.
-    // For waxing phases (0 to 0.5) we draw the dark part over the light.
-    // For waning phases (0.5 to 1) we also draw the dark part.
-    const sweepFlag = phase < 0.5 ? 0 : 1;
+  const isSouthernHemisphere = latitude < 0;
+  const phaseAngle = (age / SYNODIC_MONTH) * 2 * Math.PI; // Phase angle in radians
 
-    // A path that draws the terminator (the shadow part).
-    const shadowPath = `
-        M ${cx}, ${cy - r}
-        A ${r},${r} 0 1,${sweepFlag} ${cx},${cy + r}
-        A ${terminatorXRadius},${r} 0 1,${sweepFlag} ${cx},${cy - r}
-        Z
-    `;
+  // Size of the moon
+  const size = 24;
+  const radius = size / 2;
 
-    // For the southern hemisphere, we simply flip the entire SVG horizontally.
-    const transform = isSouthernHemisphere ? 'scale(-1, 1) translate(-24, 0)' : '';
+  // Calculate the position of the terminator (shadow line)
+  // This value goes from -radius to +radius and back
+  const terminatorX = radius * Math.cos(phaseAngle);
 
-    return (
-        <svg viewBox="0 0 24 24" className="w-24 h-24 text-foreground">
-            <g transform={transform}>
-                {/* Lit part of the moon (always a full circle) */}
-                <circle cx={cx} cy={cy} r={r} fill="currentColor" />
-                {/* The shadow overlay */}
-                <path d={shadowPath} fill="black" />
-            </g>
-        </svg>
-    );
+  // A unique ID for the mask to avoid conflicts if multiple icons are rendered
+  const maskId = `moon-mask-${Math.random().toString(36).substr(2, 9)}`;
+
+  // The hemisphere determines the direction of the shadow.
+  // The base drawing is for the Southern Hemisphere.
+  // We flip it for the Northern Hemisphere.
+  const transform = !isSouthernHemisphere ? `scale(-1, 1)` : '';
+  const transformOrigin = 'center center';
+  
+  return (
+    <svg 
+      viewBox={`0 0 ${size} ${size}`} 
+      className="w-24 h-24 text-foreground" 
+      style={{ transform, transformOrigin }}
+    >
+      <defs>
+        <mask id={maskId}>
+          {/* The mask is a white background */}
+          <rect x="0" y="0" width={size} height={size} fill="white" />
+          {/* A black circle moves across to create the shadow */}
+          <circle 
+            cx={terminatorX} 
+            cy={radius} 
+            r={radius} 
+            fill="black" 
+          />
+        </mask>
+      </defs>
+      
+      {/* Black circle for the "dark side" of the moon */}
+      <circle cx={radius} cy={radius} r={radius} fill="black" />
+      
+      {/* White circle for the lit side, with the shadow mask applied */}
+      <circle 
+        cx={radius} 
+        cy={radius} 
+        r={radius} 
+        fill="currentColor" 
+        mask={`url(#${maskId})`} 
+      />
+    </svg>
+  );
 };
+
 
 
 export function MoonCalendar({ date, latitude }: MoonCalendarProps) {
