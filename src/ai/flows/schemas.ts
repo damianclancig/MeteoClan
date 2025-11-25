@@ -9,6 +9,8 @@ import { z } from 'zod';
 export const GenerateBackgroundInputSchema = z.object({
     city: z.string().describe('The name of the city for which to generate a background image.'),
     weather: z.string().describe('A brief description of the current weather (e.g., "Clear sky", "Light rain").'),
+    country: z.string().optional().describe('The country where the city is located.'),
+    adminArea: z.string().optional().describe('The administrative area (state, province) where the city is located.'),
 });
 export type GenerateBackgroundInput = z.infer<typeof GenerateBackgroundInputSchema>;
 
