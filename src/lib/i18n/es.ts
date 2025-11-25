@@ -19,6 +19,7 @@ const es = {
   geolocationError: "No se pudo obtener tu ubicación. Activa los servicios de ubicación o usa la barra de búsqueda.",
   noLocationProvided: "No se proporcionó ninguna ubicación.",
   loading: "Obteniendo datos del tiempo...",
+  technicalDetails: "Ver detalles técnicos",
   moonCalendarTitle: "Fases de la Luna",
   illumination: "{percent}% iluminada",
   weather: {

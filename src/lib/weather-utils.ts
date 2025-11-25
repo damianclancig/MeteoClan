@@ -142,7 +142,9 @@ export function processWeatherData(apiData: OpenMeteoWeatherData, locationName: 
     const closestHourIndex = hourlyData.time.findIndex(
       (timeStr) => new Date(timeStr).getTime() >= now.getTime()
     );
-    const currentPop = hourlyData.precipitation_probability[closestHourIndex > 0 ? closestHourIndex -1 : 0];
+    const currentPop = closestHourIndex >= 0 
+      ? hourlyData.precipitation_probability[closestHourIndex]
+      : hourlyData.precipitation_probability[0] || 0;
 
     const weatherData: WeatherData = {
       current: {

@@ -63,7 +63,7 @@ const ErrorDisplay = ({ error, t }: { error: FormState, t: (key: string) => stri
             {error.errorDetail && (
                 <Accordion type="single" collapsible className="w-full text-foreground/80">
                     <AccordionItem value="item-1">
-                        <AccordionTrigger>Ver detalles técnicos</AccordionTrigger>
+                        <AccordionTrigger>{t('technicalDetails')}</AccordionTrigger>
                         <AccordionContent className="bg-black/20 p-2 rounded-md font-mono text-xs">
                             {error.errorDetail}
                         </AccordionContent>
@@ -161,6 +161,8 @@ export default function Home() {
     }
   }, [weatherData]);
 
+  const { toast } = useToast();
+
   const handleRefreshLocation = useCallback(() => {
     setIsLoading(true);
     navigator.geolocation.getCurrentPosition(
@@ -169,9 +171,14 @@ export default function Home() {
       },
       (error) => {
         setIsLoading(false);
+        toast({
+          title: t('errorTitle'),
+          description: t('geolocationError'),
+          variant: 'destructive'
+        });
       }
     );
-  }, [submitInitialForm, t]);
+  }, [submitInitialForm, toast, t]);
 
   // Effect for initial data fetch based on geolocation
   useEffect(() => {

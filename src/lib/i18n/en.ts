@@ -19,6 +19,7 @@ const en = {
   geolocationError: "Could not get your location. Please enable location services or use the search bar.",
   noLocationProvided: "No location was provided.",
   loading: "Getting weather data...",
+  technicalDetails: "View technical details",
   moonCalendarTitle: "Moon Phases",
   illumination: "{percent}% illuminated",
   weather: {

@@ -1,6 +1,7 @@
 
 'use client';
 
+import { useId } from 'react';
 import { useTranslation } from "@/hooks/use-translation";
 
 // Synodic month length (in days)
@@ -112,6 +113,7 @@ const PhaseIcon = ({ phaseName, latitude }: { phaseName: string, latitude: numbe
 
 
 const CurrentMoonIcon = ({ age, latitude }: { age: number; latitude: number }) => {
+  const maskId = useId();
   const isSouthernHemisphere = latitude < 0;
   const phaseAngle = (age / SYNODIC_MONTH) * 2 * Math.PI; // Phase angle in radians
 
@@ -122,9 +124,6 @@ const CurrentMoonIcon = ({ age, latitude }: { age: number; latitude: number }) =
   // Calculate the position of the terminator (shadow line)
   // This value goes from -radius to +radius and back
   const terminatorX = radius * Math.cos(phaseAngle);
-
-  // A unique ID for the mask to avoid conflicts if multiple icons are rendered
-  const maskId = `moon-mask-${Math.random().toString(36).substr(2, 9)}`;
 
   // The hemisphere determines the direction of the shadow.
   // The base drawing is for the Southern Hemisphere.
