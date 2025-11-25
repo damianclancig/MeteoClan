@@ -47,7 +47,7 @@ const generateBackgroundFlow = ai.defineFlow(
     // Create a detailed prompt for better image generation
     // Include country and admin area if available for better accuracy
     const locationString = [city, adminArea, country].filter(Boolean).join(', ');
-    const prompt = `A beautiful, photorealistic landscape photograph of ${locationString} with ${weatherDesc}. Cinematic lighting, high resolution, professional photography, vibrant colors, detailed architecture.`;
+    const prompt = `A breathtaking panoramic drone view of ${locationString}, capturing a wide aerial cityscape. The sky is ${weatherDesc} and dominates the composition, showcasing the atmospheric conditions. Photorealistic, 8k resolution, cinematic lighting, wide angle lens, high detail.`;
     
     console.log(`🎨 Generating AI image for: "${locationString}" with "${weatherDesc}"`);
 
