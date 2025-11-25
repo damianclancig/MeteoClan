@@ -18,7 +18,15 @@ export async function getCityFromCoords(lat: number, lon: number): Promise<strin
         const data = await res.json();
         
         const mostSpecificAdmin = data.localityInfo?.administrative?.sort((a: any, b: any) => b.order - a.order)[0];
-        const city = mostSpecificAdmin?.name || data.city || data.locality || data.principalSubdivision || "Current Location";
+        let city = mostSpecificAdmin?.name || data.city || data.locality || data.principalSubdivision || "Current Location";
+
+        // Add context (Admin Area and Country) if available
+        if (data.principalSubdivision && city !== data.principalSubdivision) {
+            city += `, ${data.principalSubdivision}`;
+        }
+        if (data.countryName) {
+            city += `, ${data.countryName}`;
+        }
 
         return city;
     } catch (error: any) {

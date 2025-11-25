@@ -1,6 +1,7 @@
 
 'use client';
 
+import { memo } from 'react';
 import type { DailyForecast } from '@/lib/types';
 import { useTranslation } from '@/hooks/use-translation';
 import { AnimatedWeatherIcon } from '@/components/icons/animated-weather-icon';
@@ -26,7 +27,7 @@ const getDayInfo = (dateString: string) => {
 };
 
 
-export function Forecast({ data, onDaySelect, onShowToday, selectedDayId }: ForecastProps) {
+export const Forecast = memo(function Forecast({ data, onDaySelect, onShowToday, selectedDayId }: ForecastProps) {
   const { t } = useTranslation();
 
   if (!data || data.length === 0) {
@@ -50,7 +51,7 @@ export function Forecast({ data, onDaySelect, onShowToday, selectedDayId }: Fore
           {t('today')}
         </Button>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
         {data.map((day, index) => {
           const { dayName, dayNumber } = getDayInfo(day.dt);
           const isSelected = selectedDayId === day.dt;
@@ -81,4 +82,4 @@ export function Forecast({ data, onDaySelect, onShowToday, selectedDayId }: Fore
       </div>
     </>
   );
-}
+});

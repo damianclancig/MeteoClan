@@ -1,7 +1,6 @@
-
-
 'use client';
 
+import { memo } from 'react';
 import type { CurrentWeather as CurrentWeatherType, DailyForecast, HourlyForecast as HourlyForecastType } from '@/lib/types';
 import type { Locale } from '@/lib/i18n';
 import { useTranslation } from '@/hooks/use-translation';
@@ -35,7 +34,7 @@ const parseDateString = (dt: string | number) => {
   return new Date(dtStr);
 }
 
-export function CurrentWeather({ data, hourlyData, locale, lastUpdated }: CurrentWeatherProps) {
+export const CurrentWeather = memo(function CurrentWeather({ data, hourlyData, locale, lastUpdated }: CurrentWeatherProps) {
   const { t } = useTranslation();
   
   const weatherDescriptionKey = `weather.${data.description}`;
@@ -151,4 +150,4 @@ export function CurrentWeather({ data, hourlyData, locale, lastUpdated }: Curren
       </div>
     </>
   );
-}
+});

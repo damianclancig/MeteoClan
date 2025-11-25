@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, memo } from 'react';
 import type { HourlyForecast as HourlyForecastType } from '@/lib/types';
 import { useTranslation } from '@/hooks/use-translation';
 import { AnimatedWeatherIcon } from '@/components/icons/animated-weather-icon';
@@ -29,7 +28,7 @@ const formatTime = (date: Date, timezone: string) => {
     });
 };
 
-export function HourlyForecast({ data, sunrise, sunset, timezone }: HourlyForecastProps) {
+export const HourlyForecast = memo(function HourlyForecast({ data, sunrise, sunset, timezone }: HourlyForecastProps) {
   const { t } = useTranslation();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const currentEventRef = useRef<HTMLDivElement>(null);
@@ -141,4 +140,4 @@ export function HourlyForecast({ data, sunrise, sunset, timezone }: HourlyForeca
       </div>
     </div>
   );
-}
+});
