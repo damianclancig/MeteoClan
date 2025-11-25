@@ -194,7 +194,7 @@ export default function Home() {
         submitInitialForm();
       }
     );
-  }, [submitInitialForm, t]);
+  }, [submitInitialForm]);
   
   // Effect to handle state changes from server action
   useEffect(() => {
@@ -213,7 +213,7 @@ export default function Home() {
       setError(state);
       setIsLoading(false);
     }
-  }, [state, t, weatherData]);
+  }, [state]);
 
   // Effect to generate background image after weather data is loaded
   useEffect(() => {
@@ -226,9 +226,14 @@ export default function Home() {
           });
           if (bgImage) {
             setBackgroundImage(bgImage);
+          } else {
+            // Fallback to a default gradient background
+            setBackgroundImage('');
           }
         } catch (e) {
           console.error("Failed to generate background image asynchronously", e);
+          // Set empty string to use default gradient background
+          setBackgroundImage('');
         }
       };
       generate();

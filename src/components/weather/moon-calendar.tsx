@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useId } from 'react';
+import { useId, memo } from 'react';
 import { useTranslation } from "@/hooks/use-translation";
 
 // Synodic month length (in days)
@@ -168,7 +167,7 @@ const CurrentMoonIcon = ({ age, latitude }: { age: number; latitude: number }) =
 
 
 
-export function MoonCalendar({ date, latitude }: MoonCalendarProps) {
+export const MoonCalendar = memo(function MoonCalendar({ date, latitude }: MoonCalendarProps) {
   const { t } = useTranslation();
 
   if (!date || isNaN(date.getTime())) {
@@ -207,4 +206,4 @@ export function MoonCalendar({ date, latitude }: MoonCalendarProps) {
       </div>
     </div>
   );
-}
+});
