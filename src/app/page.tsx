@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useActionState, useRef } from 'react';
+import NextImage from 'next/image';
 
 import type { WeatherData, DailyForecast, CurrentWeather, HourlyForecast } from '@/lib/types';
 import { getWeather } from '@/app/actions';
@@ -212,16 +213,23 @@ export default function Home() {
       {/* 1. Capa de Fondo (Atrás de todo) */}
       <div className="fixed inset-0 z-0 bg-background" onClick={toggleContent}>
         {backgroundImage ? (
-          <img
+          <NextImage
             src={backgroundImage}
-            alt="Weather background"
-            className="h-full w-full object-cover transition-opacity duration-1000 ease-in-out"
+            alt={weatherData ? `${t('weatherBackgroundFor')} ${weatherData.current.location} - ${t(`weather.${weatherData.current.description}`)}` : "Weather background"}
+            fill
+            className="object-cover transition-opacity duration-1000 ease-in-out"
+            priority
+            unoptimized={backgroundImage.startsWith('http')} // Optimization: if it's external, we might not want to process it through next/image loader if not configured
           />
         ) : (
           <div className="h-full w-full bg-background" />
         )}
         <div className="absolute inset-0 bg-black/50" />
       </div>
+
+      <h1 className="sr-only">
+        {t('appTitle')} - {t('appDescription')}
+      </h1>
 
       {/* 2. Estructura de UI (Header always on top) */}
       <div className="relative z-10 flex flex-col min-h-dvh pointer-events-none">

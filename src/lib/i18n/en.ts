@@ -1,5 +1,8 @@
 const en = {
   appName: "WeatherWise",
+  appTitle: "WeatherWise - AI Weather Forecast",
+  appDescription: "Accurate forecasts and dynamic AI-generated landscapes that reflect real-time weather.",
+  weatherBackgroundFor: "Weather background for",
   searchPlaceholder: "Search for a city...",
   search: "Search",
   useMyLocationTooltip: "Use my location",
@@ -59,7 +62,7 @@ const en = {
     waxing_gibbous: "Waxing Gibbous",
     full_moon: "Full Moon",
     waning_gibbous: "Waning Gibbous",
-gibbous: "Waning Gibbous",
+    gibbous: "Waning Gibbous",
     third_quarter: "Third Quarter",
     waning_crescent: "Waning Crescent",
   },

@@ -1,5 +1,8 @@
 const pt = {
   appName: "WeatherWise",
+  appTitle: "WeatherWise - Previsão do Tempo com IA",
+  appDescription: "Previsões precisas e paisagens dinâmicas geradas por IA que refletem o clima real.",
+  weatherBackgroundFor: "Fundo do clima para",
   searchPlaceholder: "Procurar uma cidade...",
   search: "Procurar",
   useMyLocationTooltip: "Usar a minha localização",
@@ -65,7 +68,7 @@ const pt = {
   attribution: {
     weather: "Dados meteorológicos fornecidos por",
     geocoding: "Geocodificação por",
-images: "Imagens de fundo geradas por",
+    images: "Imagens de fundo geradas por",
     moon: "Os cálculos das fases da lua são realizados localmente."
   },
   footer: {

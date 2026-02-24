@@ -16,34 +16,49 @@ const GOOGLE_ADSENSE_PUB_ID = process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_PUB_ID;
 
 export const metadata: Metadata = {
   title: {
-    default: 'WeatherWise - Pronóstico del Tiempo con IA',
+    default: 'WeatherWise - Pronóstico del Tiempo Preciso con IA',
     template: '%s | WeatherWise',
   },
-  description: 'Aplicación del tiempo con pronósticos precisos, búsqueda multilingüe y fondos espectaculares generados por IA (Gemini) que reflejan el clima actual.',
+  description: 'Consulta el clima con WeatherWise: pronósticos precisos por hora, búsqueda global y fondos espectaculares generados por IA (Gemini). Datos de temperatura, viento, humedad y fases lunares en tiempo real.',
   metadataBase: APP_URL,
   applicationName: 'WeatherWise',
-  keywords: ['clima', 'tiempo', 'pronóstico', 'temperatura', 'weather', 'forecast', 'ia', 'ai', 'inteligencia artificial', 'gemini', 'multilenguaje', 'multi-idioma', 'fases lunares', 'direccion del viento'],
+  keywords: [
+    'clima', 'tiempo', 'pronóstico', 'temperatura', 'weather', 'forecast', 'ia', 'ai',
+    'inteligencia artificial', 'gemini', 'multilenguaje', 'multi-idioma', 'fases lunares',
+    'direccion del viento', 'pronóstico del tiempo por hora', 'clima hoy', 'pronóstico a 7 días',
+    'mapa del tiempo', 'IA generativa paisajes', 'hourly weather', '7 day forecast',
+    'AI weather app', 'Generative AI weather', 'clima preciso', 'meteorología',
+    'weather forecast worldwide', 'real-time weather updates', 'clima en vivo'
+  ],
   authors: [{ name: 'Clancig FullstackDev', url: new URL('https://www.clancig.com.ar') }],
   creator: 'Clancig FullstackDev',
+  alternates: {
+    canonical: '/',
+    languages: {
+      'es-AR': '/?lang=es',
+      'en-US': '/?lang=en',
+      'pt-BR': '/?lang=pt',
+    },
+  },
   openGraph: {
     type: 'website',
     url: APP_URL,
-    title: 'WeatherWise - Pronóstico del Tiempo con Fondos de IA',
-    description: 'Consulta el pronóstico del tiempo preciso con una interfaz moderna y fondos generados por IA que se adaptan al clima.',
+    title: 'WeatherWise - El Pronóstico del Tiempo Reimaginado con IA',
+    description: 'Experimenta el clima como nunca antes. Pronósticos precisos combinados con paisajes dinámicos generados por IA que reflejan el estado real del tiempo en cualquier lugar del mundo.',
     siteName: 'WeatherWise',
     images: [
       {
         url: '/og-image.webp',
         width: 1200,
         height: 630,
-        alt: 'WeatherWise App con fondo de IA',
+        alt: 'WeatherWise - Visualización del clima con Inteligencia Artificial',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'WeatherWise - Pronóstico del Tiempo con IA',
-    description: 'El pronóstico del tiempo más visual: datos precisos y fondos generados por IA.',
+    title: 'WeatherWise - Pronóstico del Tiempo e IA',
+    description: 'Datos meteorológicos precisos y fondos generados por IA. La forma más visual de ver el clima.',
     images: ['/og-image.webp'],
   },
   appleWebApp: {
@@ -55,7 +70,10 @@ export const metadata: Metadata = {
     telephone: false,
   },
   icons: {
-    icon: '/favicon.svg',
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', sizes: 'any' }
+    ],
     shortcut: '/favicon.svg',
     apple: '/favicon.svg',
   },
@@ -70,7 +88,7 @@ export default function RootLayout({
 }>) {
   return (
     <html className="dark" suppressHydrationWarning>
-       <head>
+      <head>
         {GOOGLE_ADSENSE_PUB_ID && (
           <Script
             async
