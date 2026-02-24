@@ -18,8 +18,9 @@ export async function generateCityBackgroundAction(city: string, weatherDescript
     console.log(`[AI Server Action] Generando imagen para: ${city}, ${weatherDescription} usando Gemini API Key`);
 
     try {
-        // Usamos la versión 001 que suele tener mayor disponibilidad en el endpoint de Google AI
-        const modelId = "imagen-3.0-generate-001";
+        // Tras listar los modelos disponibles, hemos visto que Imagen 4 está disponible
+        // mientras que Imagen 3 devolvía 404 para este API Key.
+        const modelId = "imagen-4.0-generate-001";
         const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:predict?key=${apiKey}`;
 
         const prompt = `A professional cinematic photography of ${city} with ${weatherDescription}, highly detailed, photorealistic, 8k resolution, landscape orientation, no text, no watermarks.`;
