@@ -8,31 +8,31 @@ import type { CitySuggestion } from "@/lib/types";
  * @returns The name of the city.
  */
 export async function getCityFromCoords(lat: number, lon: number): Promise<string> {
-    const url = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=es`;
-    try {
-        const res = await fetch(url, { cache: "no-store" });
-        if (!res.ok) {
-            console.error(`[getCityFromCoords] API Error: ${res.statusText}`);
-            return "Current Location";
-        }
-        const data = await res.json();
-        
-        const mostSpecificAdmin = data.localityInfo?.administrative?.sort((a: any, b: any) => b.order - a.order)[0];
-        let city = mostSpecificAdmin?.name || data.city || data.locality || data.principalSubdivision || "Current Location";
-
-        // Add context (Admin Area and Country) if available
-        if (data.principalSubdivision && city !== data.principalSubdivision) {
-            city += `, ${data.principalSubdivision}`;
-        }
-        if (data.countryName) {
-            city += `, ${data.countryName}`;
-        }
-
-        return city;
-    } catch (error: any) {
-        console.error(`[getCityFromCoords] CATCH BLOCK ERROR: ${error.message}`);
-        return "Current Location";
+  const url = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=es`;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) {
+      console.error(`[getCityFromCoords] API Error: ${res.statusText}`);
+      return "Current Location";
     }
+    const data = await res.json();
+
+    const mostSpecificAdmin = data.localityInfo?.administrative?.sort((a: any, b: any) => b.order - a.order)[0];
+    let city = mostSpecificAdmin?.name || data.city || data.locality || data.principalSubdivision || "Current Location";
+
+    // Add context (Admin Area and Country) if available
+    if (data.principalSubdivision && city !== data.principalSubdivision) {
+      city += `, ${data.principalSubdivision}`;
+    }
+    if (data.countryName) {
+      city += `, ${data.countryName}`;
+    }
+
+    return city;
+  } catch (error: any) {
+    console.error(`[getCityFromCoords] CATCH BLOCK ERROR: ${error.message}`, error.cause || '');
+    return "Current Location";
+  }
 }
 
 /**
@@ -48,9 +48,9 @@ export async function getCitySuggestions(query: string, language: string, count:
   }
 
   const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=${count}&format=json&language=${language}`;
-  
+
   try {
-    const response = await fetch(url, { next: { revalidate: 3600 } }); // Cache for 1 hour
+    const response = await fetch(url);
     if (!response.ok) {
       console.error(`[getCitySuggestions] API Error: ${response.statusText}`);
       return [];
@@ -66,10 +66,10 @@ export async function getCitySuggestions(query: string, language: string, count:
     results.forEach((item: any) => {
       let name = item.name;
       if (item.admin1 && item.name !== item.admin1) {
-          name += `, ${item.admin1}`;
+        name += `, ${item.admin1}`;
       }
       if (item.country) {
-          name += `, ${item.country}`;
+        name += `, ${item.country}`;
       }
 
       if (!seen.has(name)) {

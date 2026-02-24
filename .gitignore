@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/functions/node_modules
 /.pnp
 .pnp.*
 .yarn/*
@@ -37,11 +38,15 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# AI Agents & Genkit
 .genkit/*
+.agent/
 .env*
 
 # firebase
 firebase-debug.log
 firestore-debug.log
+/functions/lib
+/functions/node_modules
 
 !.env.example
