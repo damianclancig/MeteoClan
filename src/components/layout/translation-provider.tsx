@@ -10,21 +10,23 @@ interface TranslationContextType {
 
 const TranslationContext = createContext<TranslationContextType | undefined>(undefined);
 
-export function TranslationProvider({ children }: { children: ReactNode }) {
-    const [locale, setLocaleState] = useState<Locale>(defaultLocale);
+export function TranslationProvider({ children, initialLocale }: { children: ReactNode, initialLocale?: Locale }) {
+    const [locale, setLocaleState] = useState<Locale>(initialLocale || defaultLocale);
 
     useEffect(() => {
-        const savedLocale = typeof window !== 'undefined' ? localStorage.getItem('weatherwise-locale') as Locale : null;
+        if (!initialLocale) {
+            const savedLocale = typeof window !== 'undefined' ? localStorage.getItem('weatherwise-locale') as Locale : null;
 
-        if (savedLocale && savedLocale in dictionaries) {
-            setLocaleState(savedLocale);
-        } else if (typeof window !== 'undefined' && navigator.language) {
-            const browserLang = navigator.language.split('-')[0] as Locale;
-            if (browserLang in dictionaries) {
-                setLocaleState(browserLang);
+            if (savedLocale && savedLocale in dictionaries) {
+                setLocaleState(savedLocale);
+            } else if (typeof window !== 'undefined' && navigator.language) {
+                const browserLang = navigator.language.split('-')[0] as Locale;
+                if (browserLang in dictionaries) {
+                    setLocaleState(browserLang);
+                }
             }
         }
-    }, []);
+    }, [initialLocale]);
 
     const setLocale = useCallback((newLocale: Locale) => {
         setLocaleState(newLocale);

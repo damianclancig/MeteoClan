@@ -2,6 +2,8 @@ const en = {
   appName: "WeatherWise",
   appTitle: "WeatherWise - AI Weather Forecast",
   appDescription: "Accurate forecasts and dynamic AI-generated landscapes that reflect real-time weather.",
+  seoTitle: "WeatherWise - Accurate AI Weather Forecast",
+  seoDescription: "Check the weather with WeatherWise: accurate hourly forecasts, global search, and AI-generated backgrounds. Temperature, wind, and moon phase data.",
   weatherBackgroundFor: "Weather background for",
   searchPlaceholder: "Search for a city...",
   search: "Search",

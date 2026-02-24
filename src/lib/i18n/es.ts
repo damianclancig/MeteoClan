@@ -2,6 +2,8 @@ const es = {
   appName: "WeatherWise",
   appTitle: "WeatherWise - Pronóstico del Tiempo con IA",
   appDescription: "Pronósticos precisos y paisajes dinámicos generados por IA que reflejan el clima real.",
+  seoTitle: "WeatherWise - Pronóstico del Tiempo Preciso con IA",
+  seoDescription: "Consulta el clima con WeatherWise: pronósticos precisos por hora, búsqueda global y fondos generados por IA. Datos de temperatura, viento y fases lunares.",
   weatherBackgroundFor: "Fondo del clima para",
   searchPlaceholder: "Buscar una ciudad...",
   search: "Buscar",
