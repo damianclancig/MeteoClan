@@ -8,7 +8,7 @@ export function ApiAttribution() {
   const { t } = useTranslation();
 
   return (
-    <div className="text-center text-xs text-foreground/60 py-4 px-4 backdrop-blur-sm">
+    <div className="text-center text-xs text-foreground/60 py-4 px-4">
       <p>
         {t('attribution.weather')}{' '}
         <Link href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground/80">

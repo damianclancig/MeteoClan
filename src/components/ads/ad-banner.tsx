@@ -8,9 +8,7 @@ const PUB_ID = process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_PUB_ID;
 
 declare global {
   interface Window {
-    adsbygoogle: {
-      push: (params: {}) => void;
-    }[];
+    adsbygoogle: any[];
   }
 }
 
@@ -18,11 +16,21 @@ export const AdBanner = () => {
   const pathname = usePathname();
 
   useEffect(() => {
-    try {
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
-    } catch (err) {
-      console.error('AdSense error:', err);
-    }
+    // Pequeño retardo para asegurar que el DOM esté listo y evitar colisiones en Next.js
+    const timer = setTimeout(() => {
+      try {
+        // Verificamos si hay algún elemento 'ins' que aún no tenga el atributo de estado de AdSense
+        const adsContainer = document.querySelectorAll('.adsbygoogle:not([data-adsbygoogle-status])');
+
+        if (adsContainer.length > 0) {
+          (window.adsbygoogle = window.adsbygoogle || []).push({});
+        }
+      } catch (err) {
+        console.error('AdSense error:', err);
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, [pathname]);
 
   if (!AD_SLOT_ID || !PUB_ID) {

@@ -9,7 +9,7 @@ export function Footer() {
 
   return (
     <>
-      <footer className="w-full border-t border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 text-foreground/60">
+      <footer className="w-full text-foreground/60">
         <div className="container mx-auto flex items-center justify-between py-4 px-4">
           <div className="text-sm">
             <p>

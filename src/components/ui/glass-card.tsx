@@ -12,7 +12,7 @@ export function GlassCard({
   return (
     <div
       className={cn(
-        "relative h-full w-full rounded-2xl bg-card/10 backdrop-blur p-2 border border-white/10",
+        "relative h-full w-full rounded-2xl bg-card/10 backdrop-blur p-2 border border-white/10 pointer-events-auto",
         className
       )}
       {...props}
