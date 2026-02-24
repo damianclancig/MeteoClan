@@ -2,10 +2,9 @@
 
 /**
  * Server Action que genera una imagen de fondo para una ciudad y clima específicos
- * utilizando Google AI (Gemini / Imagen 3) con API Key.
+ * utilizando Google AI (Gemini / Imagen 4) con API Key.
  * 
- * Esta versión utiliza el GEMINI_API_KEY de las variables de entorno,
- * eliminando la necesidad de credenciales complejas de Google Cloud.
+ * Versión Optimizada: Usa Imagen 4 Fast y compresión JPEG para carga ultra rápida.
  */
 export async function generateCityBackgroundAction(city: string, weatherDescription: string): Promise<{ imageUrl: string; cached: boolean }> {
     const apiKey = process.env.GEMINI_API_KEY;
@@ -15,22 +14,24 @@ export async function generateCityBackgroundAction(city: string, weatherDescript
         return { imageUrl: "", cached: false };
     }
 
-    console.log(`[AI Server Action] Generando imagen para: ${city}, ${weatherDescription} usando Gemini API Key`);
+    console.log(`[AI Server Action] Generando imagen para: ${city}, ${weatherDescription} usando Gemini API Key (Imagen 4 Fast)`);
 
     try {
-        // Tras listar los modelos disponibles, hemos visto que Imagen 4 está disponible
-        // mientras que Imagen 3 devolvía 404 para este API Key.
-        const modelId = "imagen-4.0-generate-001";
+        // Optimizamos para velocidad: usamos el modelo "Fast" y formato JPEG con compresión
+        const modelId = "imagen-4.0-fast-generate-001";
         const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:predict?key=${apiKey}`;
 
-        const prompt = `A professional cinematic photography of ${city} with ${weatherDescription}, highly detailed, photorealistic, 8k resolution, landscape orientation, no text, no watermarks.`;
+        const prompt = `A cinematic photography of ${city} with ${weatherDescription}, professional lighting, landscape orientation, no text.`;
 
         const payload = {
             instances: [{ prompt: prompt }],
             parameters: {
                 sampleCount: 1,
                 aspectRatio: "16:9",
-                outputOptions: { mimeType: "image/png" }
+                outputOptions: {
+                    mimeType: "image/jpeg",
+                    compressionQuality: 60 // Calidad moderada para carga ultra rápida (< 200kb)
+                }
             }
         };
 
@@ -45,9 +46,6 @@ export async function generateCityBackgroundAction(city: string, weatherDescript
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
             console.error("[AI Server Action] Google AI Error:", response.status, JSON.stringify(errorData));
-
-            // Si el error es 404, es posible que el modelo Imagen 3 no esté disponible todavía en esa región/API
-            // Intentamos un fallback silencioso
             throw new Error(`Google AI respondió con error: ${response.status}`);
         }
 
@@ -59,9 +57,9 @@ export async function generateCityBackgroundAction(city: string, weatherDescript
 
         // La respuesta viene en Base64
         const base64Image = data.predictions[0].bytesBase64Encoded;
-        const imageUrl = `data:image/png;base64,${base64Image}`;
+        const imageUrl = `data:image/jpeg;base64,${base64Image}`;
 
-        console.log(`[AI Server Action] ¡Imagen generada con éxito para ${city}!`);
+        console.log(`[AI Server Action] ¡Imagen optimizada generada con éxito para ${city}!`);
 
         return {
             imageUrl,
