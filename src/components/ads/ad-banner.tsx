@@ -1,7 +1,7 @@
-
 'use client';
 
 import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
 const AD_SLOT_ID = process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_AD_SLOT_ID;
 const PUB_ID = process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_PUB_ID;
@@ -15,13 +15,15 @@ declare global {
 }
 
 export const AdBanner = () => {
+  const pathname = usePathname();
+
   useEffect(() => {
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
     } catch (err) {
       console.error('AdSense error:', err);
     }
-  }, []);
+  }, [pathname]);
 
   if (!AD_SLOT_ID || !PUB_ID) {
     // Don't render anything if the IDs are not configured
@@ -30,10 +32,10 @@ export const AdBanner = () => {
   }
 
   return (
-    <div className="flex justify-center my-4">
+    <div key={pathname} className="flex justify-center my-4 w-full min-h-[100px]">
       <ins
         className="adsbygoogle"
-        style={{ display: 'block' }}
+        style={{ display: 'block', width: '100%' }}
         data-ad-client={PUB_ID}
         data-ad-slot={AD_SLOT_ID}
         data-ad-format="auto"
