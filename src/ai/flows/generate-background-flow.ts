@@ -1,24 +1,24 @@
-
 'use server';
 
 /**
- * @fileOverview A Genkit flow that generates a background image for the weather app.
- * 
- * - generateBackground: A function that takes a city and weather description and returns a background image.
+ * @fileOverview Genkit flow que genera la imagen de fondo del Weather App.
+ *
+ * Estrategia 1: Unsplash API — Busca fotos reales de la ciudad con clima.
+ *               Requiere UNSPLASH_ACCESS_KEY en .env.local
+ * Estrategia 2: Picsum.photos — Imágenes aleatorias de alta calidad (CORS OK).
  */
 
 import { ai } from '@/ai/genkit';
-import { 
-    GenerateBackgroundInputSchema, 
-    type GenerateBackgroundInput, 
-    GenerateBackgroundOutputSchema, 
-    type GenerateBackgroundOutput 
+import {
+  GenerateBackgroundInputSchema,
+  type GenerateBackgroundInput,
+  GenerateBackgroundOutputSchema,
+  type GenerateBackgroundOutput
 } from './schemas';
 
 
-// This is the exported function that will be called from server actions.
 export async function generateBackground(input: GenerateBackgroundInput): Promise<GenerateBackgroundOutput> {
-    return generateBackgroundFlow(input);
+  return generateBackgroundFlow(input);
 }
 
 
@@ -29,99 +29,61 @@ const generateBackgroundFlow = ai.defineFlow(
     outputSchema: GenerateBackgroundOutputSchema,
   },
   async ({ city, weather, country, adminArea }) => {
-    // Map weather codes to descriptive terms for better prompts
-    const weatherDescriptions: Record<string, string> = {
-      'clear_sky': 'clear blue sky, sunny day',
-      'few_clouds': 'partly cloudy sky',
-      'scattered_clouds': 'cloudy sky',
-      'broken_clouds': 'overcast sky',
-      'shower_rain': 'rainy weather with rain showers',
-      'rain': 'rainy day with rainfall',
-      'thunderstorm': 'dramatic storm with lightning',
-      'snow': 'snowy winter scene',
-      'mist': 'misty foggy atmosphere',
+    const weatherKeywords: Record<string, string> = {
+      'clear_sky': 'sunny clear sky',
+      'few_clouds': 'partly cloudy',
+      'scattered_clouds': 'cloudy',
+      'broken_clouds': 'overcast',
+      'shower_rain': 'rain',
+      'rain': 'rain',
+      'thunderstorm': 'storm lightning',
+      'snow': 'snow winter',
+      'mist': 'fog mist',
     };
 
-    const weatherDesc = weatherDescriptions[weather] || weather.replace(/_/g, ' ');
-    
-    // Create a detailed prompt for better image generation
-    // Include country and admin area if available for better accuracy
-    const locationString = [city, adminArea, country].filter(Boolean).join(', ');
-    const prompt = `A breathtaking panoramic drone view of ${locationString}, capturing a wide aerial cityscape. The sky is ${weatherDesc} and dominates the composition, showcasing the atmospheric conditions. Photorealistic, 8k resolution, cinematic lighting, wide angle lens, high detail.`;
-    
-    console.log(`🎨 Generating AI image for: "${locationString}" with "${weatherDesc}"`);
+    const weatherKw = weatherKeywords[weather] || weather.replace(/_/g, ' ');
 
-    // STRATEGY 1: Hugging Face (if key is configured)
-    const hfToken = process.env.HUGGINGFACE_API_KEY;
-    
-    if (hfToken) {
+    // STRATEGY 1: Unsplash API — Real city photos with proper CORS
+    const UNSPLASH_KEY = process.env.UNSPLASH_ACCESS_KEY;
+    if (UNSPLASH_KEY) {
       try {
-        console.log('   Trying Hugging Face API...');
-        // Using the correct Router endpoint
-        const response = await fetch(
-          'https://router.huggingface.co/hf-inference/models/stabilityai/stable-diffusion-xl-base-1.0',
-          {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${hfToken}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              inputs: prompt,
-              parameters: {
-                num_inference_steps: 25, // Slightly faster
-                guidance_scale: 7.5,
-              },
-            }),
-          }
-        );
+        console.log(`[generateBackground] Trying Unsplash API for "${city}"...`);
+        const query = encodeURIComponent(`${city} ${weatherKw} cityscape`);
+        const apiUrl = `https://api.unsplash.com/photos/random?query=${query}&orientation=landscape&client_id=${UNSPLASH_KEY}`;
 
-        if (response.ok) {
-          const imageBlob = await response.blob();
-          const arrayBuffer = await imageBlob.arrayBuffer();
-          const buffer = Buffer.from(arrayBuffer);
-          const base64Image = buffer.toString('base64');
-          console.log(`✅ Image generated with Hugging Face (${(imageBlob.size / 1024).toFixed(1)}KB)`);
-          return { image: `data:image/png;base64,${base64Image}` };
+        const res = await fetch(apiUrl, { next: { revalidate: 0 } });
+        if (res.ok) {
+          const data = await res.json();
+          const imageUrl: string | undefined = data?.urls?.regular;
+          if (imageUrl) {
+            console.log(`[generateBackground] Unsplash OK: ${imageUrl.substring(0, 60)}...`);
+            return { image: imageUrl };
+          }
         } else {
-          console.log(`⚠️ Hugging Face failed (${response.status}). Falling back to Pollinations.ai...`);
+          const err = await res.text();
+          console.error(`[generateBackground] Unsplash API error ${res.status}: ${err.substring(0, 200)}`);
         }
-      } catch (error) {
-        console.error('⚠️ Hugging Face error:', error);
-        console.log('   Falling back to Pollinations.ai...');
+      } catch (err: any) {
+        console.error(`[generateBackground] Unsplash fetch error: ${err.message}`);
       }
     } else {
-      console.log('ℹ️  HUGGINGFACE_API_KEY not found. Using Pollinations.ai (Free, No Key needed)...');
+      console.log('[generateBackground] UNSPLASH_ACCESS_KEY not set, skipping Unsplash.');
     }
 
-    // STRATEGY 2: Pollinations.ai (Robust Fallback - No Key Required)
+    // STRATEGY 2: Picsum.photos — Always works, no key needed, CORS OK
+    // The URL is deterministic based on city name for consistency.
     try {
-      // Pollinations.ai is a free, URL-based generation service
-      // We use a random seed to ensure unique images every time
-      const seed = Math.floor(Math.random() * 1000000);
-      const encodedPrompt = encodeURIComponent(prompt);
-      const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1080&height=720&seed=${seed}&model=flux`;
-      
-      console.log('   Fetching from Pollinations.ai...');
-      
-      // We fetch it to verify it works and to potentially cache or process if needed
-      // But for now we can just return the URL directly or fetch to base64 to avoid hotlinking issues
-      const response = await fetch(imageUrl);
-      
-      if (response.ok) {
-        const imageBlob = await response.blob();
-        const arrayBuffer = await imageBlob.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
-        const base64Image = buffer.toString('base64');
-        console.log(`✅ Image generated with Pollinations.ai (${(imageBlob.size / 1024).toFixed(1)}KB)`);
-        return { image: `data:image/jpeg;base64,${base64Image}` };
-      }
-    } catch (error) {
-      console.error('❌ Pollinations.ai failed:', error);
+      console.log(`[generateBackground] Using Picsum.photos fallback...`);
+      // Use a hash of the city name as seed for a consistent image per city
+      const seed = city.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) % 1000;
+      const picsumUrl = `https://picsum.photos/seed/${seed}/1280/720`;
+      console.log(`[generateBackground] Picsum URL: ${picsumUrl}`);
+      return { image: picsumUrl };
+    } catch (err: any) {
+      console.error(`[generateBackground] Picsum error: ${err.message}`);
     }
 
-    // Final Fallback: Gradient
-    console.log('❌ All image generation strategies failed. Using gradient fallback.');
+    console.log(`[generateBackground] ALL STRATEGIES FAILED.`);
     return { image: '' };
   }
 );
