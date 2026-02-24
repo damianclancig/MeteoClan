@@ -1,10 +1,13 @@
 'use server';
 
+// Caché en memoria simple para resultados de IA (Persiste mientras el proceso de Vercel esté caliente)
+const aiCache = new Map<string, string>();
+
 /**
  * Server Action que genera una imagen de fondo para una ciudad y clima específicos
  * utilizando Google AI (Gemini / Imagen 4) con API Key.
  * 
- * Versión Optimizada: Usa Imagen 4 Fast y compresión JPEG para carga ultra rápida.
+ * Versión de Velocidad Extrema: Imagen 4 Fast, JPEG Quality 40, Prompt Minimalista y Caché.
  */
 export async function generateCityBackgroundAction(city: string, weatherDescription: string): Promise<{ imageUrl: string; cached: boolean }> {
     const apiKey = process.env.GEMINI_API_KEY;
@@ -14,14 +17,21 @@ export async function generateCityBackgroundAction(city: string, weatherDescript
         return { imageUrl: "", cached: false };
     }
 
-    console.log(`[AI Server Action] Generando imagen para: ${city}, ${weatherDescription} usando Gemini API Key (Imagen 4 Fast)`);
+    // Normalizar clave de caché
+    const cacheKey = `${city.toLowerCase()}_${weatherDescription.toLowerCase()}`;
+    if (aiCache.has(cacheKey)) {
+        console.log(`[AI Server Action] Cache Hit (In-Memory) para: ${cacheKey}`);
+        return { imageUrl: aiCache.get(cacheKey)!, cached: true };
+    }
+
+    console.log(`[AI Server Action] Generando imagen ultra-rápida para: ${city}, ${weatherDescription}`);
 
     try {
-        // Optimizamos para velocidad: usamos el modelo "Fast" y formato JPEG con compresión
         const modelId = "imagen-4.0-fast-generate-001";
         const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:predict?key=${apiKey}`;
 
-        const prompt = `A cinematic photography of ${city} with ${weatherDescription}, professional lighting, landscape orientation, no text.`;
+        // Prompt ultra-minimalista para reducir tiempo de procesamiento
+        const prompt = `Background of ${city} with ${weatherDescription}, cinematic view`;
 
         const payload = {
             instances: [{ prompt: prompt }],
@@ -30,7 +40,7 @@ export async function generateCityBackgroundAction(city: string, weatherDescript
                 aspectRatio: "16:9",
                 outputOptions: {
                     mimeType: "image/jpeg",
-                    compressionQuality: 60 // Calidad moderada para carga ultra rápida (< 200kb)
+                    compressionQuality: 40 // Calidad baja para carga instantánea (< 100kb)
                 }
             }
         };
@@ -55,11 +65,13 @@ export async function generateCityBackgroundAction(city: string, weatherDescript
             throw new Error("La API no devolvió ninguna imagen.");
         }
 
-        // La respuesta viene en Base64
         const base64Image = data.predictions[0].bytesBase64Encoded;
         const imageUrl = `data:image/jpeg;base64,${base64Image}`;
 
-        console.log(`[AI Server Action] ¡Imagen optimizada generada con éxito para ${city}!`);
+        // Guardar en caché
+        aiCache.set(cacheKey, imageUrl);
+
+        console.log(`[AI Server Action] ¡Imagen instantánea generada con éxito para ${city}!`);
 
         return {
             imageUrl,
@@ -68,8 +80,6 @@ export async function generateCityBackgroundAction(city: string, weatherDescript
 
     } catch (error: any) {
         console.error("[AI Server Action] Error global:", error.message || error, error.cause || '');
-
-        // Fallback: Si falla la generación por IA, devolvemos vacío para usar el gradiente CSS.
         return { imageUrl: "", cached: false };
     }
 }

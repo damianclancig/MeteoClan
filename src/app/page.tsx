@@ -218,18 +218,17 @@ export default function Home() {
 
   // Effect to generate background image after weather data is loaded
   useEffect(() => {
-    if (weatherData?.current) {
+    // Extraemos las propiedades específicas para que el efecto sea más granular y rápido
+    const location = weatherData?.current?.location;
+    const description = weatherData?.current?.description;
+
+    if (location && description) {
       const generate = async () => {
         try {
-          // Usamos la Server Action local para evitar problemas de CORS
-          const response = await generateCityBackgroundAction(
-            weatherData.current.location,
-            weatherData.current.description,
-          );
+          const response = await generateCityBackgroundAction(location, description);
           if (response.imageUrl) {
             setBackgroundImage(response.imageUrl);
           } else {
-            // Fallback to a default gradient background
             setBackgroundImage('');
           }
         } catch (e) {
@@ -239,7 +238,7 @@ export default function Home() {
       };
       generate();
     }
-  }, [weatherData?.current]);
+  }, [weatherData?.current?.location, weatherData?.current?.description]);
 
   const latitudeForMoon = weatherData?.latitude;
 
