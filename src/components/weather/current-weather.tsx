@@ -67,17 +67,17 @@ export const CurrentWeather = memo(function CurrentWeather({ data, hourlyData, l
             <MapPin className="w-5 h-5 text-foreground/80" />
             <h2 className="text-xl md:text-2xl font-bold">{data.location}</h2>
           </div>
-          <p className="text-sm text-foreground/80">{new Intl.DateTimeFormat(undefined, dateOptions).format(date)}</p>
+          <p className="text-sm text-foreground/80">{new Intl.DateTimeFormat(locale, dateOptions).format(date)}</p>
           {/* Last updated for mobile */}
           <div className="md:hidden flex items-center gap-1.5 text-xs text-foreground/60 mt-1">
             <History className="w-3 h-3" />
-            <span>{t('lastUpdated', { time: new Intl.DateTimeFormat(undefined, timeOptions).format(updatedDate) })}</span>
+            <span>{t('lastUpdated', { time: new Intl.DateTimeFormat(locale, timeOptions).format(updatedDate) })}</span>
           </div>
         </div>
         {/* Last updated for desktop */}
         <div className="hidden md:flex items-center gap-1.5 text-xs text-foreground/60 whitespace-nowrap mt-1">
           <History className="w-3 h-3" />
-          <span>{t('lastUpdated', { time: new Intl.DateTimeFormat(undefined, timeOptions).format(updatedDate) })}</span>
+          <span>{t('lastUpdated', { time: new Intl.DateTimeFormat(locale, timeOptions).format(updatedDate) })}</span>
         </div>
       </div>
 

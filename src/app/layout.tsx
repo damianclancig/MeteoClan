@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import Script from 'next/script';
+import { TranslationProvider } from '@/components/layout/translation-provider';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -87,7 +88,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html className="dark" suppressHydrationWarning>
+    <html lang="es" className="dark" suppressHydrationWarning>
       <head>
         {GOOGLE_ADSENSE_PUB_ID && (
           <Script
@@ -99,10 +100,12 @@ export default function RootLayout({
         )}
       </head>
       <body className={cn('font-sans antialiased', inter.variable)}>
-        {children}
-        <Toaster />
-        <Analytics />
-        <SpeedInsights />
+        <TranslationProvider>
+          {children}
+          <Toaster />
+          <Analytics />
+          <SpeedInsights />
+        </TranslationProvider>
       </body>
     </html>
   );
