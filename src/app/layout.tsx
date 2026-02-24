@@ -90,6 +90,9 @@ export default function RootLayout({
   return (
     <html lang="es" className="dark" suppressHydrationWarning>
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://image.pollinations.ai" />
         {GOOGLE_ADSENSE_PUB_ID && (
           <Script
             async

@@ -8,7 +8,7 @@ import { Umbrella, Sunrise, Sunset } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // New type to include sunrise/sunset events
-type TimelineEvent = 
+type TimelineEvent =
   | ({ type: 'hour' } & HourlyForecastType & { dt: number; time: string })
   | { type: 'sunrise' | 'sunset'; time: string; dt: number };
 
@@ -20,12 +20,12 @@ interface HourlyForecastProps {
 }
 
 const formatTime = (date: Date, timezone: string) => {
-    return date.toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-        timeZone: timezone,
-        hour12: false,
-    });
+  return date.toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: timezone,
+    hour12: false,
+  });
 };
 
 export const HourlyForecast = memo(function HourlyForecast({ data, sunrise, sunset, timezone }: HourlyForecastProps) {
@@ -35,19 +35,15 @@ export const HourlyForecast = memo(function HourlyForecast({ data, sunrise, suns
 
   useEffect(() => {
     if (currentEventRef.current && scrollContainerRef.current) {
-        const container = scrollContainerRef.current;
-        const element = currentEventRef.current;
-        const containerWidth = container.offsetWidth;
-        const elementLeft = element.offsetLeft;
-        const elementWidth = element.offsetWidth;
-
-        // Calculate the scroll position to center the element
-        const scrollLeft = elementLeft - (containerWidth / 2) + (elementWidth / 2);
-
-        container.scrollTo({
-            left: scrollLeft,
-            behavior: 'smooth'
+      // Use requestAnimationFrame to ensure the DOM is painted and calculated
+      const timer = setTimeout(() => {
+        currentEventRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          inline: 'center',
+          block: 'nearest'
         });
+      }, 100);
+      return () => clearTimeout(timer);
     }
   }, [data]); // Rerun when data changes
 
@@ -55,7 +51,7 @@ export const HourlyForecast = memo(function HourlyForecast({ data, sunrise, suns
   if (!data || data.length === 0 || !timezone) {
     return null;
   }
-  
+
   // Create timeline events from hourly data
   const timelineEvents: TimelineEvent[] = data.map(hour => {
     const eventDate = new Date(hour.time);
@@ -66,7 +62,7 @@ export const HourlyForecast = memo(function HourlyForecast({ data, sunrise, suns
       time: formatTime(eventDate, timezone)
     };
   });
-  
+
   const sunriseDate = sunrise ? new Date(sunrise) : null;
   const sunsetDate = sunset ? new Date(sunset) : null;
 
@@ -79,7 +75,7 @@ export const HourlyForecast = memo(function HourlyForecast({ data, sunrise, suns
 
   // Sort all events chronologically
   timelineEvents.sort((a, b) => a.dt - b.dt);
-  
+
   const now = new Date().getTime();
   // Find the index of the last hourly event that is less than or equal to the current time.
   const currentEventIndex = timelineEvents.findLastIndex(event => event.type === 'hour' && event.dt <= now);
@@ -89,16 +85,16 @@ export const HourlyForecast = memo(function HourlyForecast({ data, sunrise, suns
     <div className="overflow-x-auto pb-2 -mb-2" ref={scrollContainerRef}>
       <div className="flex space-x-4">
         {timelineEvents.map((item, index) => {
-          
+
           let isNight = false;
           if (item.type === 'hour' && sunriseDate && sunsetDate) {
-             isNight = item.dt < sunriseDate.getTime() || item.dt > sunsetDate.getTime();
+            isNight = item.dt < sunriseDate.getTime() || item.dt > sunsetDate.getTime();
           }
 
           const isCurrent = index === currentEventIndex;
 
           return (
-            <div 
+            <div
               key={index}
               ref={isCurrent ? currentEventRef : null}
               className={cn(
@@ -107,7 +103,7 @@ export const HourlyForecast = memo(function HourlyForecast({ data, sunrise, suns
               )}
             >
               <p className="font-semibold text-foreground/80 text-sm">{item.time}</p>
-              
+
               {item.type === 'hour' && (
                 <>
                   <AnimatedWeatherIcon code={item.weatherCode} className="w-10 h-10" isNight={isNight} />
@@ -123,7 +119,7 @@ export const HourlyForecast = memo(function HourlyForecast({ data, sunrise, suns
                 <>
                   <Sunrise className="w-10 h-10 text-yellow-400" />
                   <p className="font-bold text-xs capitalize">{t('sunrise') || 'Sunrise'}</p>
-                   <div className="h-[22px]" />
+                  <div className="h-[22px]" />
                 </>
               )}
 
@@ -131,7 +127,7 @@ export const HourlyForecast = memo(function HourlyForecast({ data, sunrise, suns
                 <>
                   <Sunset className="w-10 h-10 text-orange-400" />
                   <p className="font-bold text-xs capitalize">{t('sunset') || 'Sunset'}</p>
-                   <div className="h-[22px]" />
+                  <div className="h-[22px]" />
                 </>
               )}
             </div>

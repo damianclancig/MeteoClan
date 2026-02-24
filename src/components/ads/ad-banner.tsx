@@ -40,7 +40,7 @@ export const AdBanner = () => {
   }
 
   return (
-    <div key={pathname} className="flex justify-center my-4 w-full min-h-[100px]">
+    <div key={pathname} className="flex justify-center my-4 w-full min-h-[280px] sm:min-h-[100px] transition-all">
       <ins
         className="adsbygoogle"
         style={{ display: 'block', width: '100%' }}

@@ -11,10 +11,10 @@ import { useTranslation } from '@/hooks/use-translation';
 
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
-import { ApiAttribution } from '@/components/layout/api-attribution';
 import { SearchControls } from '@/components/weather/search-controls';
 import { CurrentWeather as CurrentWeatherComponent } from '@/components/weather/current-weather';
 import { Forecast } from '@/components/weather/forecast';
+import { WeatherSkeleton } from '@/components/weather/weather-skeleton';
 import { Loader, AlertTriangle } from 'lucide-react';
 import { GlassCard } from '@/components/ui/glass-card';
 import { MoonCalendar } from '@/components/weather/moon-calendar';
@@ -63,10 +63,9 @@ const ErrorDisplay = ({ error, t }: { error: FormState, t: (key: string) => stri
   </GlassCard>
 );
 
-const LoadingDisplay = ({ t }: { t: (key: string) => string }) => (
-  <div className="flex flex-col items-center justify-center text-foreground/80 gap-4 mt-10">
-    <Loader className="w-12 h-12 animate-spin" />
-    <p className="text-xl">{t('loading')}</p>
+const LoadingDisplay = () => (
+  <div className="w-full mt-2">
+    <WeatherSkeleton />
   </div>
 );
 
@@ -246,7 +245,7 @@ export default function Home() {
         {/* Cuerpo (Main): Gestiona clics en los huecos o márgenes */}
         <main
           className={cn(
-            "flex-1 flex flex-col items-center justify-center w-full transition-all duration-500 pointer-events-auto",
+            "flex-1 flex flex-col items-center justify-center w-full min-h-[800px] transition-all duration-500 pointer-events-auto",
             !contentVisible ? "opacity-0 invisible" : "opacity-100 visible"
           )}
           onClick={toggleContent}
@@ -263,8 +262,8 @@ export default function Home() {
 
             <div className="w-full flex flex-col items-center">
               {isLoading ? (
-                <div onClick={(e) => e.stopPropagation()}>
-                  <LoadingDisplay t={t} />
+                <div className="w-full" onClick={(e) => e.stopPropagation()}>
+                  <LoadingDisplay />
                 </div>
               ) : error && !weatherData ? (
                 <div onClick={(e) => e.stopPropagation()}>
@@ -304,12 +303,11 @@ export default function Home() {
         {/* Footer: Ocupa espacio pero puede ser invisible */}
         <footer
           className={cn(
-            "shrink-0 w-full flex flex-col border-t border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-opacity duration-500",
+            "shrink-0 w-full transition-opacity duration-500",
             !contentVisible ? "opacity-0 invisible" : "opacity-100 visible"
           )}
         >
           <div className="pointer-events-auto" onClick={(e) => e.stopPropagation()}>
-            <ApiAttribution />
             <Footer />
           </div>
         </footer>
