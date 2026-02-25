@@ -11,7 +11,6 @@ import NextImage from 'next/image';
 
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
-import { LoadingScreen } from '@/components/layout/loading-screen';
 import { SearchControls } from '@/components/weather/search-controls';
 import { CurrentWeather as CurrentWeatherComponent } from '@/components/weather/current-weather';
 import { Forecast } from '@/components/weather/forecast';
@@ -209,7 +208,6 @@ export function WeatherMain({ initialLocale }: { initialLocale?: Locale }) {
 
     return (
         <div className={cn("relative flex flex-col min-h-dvh transition-all duration-700", !contentVisible && "overflow-hidden")}>
-            <LoadingScreen />
 
             {/* 1. Capa de Fondo (Atrás de todo) */}
             <div className="fixed inset-0 z-0 bg-background" onClick={toggleContent}>

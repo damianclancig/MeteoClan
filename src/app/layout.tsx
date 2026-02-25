@@ -17,7 +17,8 @@ const APP_URL = new URL(process.env.APP_URL || 'https://clima.clancig.com.ar');
 const GOOGLE_ADSENSE_PUB_ID = process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_PUB_ID;
 
 export async function generateMetadata(): Promise<Metadata> {
-  const dict = dictionaries[defaultLocale];
+  const dict = dictionaries['es']; // Siempre en español para el SEO principal
+  const logoUrl = `${APP_URL.origin}/assets/logo_big.png`;
 
   return {
     title: {
@@ -38,7 +39,7 @@ export async function generateMetadata(): Promise<Metadata> {
     authors: [{ name: 'Clancig FullstackDev', url: new URL('https://www.clancig.com.ar') }],
     creator: 'Clancig FullstackDev',
     alternates: {
-      canonical: '/',
+      canonical: APP_URL.toString(),
       languages: {
         'es-AR': '/?lang=es',
         'en-US': '/?lang=en',
@@ -47,13 +48,13 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     openGraph: {
       type: 'website',
-      url: APP_URL,
+      url: APP_URL.toString(),
       title: dict.seoTitle,
       description: dict.seoDescription,
       siteName: dict.appName,
       images: [
         {
-          url: '/assets/logo_big.png',
+          url: logoUrl,
           width: 1200,
           height: 630,
           alt: `${dict.appName} - ${dict.appDescription}`,
@@ -64,7 +65,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: 'summary_large_image',
       title: dict.seoTitle,
       description: dict.seoDescription,
-      images: ['/assets/logo_big.png'],
+      images: [logoUrl],
     },
     appleWebApp: {
       capable: true,
