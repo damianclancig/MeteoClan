@@ -18,7 +18,7 @@ const GOOGLE_ADSENSE_PUB_ID = process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_PUB_ID;
 
 export async function generateMetadata(): Promise<Metadata> {
   const dict = dictionaries['es']; // Siempre en español para el SEO principal
-  const logoUrl = `${APP_URL.origin}/assets/logo_big.png`;
+  const logoUrl = `${APP_URL.origin}/og-image.webp`;
 
   return {
     title: {
