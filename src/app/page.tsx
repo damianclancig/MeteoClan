@@ -8,20 +8,12 @@ interface PageProps {
 
 export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
   const params = await searchParams;
-  const lang = (params.lang as Locale) || defaultLocale;
-  const dict = dictionaries[lang] || dictionaries[defaultLocale];
+  const lang = (params.lang as Locale) || 'es';
+  const dict = dictionaries[lang] || dictionaries['es'];
 
   return {
     title: dict.seoTitle,
     description: dict.seoDescription,
-    openGraph: {
-      title: dict.seoTitle,
-      description: dict.appDescription,
-    },
-    twitter: {
-      title: dict.seoTitle,
-      description: dict.appDescription,
-    },
   };
 }
 

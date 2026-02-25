@@ -16,85 +16,81 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const APP_URL = new URL(process.env.APP_URL || 'https://clima.clancig.com.ar');
 const GOOGLE_ADSENSE_PUB_ID = process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_PUB_ID;
 
-export async function generateMetadata(): Promise<Metadata> {
-  const dict = dictionaries['es']; // Siempre en español para el SEO principal
-  const baseUrl = 'https://clima.clancig.com.ar';
-  const logoUrl = `${baseUrl}/og-image.webp`;
+const baseUrl = 'https://clima.clancig.com.ar';
 
-  return {
-    metadataBase: new URL(baseUrl),
-    title: {
-      default: dict.seoTitle,
-      template: `%s | ${dict.appName}`,
+export const metadata: Metadata = {
+  metadataBase: new URL(baseUrl),
+  title: {
+    default: "MeteoClan: Pronóstico del Tiempo Preciso y Paisajes con IA en Tiempo Real",
+    template: "%s | MeteoClan",
+  },
+  description: "Descubre el clima con MeteoClan. Pronósticos precisos por hora, búsqueda global de ciudades y fondos dinámicos generados por IA que reflejan el estado del cielo en tiempo real.",
+  applicationName: "MeteoClan",
+  keywords: [
+    'clima', 'tiempo', 'pronóstico', 'temperatura', 'weather', 'forecast', 'ia', 'ai',
+    'inteligencia artificial', 'gemini', 'multilenguaje', 'multi-idioma', 'fases lunares',
+    'direccion del viento', 'pronóstico del tiempo por hora', 'clima hoy', 'pronóstico a 7 días',
+    'mapa del tiempo', 'IA generativa paisajes', 'hourly weather', '7 day forecast',
+    'AI weather app', 'Generative AI weather', 'clima preciso', 'meteorología',
+    'weather forecast worldwide', 'real-time weather updates', 'clima en vivo'
+  ],
+  authors: [{ name: 'Clancig FullstackDev', url: 'https://www.clancig.com.ar' }],
+  creator: 'Damián Clancig',
+  publisher: 'Damián Clancig',
+  alternates: {
+    canonical: baseUrl,
+    languages: {
+      'es-AR': `${baseUrl}/?lang=es`,
+      'en-US': `${baseUrl}/?lang=en`,
+      'pt-BR': `${baseUrl}/?lang=pt`,
     },
-    description: dict.seoDescription,
-    applicationName: dict.appName,
-    keywords: [
-      'clima', 'tiempo', 'pronóstico', 'temperatura', 'weather', 'forecast', 'ia', 'ai',
-      'inteligencia artificial', 'gemini', 'multilenguaje', 'multi-idioma', 'fases lunares',
-      'direccion del viento', 'pronóstico del tiempo por hora', 'clima hoy', 'pronóstico a 7 días',
-      'mapa del tiempo', 'IA generativa paisajes', 'hourly weather', '7 day forecast',
-      'AI weather app', 'Generative AI weather', 'clima preciso', 'meteorología',
-      'weather forecast worldwide', 'real-time weather updates', 'clima en vivo'
-    ],
-    authors: [{ name: 'Clancig FullstackDev', url: 'https://www.clancig.com.ar' }],
-    creator: 'Damián Clancig',
-    publisher: 'Damián Clancig',
-    alternates: {
-      canonical: baseUrl,
-      languages: {
-        'es-AR': `${baseUrl}/?lang=es`,
-        'en-US': `${baseUrl}/?lang=en`,
-        'pt-BR': `${baseUrl}/?lang=pt`,
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'es_AR',
+    url: baseUrl,
+    siteName: "MeteoClan",
+    title: "MeteoClan: Pronóstico del Tiempo Preciso y Paisajes con IA en Tiempo Real",
+    description: "Pronósticos precisos y paisajes dinámicos generados por IA que reflejan el clima real en tiempo real.",
+    images: [
+      {
+        url: `${baseUrl}/og-image.webp`,
+        width: 1200,
+        height: 630,
+        alt: "MeteoClan - Pronóstico del tiempo con paisajes de IA dinámicos.",
       },
-    },
-    openGraph: {
-      type: 'website',
-      locale: 'es_AR',
-      url: baseUrl,
-      siteName: dict.appName,
-      title: dict.seoTitle,
-      description: dict.seoDescription,
-      images: [
-        {
-          url: logoUrl,
-          width: 1200,
-          height: 630,
-          alt: `${dict.appName} - ${dict.appDescription}`,
-        },
-      ],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: dict.seoTitle,
-      description: dict.seoDescription,
-      images: [logoUrl],
-      creator: '@dclancig',
-    },
-    appleWebApp: {
-      capable: true,
-      statusBarStyle: 'default',
-      title: dict.appName,
-    },
-    formatDetection: {
-      telephone: false,
-    },
-    icons: {
-      icon: `${baseUrl}/favicon.ico`,
-    },
-    robots: {
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "MeteoClan: Pronóstico del Tiempo Preciso y Paisajes con IA en Tiempo Real",
+    description: "Pronósticos precisos y paisajes dinámicos generados por IA que reflejan el clima real.",
+    images: [`${baseUrl}/og-image.webp`],
+    creator: '@dclancig',
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: "MeteoClan",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  icons: {
+    icon: `${baseUrl}/favicon.ico`,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
       index: true,
       follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      },
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
     },
-  };
-}
+  },
+};
 
 
 export default function RootLayout({

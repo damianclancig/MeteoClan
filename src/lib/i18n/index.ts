@@ -10,4 +10,4 @@ export const dictionaries = {
 
 export type Locale = keyof typeof dictionaries;
 
-export const defaultLocale: Locale = 'en';
+export const defaultLocale: Locale = 'es';
