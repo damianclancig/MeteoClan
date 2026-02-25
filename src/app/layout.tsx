@@ -49,11 +49,11 @@ export async function generateMetadata(): Promise<Metadata> {
       type: 'website',
       url: APP_URL,
       title: dict.seoTitle,
-      description: dict.appDescription,
+      description: dict.seoDescription,
       siteName: dict.appName,
       images: [
         {
-          url: '/og-image.webp',
+          url: '/assets/logo_big.png',
           width: 1200,
           height: 630,
           alt: `${dict.appName} - ${dict.appDescription}`,
@@ -63,8 +63,8 @@ export async function generateMetadata(): Promise<Metadata> {
     twitter: {
       card: 'summary_large_image',
       title: dict.seoTitle,
-      description: dict.appDescription,
-      images: ['/og-image.webp'],
+      description: dict.seoDescription,
+      images: ['/assets/logo_big.png'],
     },
     appleWebApp: {
       capable: true,
@@ -76,11 +76,10 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     icons: {
       icon: [
-        { url: '/favicon.svg', type: 'image/svg+xml' },
-        { url: '/favicon.ico', sizes: 'any' }
+        { url: '/favicon.png', type: 'image/png' },
       ],
-      shortcut: '/favicon.svg',
-      apple: '/favicon.svg',
+      shortcut: '/favicon.png',
+      apple: '/favicon.png',
     },
   };
 }

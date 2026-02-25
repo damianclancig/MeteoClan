@@ -14,8 +14,9 @@ export function TranslationProvider({ children, initialLocale }: { children: Rea
     const [locale, setLocaleState] = useState<Locale>(initialLocale || defaultLocale);
 
     useEffect(() => {
+        // Only run auto-detection if we don't have a forced initial locale from URL
         if (!initialLocale) {
-            const savedLocale = typeof window !== 'undefined' ? localStorage.getItem('weatherwise-locale') as Locale : null;
+            const savedLocale = typeof window !== 'undefined' ? localStorage.getItem('meteoclan-locale') as Locale : null;
 
             if (savedLocale && savedLocale in dictionaries) {
                 setLocaleState(savedLocale);
@@ -31,7 +32,7 @@ export function TranslationProvider({ children, initialLocale }: { children: Rea
     const setLocale = useCallback((newLocale: Locale) => {
         setLocaleState(newLocale);
         if (typeof window !== 'undefined') {
-            localStorage.setItem('weatherwise-locale', newLocale);
+            localStorage.setItem('meteoclan-locale', newLocale);
         }
     }, []);
 

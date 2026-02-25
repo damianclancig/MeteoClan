@@ -19,9 +19,16 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-14 items-center justify-between px-4">
-        <Link href="/" className="flex items-center hover:opacity-80 transition-opacity" aria-label="WeatherWise Home">
-          <Sun className="h-6 w-6 mr-2 text-yellow-400" aria-hidden="true" />
-          <span className="font-bold text-xl">WeatherWise</span>
+        <Link href="/" className="flex items-center hover:opacity-80 transition-opacity" aria-label="MeteoClan Home">
+          <img
+            src="/assets/logo_full.png"
+            alt="MeteoClan"
+            className="h-10 w-auto"
+            onError={(e) => {
+              e.currentTarget.src = ''; // Fallback placeholder if image fails
+              e.currentTarget.alt = 'MeteoClan';
+            }}
+          />
         </Link>
         <div className="flex items-center space-x-1 relative">
           <Button variant="ghost" size="icon" asChild>

@@ -30,7 +30,7 @@ import { StructuredData } from '@/components/seo/structured-data';
 
 export default async function Home({ searchParams }: PageProps) {
   const params = await searchParams;
-  const lang = (params.lang as Locale) || defaultLocale;
+  const lang = params.lang as Locale; // No default here to allow detection in Provider
 
   return (
     <TranslationProvider initialLocale={lang}>

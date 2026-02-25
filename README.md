@@ -1,11 +1,11 @@
 
-# WeatherWise - Pronóstico del Tiempo en Tiempo Real con IA
+# MeteoClan - Pronóstico del Tiempo en Tiempo Real con IA
 
-[![Captura de Pantalla de WeatherWise](public/assets/screenshot.png)](https://clima.clancig.com.ar)
+[![Captura de Pantalla de MeteoClan](https://res.cloudinary.com/dqh1coa3c/image/upload/v1772030429/MeteoClan/screenshot_dix6yd.webp)](https://clima.clancig.com.ar)
 
 ### 🚀 [Ver Demo en Vivo](https://clima.clancig.com.ar) 🚀
 
-**WeatherWise** es una aplicación web moderna y elegante que proporciona pronósticos del tiempo en tiempo real para cualquier ciudad del mundo. Construida con tecnologías de vanguardia, ofrece una experiencia de usuario rápida, receptiva e inmersiva, destacando por sus **fondos de pantalla dinámicos generados por Inteligencia Artificial** que reflejan el clima actual de la ciudad consultada.
+**MeteoClan** es una aplicación web moderna y elegante que proporciona pronósticos del tiempo en tiempo real para cualquier ciudad del mundo. Construida con tecnologías de vanguardia, ofrece una experiencia de usuario rápida, receptiva e inmersiva, destacando por sus **fondos de pantalla dinámicos generados por Inteligencia Artificial** que reflejan el clima actual de la ciudad consultada.
 
 La aplicación detecta automáticamente la ubicación del usuario para proporcionar un pronóstico local instantáneo. La interfaz está diseñada para ser limpia e informativa, con iconos animados y un diseño futurista tipo "tarjeta de cristal".
 

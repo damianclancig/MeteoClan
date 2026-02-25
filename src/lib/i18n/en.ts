@@ -1,9 +1,9 @@
 const en = {
-  appName: "WeatherWise",
-  appTitle: "WeatherWise - AI Weather Forecast",
+  appName: "MeteoClan",
+  appTitle: "MeteoClan - AI Weather Forecast",
   appDescription: "Accurate forecasts and dynamic AI-generated landscapes that reflect real-time weather.",
-  seoTitle: "WeatherWise - Accurate AI Weather Forecast",
-  seoDescription: "Check the weather with WeatherWise: accurate hourly forecasts, global search, and AI-generated backgrounds. Temperature, wind, and moon phase data.",
+  seoTitle: "MeteoClan: Accurate AI Weather Forecasts & Real-Time Dynamic Landscapes",
+  seoDescription: "Check the weather with MeteoClan: accurate hourly forecasts, global city search, and dynamic AI-generated backgrounds. Real-time temperature, wind, and moon phases.",
   weatherBackgroundFor: "Weather background for",
   searchPlaceholder: "Search for a city...",
   search: "Search",
@@ -80,7 +80,7 @@ const en = {
   },
   support: {
     title: "Support the Project",
-    message1: "Thank you for using WeatherWise! This is a free and open-source project maintained with passion.",
+    message1: "Thank you for using MeteoClan! This is a free and open-source project maintained with passion.",
     message2: "If you find it useful, please consider sharing it.",
     message3: "If you wish to collaborate, you can do so from these links.",
     copied: "Copied!",

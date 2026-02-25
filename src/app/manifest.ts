@@ -2,18 +2,30 @@ import { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
     return {
-        name: 'WeatherWise - Pronóstico del Tiempo con IA',
-        short_name: 'WeatherWise',
+        name: 'MeteoClan - Pronóstico del Tiempo con IA',
+        short_name: 'MeteoClan',
         description: 'Aplicación del tiempo con pronósticos precisos y fondos generados por IA.',
         start_url: '/',
         display: 'standalone',
-        background_color: '#000000',
-        theme_color: '#000000',
+        background_color: '#020617', // Slate-950 (matching the app theme)
+        theme_color: '#020617',
         icons: [
             {
-                src: '/favicon.svg',
-                sizes: 'any',
-                type: 'image/svg+xml',
+                src: '/assets/icon.png',
+                sizes: '192x192',
+                type: 'image/png',
+            },
+            {
+                src: '/assets/icon.png',
+                sizes: '512x512',
+                type: 'image/png',
+                purpose: 'maskable',
+            },
+            {
+                src: '/assets/icon.png',
+                sizes: '512x512',
+                type: 'image/png',
+                purpose: 'any',
             },
         ],
     };

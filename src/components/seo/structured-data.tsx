@@ -7,7 +7,7 @@ export function StructuredData({ lang }: { lang?: string }) {
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "WebApplication",
-        "name": "WeatherWise",
+        "name": "MeteoClan",
         "url": "https://clima.clancig.com.ar",
         "description": dict.seoDescription,
         "applicationCategory": "WeatherApplication",

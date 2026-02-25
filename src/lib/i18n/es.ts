@@ -1,9 +1,9 @@
 const es = {
-  appName: "WeatherWise",
-  appTitle: "WeatherWise - Pronóstico del Tiempo con IA",
+  appName: "MeteoClan",
+  appTitle: "MeteoClan - Pronóstico del Tiempo con IA",
   appDescription: "Pronósticos precisos y paisajes dinámicos generados por IA que reflejan el clima real.",
-  seoTitle: "WeatherWise - Pronóstico del Tiempo Preciso con IA",
-  seoDescription: "Consulta el clima con WeatherWise: pronósticos precisos por hora, búsqueda global y fondos generados por IA. Datos de temperatura, viento y fases lunares.",
+  seoTitle: "MeteoClan: Pronóstico del Tiempo Preciso y Paisajes con IA en Tiempo Real",
+  seoDescription: "Descubre el clima con MeteoClan. Pronósticos precisos por hora, búsqueda global de ciudades y fondos dinámicos generados por IA que reflejan el estado del cielo en tiempo real. Datos de viento, humedad y fases lunares.",
   weatherBackgroundFor: "Fondo del clima para",
   searchPlaceholder: "Buscar una ciudad...",
   search: "Buscar",
@@ -79,7 +79,7 @@ const es = {
   },
   support: {
     title: "Apoyá el Proyecto",
-    message1: "¡Gracias por usar WeatherWise! Este es un proyecto gratuito y de código abierto mantenido con pasión.",
+    message1: "¡Gracias por usar MeteoClan! Este es un proyecto gratuito y de código abierto mantenido con pasión.",
     message2: "Si te resulta útil, considera compartirla.",
     message3: "Si deseas colaborar, puedes hacerlo desde estos enlaces.",
     copied: "¡Copiado!",
