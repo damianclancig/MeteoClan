@@ -14,8 +14,11 @@ export function TranslationProvider({ children, initialLocale }: { children: Rea
     const [locale, setLocaleState] = useState<Locale>(initialLocale || defaultLocale);
 
     useEffect(() => {
-        // Only run auto-detection if we don't have a forced initial locale from URL
-        if (!initialLocale) {
+        // Run auto-detection if we don't have a forced language in URL (param lang)
+        // We now consider 'es' as the neutral starting point for hydration matching
+        const hasUrlParam = typeof window !== 'undefined' && window.location.search.includes('lang=');
+
+        if (!hasUrlParam) {
             const savedLocale = typeof window !== 'undefined' ? localStorage.getItem('meteoclan-locale') as Locale : null;
 
             if (savedLocale && savedLocale in dictionaries) {
