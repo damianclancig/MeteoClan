@@ -62,8 +62,8 @@ Sigue estas instrucciones para obtener una copia local del proyecto y ponerla en
 
 1.  **Clona el repositorio:**
     ```bash
-    git clone https://github.com/damianclancig/weather-wise.git
-    cd weather-wise
+    git clone https://github.com/damianclancig/MeteoClan.git
+    cd MeteoClan
     ```
 
 2.  **Instala las dependencias:**
@@ -86,7 +86,7 @@ Sigue estas instrucciones para obtener una copia local del proyecto y ponerla en
     # URLs for the support dialog
     NEXT_PUBLIC_DONATION_URL=https://cafecito.app/damianclancig
     NEXT_PUBLIC_PORTFOLIO_URL=https://www.clancig.com.ar
-    NEXT_PUBLIC_GITHUB_URL=https://github.com/damianclancig/weather-wise
+    NEXT_PUBLIC_GITHUB_URL=https://github.com/damianclancig/MeteoClan
     
     # Credenciales de Google AdSense (Opcional)
     # Tu ID de editor de AdSense
