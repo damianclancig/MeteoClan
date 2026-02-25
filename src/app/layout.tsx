@@ -19,15 +19,15 @@ const GOOGLE_ADSENSE_PUB_ID = process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_PUB_ID;
 export async function generateMetadata(): Promise<Metadata> {
   const dict = dictionaries['es']; // Siempre en español para el SEO principal
   const baseUrl = 'https://clima.clancig.com.ar';
-  const logoUrl = `${baseUrl}/og-image.png`;
+  const logoUrl = `${baseUrl}/og-image.webp`;
 
   return {
+    metadataBase: new URL(baseUrl),
     title: {
       default: dict.seoTitle,
       template: `%s | ${dict.appName}`,
     },
     description: dict.seoDescription,
-    metadataBase: new URL(baseUrl),
     applicationName: dict.appName,
     keywords: [
       'clima', 'tiempo', 'pronóstico', 'temperatura', 'weather', 'forecast', 'ia', 'ai',
@@ -37,8 +37,9 @@ export async function generateMetadata(): Promise<Metadata> {
       'AI weather app', 'Generative AI weather', 'clima preciso', 'meteorología',
       'weather forecast worldwide', 'real-time weather updates', 'clima en vivo'
     ],
-    authors: [{ name: 'Clancig FullstackDev', url: new URL('https://www.clancig.com.ar') }],
-    creator: 'Clancig FullstackDev',
+    authors: [{ name: 'Clancig FullstackDev', url: 'https://www.clancig.com.ar' }],
+    creator: 'Damián Clancig',
+    publisher: 'Damián Clancig',
     alternates: {
       canonical: baseUrl,
       languages: {
@@ -49,18 +50,17 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     openGraph: {
       type: 'website',
+      locale: 'es_AR',
       url: baseUrl,
+      siteName: dict.appName,
       title: dict.seoTitle,
       description: dict.seoDescription,
-      siteName: dict.appName,
-      locale: 'es_AR',
       images: [
         {
           url: logoUrl,
           width: 1200,
           height: 630,
           alt: `${dict.appName} - ${dict.appDescription}`,
-          type: 'image/png',
         },
       ],
     },
@@ -68,9 +68,8 @@ export async function generateMetadata(): Promise<Metadata> {
       card: 'summary_large_image',
       title: dict.seoTitle,
       description: dict.seoDescription,
-      site: '@MeteoClan',
-      creator: '@ClancigDev',
       images: [logoUrl],
+      creator: '@dclancig',
     },
     appleWebApp: {
       capable: true,
@@ -81,12 +80,18 @@ export async function generateMetadata(): Promise<Metadata> {
       telephone: false,
     },
     icons: {
-      icon: [
-        { url: '/favicon.ico', sizes: 'any' },
-        { url: '/favicon.png', type: 'image/png' },
-      ],
-      shortcut: '/favicon.ico',
-      apple: '/favicon.png',
+      icon: `${baseUrl}/favicon.ico`,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
     },
   };
 }

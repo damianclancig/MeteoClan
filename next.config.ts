@@ -49,8 +49,21 @@ const nextConfig: NextConfig = {
         source: '/:path*',
         headers: [
           {
+            key: 'Cache-Control',
+            value: 'public, max-age=3600, stale-while-revalidate=86400',
+          },
+          {
             key: 'Content-Security-Policy',
             value: "img-src 'self' data: blob: https://image.pollinations.ai https://placehold.co https://*.unsplash.com https://picsum.photos https://fastly.picsum.photos;",
+          },
+        ],
+      },
+      {
+        source: '/',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate, max-age=0, s-maxage=0',
           },
         ],
       },
