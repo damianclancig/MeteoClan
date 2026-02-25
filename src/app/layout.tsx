@@ -18,8 +18,16 @@ const GOOGLE_ADSENSE_PUB_ID = process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_PUB_ID;
 
 const baseUrl = 'https://clima.clancig.com.ar';
 
+export const viewport = {
+  themeColor: '#020617',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
 export const metadata: Metadata = {
-  metadataBase: new URL(baseUrl),
+  metadataBase: APP_URL,
   title: {
     default: "MeteoClan: Pronóstico del Tiempo Preciso y Paisajes con IA en Tiempo Real",
     template: "%s | MeteoClan",
@@ -38,23 +46,23 @@ export const metadata: Metadata = {
   creator: 'Damián Clancig',
   publisher: 'Damián Clancig',
   alternates: {
-    canonical: baseUrl,
+    canonical: '/',
     languages: {
-      'es-AR': `${baseUrl}/?lang=es`,
-      'en-US': `${baseUrl}/?lang=en`,
-      'pt-BR': `${baseUrl}/?lang=pt`,
+      'es-AR': '/?lang=es',
+      'en-US': '/?lang=en',
+      'pt-BR': '/?lang=pt',
     },
   },
   openGraph: {
     type: 'website',
     locale: 'es_AR',
-    url: baseUrl,
+    url: '/',
     siteName: "MeteoClan",
     title: "MeteoClan: Pronóstico del Tiempo Preciso y Paisajes con IA en Tiempo Real",
     description: "Pronósticos precisos y paisajes dinámicos generados por IA que reflejan el clima real en tiempo real.",
     images: [
       {
-        url: `${baseUrl}/og-image.webp`,
+        url: '/og-image.webp',
         width: 1200,
         height: 630,
         alt: "MeteoClan - Pronóstico del tiempo con paisajes de IA dinámicos.",
@@ -65,7 +73,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: "MeteoClan: Pronóstico del Tiempo Preciso y Paisajes con IA en Tiempo Real",
     description: "Pronósticos precisos y paisajes dinámicos generados por IA que reflejan el clima real.",
-    images: [`${baseUrl}/og-image.webp`],
+    images: ['/og-image.webp'],
     creator: '@dclancig',
   },
   appleWebApp: {
@@ -77,8 +85,11 @@ export const metadata: Metadata = {
     telephone: false,
   },
   icons: {
-    icon: `${baseUrl}/favicon.ico`,
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/favicon.png',
   },
+  manifest: '/manifest.webmanifest',
   robots: {
     index: true,
     follow: true,
