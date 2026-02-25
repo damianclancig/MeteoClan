@@ -18,7 +18,8 @@ const GOOGLE_ADSENSE_PUB_ID = process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_PUB_ID;
 
 export async function generateMetadata(): Promise<Metadata> {
   const dict = dictionaries['es']; // Siempre en español para el SEO principal
-  const logoUrl = `${APP_URL.origin}/og-image.webp`;
+  const baseUrl = 'https://clima.clancig.com.ar';
+  const logoUrl = `${baseUrl}/og-image.png`;
 
   return {
     title: {
@@ -26,7 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
       template: `%s | ${dict.appName}`,
     },
     description: dict.seoDescription,
-    metadataBase: APP_URL,
+    metadataBase: new URL(baseUrl),
     applicationName: dict.appName,
     keywords: [
       'clima', 'tiempo', 'pronóstico', 'temperatura', 'weather', 'forecast', 'ia', 'ai',
@@ -39,25 +40,27 @@ export async function generateMetadata(): Promise<Metadata> {
     authors: [{ name: 'Clancig FullstackDev', url: new URL('https://www.clancig.com.ar') }],
     creator: 'Clancig FullstackDev',
     alternates: {
-      canonical: APP_URL.toString(),
+      canonical: baseUrl,
       languages: {
-        'es-AR': '/?lang=es',
-        'en-US': '/?lang=en',
-        'pt-BR': '/?lang=pt',
+        'es-AR': `${baseUrl}/?lang=es`,
+        'en-US': `${baseUrl}/?lang=en`,
+        'pt-BR': `${baseUrl}/?lang=pt`,
       },
     },
     openGraph: {
       type: 'website',
-      url: APP_URL.toString(),
+      url: baseUrl,
       title: dict.seoTitle,
       description: dict.seoDescription,
       siteName: dict.appName,
+      locale: 'es_AR',
       images: [
         {
           url: logoUrl,
           width: 1200,
           height: 630,
           alt: `${dict.appName} - ${dict.appDescription}`,
+          type: 'image/png',
         },
       ],
     },
@@ -65,6 +68,8 @@ export async function generateMetadata(): Promise<Metadata> {
       card: 'summary_large_image',
       title: dict.seoTitle,
       description: dict.seoDescription,
+      site: '@MeteoClan',
+      creator: '@ClancigDev',
       images: [logoUrl],
     },
     appleWebApp: {
