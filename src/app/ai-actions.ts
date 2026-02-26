@@ -30,8 +30,8 @@ export async function generateCityBackgroundAction(city: string, weatherDescript
         const modelId = "imagen-4.0-fast-generate-001";
         const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:predict?key=${apiKey}`;
 
-        // Prompt enriquecido para bloquear texto y requerir estilo FullHD fotorealista
-        const prompt = `Photorealistic background landscape of ${city} with ${weatherDescription}, cinematic view, 1080p resolution. IMPORTANT: Absolutely NO text, NO words, NO letters, NO watermarks, NO city names, NO fonts.`;
+        // Prompt enriquecido para bloquear texto y requerir estilo FullHD fotorealista, priorizando arquitectura real
+        const prompt = `Highly accurate photorealistic photography of ${city}. Show the REAL geography, ACTUAL architecture, and TRUE landscape or cityscape of this specific location. Weather condition: ${weatherDescription}. Cinematic view, 1080p resolution. IMPORTANT: Absolutely NO text, NO words, NO letters, NO watermarks, NO city names, NO fonts.`;
 
         const payload = {
             instances: [{ prompt: prompt }],
