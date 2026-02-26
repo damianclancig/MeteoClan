@@ -25,12 +25,13 @@ interface CurrentWeatherProps {
 }
 
 const parseDateString = (dt: string | number) => {
-  // If it's just a date 'YYYY-MM-DD', replace dashes to avoid UTC parsing issues.
-  // If it's a full ISO string, it can be parsed directly.
   const dtStr = String(dt);
+  // If it's just a date 'YYYY-MM-DD' (forecast days), force to noon UTC
+  // to avoid timezone shifting issues when rendering the date.
   if (!dtStr.includes('T')) {
-    return new Date(dtStr.replace(/-/g, '/'));
+    return new Date(`${dtStr}T12:00:00Z`);
   }
+  // For full ISO strings (current weather), parse as is.
   return new Date(dtStr);
 }
 
@@ -44,8 +45,11 @@ export const CurrentWeather = memo(function CurrentWeather({ data, hourlyData, l
   const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
   const timeOptions: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit' };
 
+  const isForecastDay = typeof data.dt === 'string' && !data.dt.includes('T');
+
   if ('timezone' in data && data.timezone) {
-    dateOptions.timeZone = data.timezone;
+    // For forecast days, we use the forced noon UTC approach to keep the day consistent
+    dateOptions.timeZone = isForecastDay ? 'UTC' : data.timezone;
     timeOptions.timeZone = data.timezone;
   }
 
