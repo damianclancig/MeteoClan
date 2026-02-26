@@ -85,6 +85,7 @@ Sigue estas instrucciones para obtener una copia local del proyecto y ponerla en
 
     # URLs for the support dialog
     NEXT_PUBLIC_DONATION_URL=https://cafecito.app/damianclancig
+    NEXT_PUBLIC_PAYPAL_URL=https://paypal.me/tu_usuario
     NEXT_PUBLIC_PORTFOLIO_URL=https://www.clancig.com.ar
     NEXT_PUBLIC_GITHUB_URL=https://github.com/damianclancig/MeteoClan
     
@@ -93,6 +94,14 @@ Sigue estas instrucciones para obtener una copia local del proyecto y ponerla en
     NEXT_PUBLIC_GOOGLE_ADSENSE_PUB_ID=ca-pub-XXXXXXXXXXXXXXXX
     # Tu ID de bloque de anuncios de AdSense
     NEXT_PUBLIC_GOOGLE_ADSENSE_AD_SLOT_ID=XXXXXXXXXX
+
+    # Configuración de Firebase (Opcional si NO se usa el backend/storage, Requerido si vas a guardar datos)
+    NEXT_PUBLIC_FIREBASE_API_KEY=tu_api_key_de_firebase
+    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=tu_proyecto.firebaseapp.com
+    NEXT_PUBLIC_FIREBASE_PROJECT_ID=tu_proyecto_id
+    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=tu_proyecto.appspot.com
+    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=1234567890
+    NEXT_PUBLIC_FIREBASE_APP_ID=1:1234567890:web:abcdef123456
     ```
 
 ### Ejecutar la Aplicación

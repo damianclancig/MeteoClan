@@ -25,12 +25,6 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: '**.unsplash.com',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
         hostname: 'picsum.photos',
         port: '',
         pathname: '/**',
@@ -54,7 +48,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "img-src 'self' data: blob: https://image.pollinations.ai https://placehold.co https://*.unsplash.com https://picsum.photos https://fastly.picsum.photos;",
+            value: "img-src 'self' data: blob: https://image.pollinations.ai https://placehold.co https://picsum.photos https://fastly.picsum.photos;",
           },
         ],
       },
