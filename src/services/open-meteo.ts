@@ -21,8 +21,9 @@ export async function getWeatherData(latitude: string, longitude: string, locati
   });
 
   const weatherUrl = `https://api.open-meteo.com/v1/forecast?${weatherParams}`;
-
-  const weatherResponse = await fetch(weatherUrl);
+  const weatherResponse = await fetch(weatherUrl, {
+    next: { revalidate: 300 } // Cache weather data for 5 minutes
+  });
 
   if (!weatherResponse.ok) {
     const errorData = await weatherResponse.json();
