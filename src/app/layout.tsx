@@ -7,6 +7,9 @@ import { Toaster } from "@/components/ui/toaster"
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import Script from 'next/script';
+import { dictionaries, defaultLocale } from '@/lib/i18n';
+import { TranslationProvider } from '@/components/layout/translation-provider';
+
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -14,52 +17,90 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const APP_URL = new URL(process.env.APP_URL || 'https://clima.clancig.com.ar');
 const GOOGLE_ADSENSE_PUB_ID = process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_PUB_ID;
 
+const baseUrl = 'https://clima.clancig.com.ar';
+
+export const viewport = {
+  themeColor: '#020617',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
 export const metadata: Metadata = {
-  title: {
-    default: 'WeatherWise - Pronóstico del Tiempo con IA',
-    template: '%s | WeatherWise',
-  },
-  description: 'Aplicación del tiempo con pronósticos precisos, búsqueda multilingüe y fondos espectaculares generados por IA (Gemini) que reflejan el clima actual.',
   metadataBase: APP_URL,
-  applicationName: 'WeatherWise',
-  keywords: ['clima', 'tiempo', 'pronóstico', 'temperatura', 'weather', 'forecast', 'ia', 'ai', 'inteligencia artificial', 'gemini', 'multilenguaje', 'multi-idioma', 'fases lunares', 'direccion del viento'],
-  authors: [{ name: 'Clancig FullstackDev', url: new URL('https://www.clancig.com.ar') }],
-  creator: 'Clancig FullstackDev',
+  title: {
+    default: "MeteoClan: Pronóstico del Tiempo Preciso y Paisajes con IA en Tiempo Real",
+    template: "%s | MeteoClan",
+  },
+  description: "Descubre el clima con MeteoClan. Pronósticos precisos por hora, búsqueda global de ciudades y fondos dinámicos generados por IA que reflejan el estado del cielo en tiempo real.",
+  applicationName: "MeteoClan",
+  keywords: [
+    'clima', 'tiempo', 'pronóstico', 'temperatura', 'weather', 'forecast', 'ia', 'ai',
+    'inteligencia artificial', 'gemini', 'multilenguaje', 'multi-idioma', 'fases lunares',
+    'direccion del viento', 'pronóstico del tiempo por hora', 'clima hoy', 'pronóstico a 7 días',
+    'mapa del tiempo', 'IA generativa paisajes', 'hourly weather', '7 day forecast',
+    'AI weather app', 'Generative AI weather', 'clima preciso', 'meteorología',
+    'weather forecast worldwide', 'real-time weather updates', 'clima en vivo'
+  ],
+  authors: [{ name: 'Clancig FullstackDev', url: 'https://www.clancig.com.ar' }],
+  creator: 'Damián Clancig',
+  publisher: 'Damián Clancig',
+  alternates: {
+    canonical: '/',
+    languages: {
+      'es-AR': '/?lang=es',
+      'en-US': '/?lang=en',
+      'pt-BR': '/?lang=pt',
+    },
+  },
   openGraph: {
     type: 'website',
-    url: APP_URL,
-    title: 'WeatherWise - Pronóstico del Tiempo con Fondos de IA',
-    description: 'Consulta el pronóstico del tiempo preciso con una interfaz moderna y fondos generados por IA que se adaptan al clima.',
-    siteName: 'WeatherWise',
+    locale: 'es_AR',
+    url: '/',
+    siteName: "MeteoClan",
+    title: "MeteoClan: Pronóstico del Tiempo Preciso y Paisajes con IA en Tiempo Real",
+    description: "Pronósticos precisos y paisajes dinámicos generados por IA que reflejan el clima real en tiempo real.",
     images: [
       {
         url: '/og-image.webp',
         width: 1200,
         height: 630,
-        alt: 'WeatherWise App con fondo de IA',
+        alt: "MeteoClan - Pronóstico del tiempo con paisajes de IA dinámicos.",
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'WeatherWise - Pronóstico del Tiempo con IA',
-    description: 'El pronóstico del tiempo más visual: datos precisos y fondos generados por IA.',
+    title: "MeteoClan: Pronóstico del Tiempo Preciso y Paisajes con IA en Tiempo Real",
+    description: "Pronósticos precisos y paisajes dinámicos generados por IA que reflejan el clima real.",
     images: ['/og-image.webp'],
+    creator: '@dclancig',
   },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'WeatherWise',
+    title: "MeteoClan",
   },
   formatDetection: {
     telephone: false,
   },
   icons: {
-    icon: '/favicon.svg',
-    shortcut: '/favicon.svg',
-    apple: '/favicon.svg',
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/favicon.png',
   },
-  manifest: '/manifest.webmanifest',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 };
 
 
@@ -69,8 +110,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html className="dark" suppressHydrationWarning>
-       <head>
+    <html lang="es" className="dark" suppressHydrationWarning>
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         {GOOGLE_ADSENSE_PUB_ID && (
           <Script
             async
@@ -81,10 +125,14 @@ export default function RootLayout({
         )}
       </head>
       <body className={cn('font-sans antialiased', inter.variable)}>
-        {children}
-        <Toaster />
-        <Analytics />
-        <SpeedInsights />
+        <TranslationProvider initialLocale="es">
+          {children}
+          <Toaster />
+          <Analytics />
+          <SpeedInsights />
+          {/* Registro estándar y tradicional para máxima compatibilidad de Service Worker */}
+          <script defer src="/register-sw.js"></script>
+        </TranslationProvider>
       </body>
     </html>
   );

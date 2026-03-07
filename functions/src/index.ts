@@ -71,7 +71,7 @@ export const generateCityBackground = onCall(
             const modelId = "imagen-3.0-generate-002"; // Última versión estable de Imagen 3 para generación
             const endpointRef = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/${modelId}:predict`;
 
-            const prompt = `A professional cinematic photography of ${city} with ${weatherDescription}, highly detailed, photorealistic, 8k resolution, landscape orientation, no text, no watermarks.`;
+            const prompt = `A professional cinematic photography of ${city} with ${weatherDescription}, highly detailed, photorealistic, fullhd resolution, landscape orientation, no text, no watermarks.`;
 
             const payload = {
                 instances: [{ prompt: prompt }],

@@ -3,9 +3,7 @@
 /**
  * @fileOverview Genkit flow que genera la imagen de fondo del Weather App.
  *
- * Estrategia 1: Unsplash API — Busca fotos reales de la ciudad con clima.
- *               Requiere UNSPLASH_ACCESS_KEY en .env.local
- * Estrategia 2: Picsum.photos — Imágenes aleatorias de alta calidad (CORS OK).
+ * Estrategia 1: Picsum.photos — Imágenes aleatorias de alta calidad (CORS OK).
  */
 
 import { ai } from '@/ai/genkit';
@@ -43,34 +41,7 @@ const generateBackgroundFlow = ai.defineFlow(
 
     const weatherKw = weatherKeywords[weather] || weather.replace(/_/g, ' ');
 
-    // STRATEGY 1: Unsplash API — Real city photos with proper CORS
-    const UNSPLASH_KEY = process.env.UNSPLASH_ACCESS_KEY;
-    if (UNSPLASH_KEY) {
-      try {
-        console.log(`[generateBackground] Trying Unsplash API for "${city}"...`);
-        const query = encodeURIComponent(`${city} ${weatherKw} cityscape`);
-        const apiUrl = `https://api.unsplash.com/photos/random?query=${query}&orientation=landscape&client_id=${UNSPLASH_KEY}`;
-
-        const res = await fetch(apiUrl, { next: { revalidate: 0 } });
-        if (res.ok) {
-          const data = await res.json();
-          const imageUrl: string | undefined = data?.urls?.regular;
-          if (imageUrl) {
-            console.log(`[generateBackground] Unsplash OK: ${imageUrl.substring(0, 60)}...`);
-            return { image: imageUrl };
-          }
-        } else {
-          const err = await res.text();
-          console.error(`[generateBackground] Unsplash API error ${res.status}: ${err.substring(0, 200)}`);
-        }
-      } catch (err: any) {
-        console.error(`[generateBackground] Unsplash fetch error: ${err.message}`);
-      }
-    } else {
-      console.log('[generateBackground] UNSPLASH_ACCESS_KEY not set, skipping Unsplash.');
-    }
-
-    // STRATEGY 2: Picsum.photos — Always works, no key needed, CORS OK
+    // STRATEGY: Picsum.photos — Always works, no key needed, CORS OK
     // The URL is deterministic based on city name for consistency.
     try {
       console.log(`[generateBackground] Using Picsum.photos fallback...`);

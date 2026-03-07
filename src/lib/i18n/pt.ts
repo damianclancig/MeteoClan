@@ -1,5 +1,10 @@
 const pt = {
-  appName: "WeatherWise",
+  appName: "MeteoClan",
+  appTitle: "MeteoClan - Previsão do Tempo com IA",
+  appDescription: "Previsões precisas e paisagens dinámicas geradas por IA que refletem o clima real.",
+  seoTitle: "MeteoClan: Previsão do Tempo Precisa e Paisagens com IA em Tempo Real",
+  seoDescription: "Consulte o clima com MeteoClan: previsões horárias precisas, busca global de cidades e fundos dinâmicos gerados por IA. Dados reais de vento, umidade e fases da lua.",
+  weatherBackgroundFor: "Fundo do clima para",
   searchPlaceholder: "Procurar uma cidade...",
   search: "Procurar",
   useMyLocationTooltip: "Usar a minha localização",
@@ -65,7 +70,7 @@ const pt = {
   attribution: {
     weather: "Dados meteorológicos fornecidos por",
     geocoding: "Geocodificação por",
-images: "Imagens de fundo geradas por",
+    images: "Imagens de fundo geradas por",
     moon: "Os cálculos das fases da lua são realizados localmente."
   },
   footer: {
@@ -83,6 +88,11 @@ images: "Imagens de fundo geradas por",
     button_paypal: "Apoiar com PayPal",
     button_portfolio: "Visite meu Portfólio",
     button_github: "Ver no GitHub",
+  },
+  notFound: {
+    title: "404 - Página não encontrada",
+    message: "Ops! Parece que você se perdeu nas nuvens. A página que você está procurando não existe ou foi movida.",
+    button: "Voltar ao Início",
   }
 };
 

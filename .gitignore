@@ -1,18 +1,10 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
 # dependencies
-/node_modules
-/functions/node_modules
+node_modules
 /.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
+.pnp.js
 
 # testing
-/coverage
+coverage
 
 # next.js
 /.next/
@@ -31,6 +23,9 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
+# local env files
+.env*.local
+
 # vercel
 .vercel
 
@@ -38,15 +33,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# AI Agents & Genkit
-.genkit/*
-.agent/
-.env*
+# logs
+*.log
+*.txt
 
-# firebase
-firebase-debug.log
-firestore-debug.log
-/functions/lib
-/functions/node_modules
-
-!.env.example
+.agent

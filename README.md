@@ -1,11 +1,11 @@
 
-# WeatherWise - Pronóstico del Tiempo en Tiempo Real con IA
+# MeteoClan - Pronóstico del Tiempo en Tiempo Real con IA
 
-[![Captura de Pantalla de WeatherWise](public/assets/screenshot.png)](https://clima.clancig.com.ar)
+[![Captura de Pantalla de MeteoClan](https://res.cloudinary.com/dqh1coa3c/image/upload/v1772030429/MeteoClan/screenshot_dix6yd.webp)](https://clima.clancig.com.ar)
 
 ### 🚀 [Ver Demo en Vivo](https://clima.clancig.com.ar) 🚀
 
-**WeatherWise** es una aplicación web moderna y elegante que proporciona pronósticos del tiempo en tiempo real para cualquier ciudad del mundo. Construida con tecnologías de vanguardia, ofrece una experiencia de usuario rápida, receptiva e inmersiva, destacando por sus **fondos de pantalla dinámicos generados por Inteligencia Artificial** que reflejan el clima actual de la ciudad consultada.
+**MeteoClan** es una aplicación web moderna y elegante que proporciona pronósticos del tiempo en tiempo real para cualquier ciudad del mundo. Construida con tecnologías de vanguardia, ofrece una experiencia de usuario rápida, receptiva e inmersiva, destacando por sus **fondos de pantalla dinámicos generados por Inteligencia Artificial** que reflejan el clima actual de la ciudad consultada.
 
 La aplicación detecta automáticamente la ubicación del usuario para proporcionar un pronóstico local instantáneo. La interfaz está diseñada para ser limpia e informativa, con iconos animados y un diseño futurista tipo "tarjeta de cristal".
 
@@ -62,8 +62,8 @@ Sigue estas instrucciones para obtener una copia local del proyecto y ponerla en
 
 1.  **Clona el repositorio:**
     ```bash
-    git clone https://github.com/damianclancig/weather-wise.git
-    cd weather-wise
+    git clone https://github.com/damianclancig/MeteoClan.git
+    cd MeteoClan
     ```
 
 2.  **Instala las dependencias:**
@@ -85,14 +85,23 @@ Sigue estas instrucciones para obtener una copia local del proyecto y ponerla en
 
     # URLs for the support dialog
     NEXT_PUBLIC_DONATION_URL=https://cafecito.app/damianclancig
+    NEXT_PUBLIC_PAYPAL_URL=https://paypal.me/tu_usuario
     NEXT_PUBLIC_PORTFOLIO_URL=https://www.clancig.com.ar
-    NEXT_PUBLIC_GITHUB_URL=https://github.com/damianclancig/weather-wise
+    NEXT_PUBLIC_GITHUB_URL=https://github.com/damianclancig/MeteoClan
     
     # Credenciales de Google AdSense (Opcional)
     # Tu ID de editor de AdSense
     NEXT_PUBLIC_GOOGLE_ADSENSE_PUB_ID=ca-pub-XXXXXXXXXXXXXXXX
     # Tu ID de bloque de anuncios de AdSense
     NEXT_PUBLIC_GOOGLE_ADSENSE_AD_SLOT_ID=XXXXXXXXXX
+
+    # Configuración de Firebase (Opcional si NO se usa el backend/storage, Requerido si vas a guardar datos)
+    NEXT_PUBLIC_FIREBASE_API_KEY=tu_api_key_de_firebase
+    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=tu_proyecto.firebaseapp.com
+    NEXT_PUBLIC_FIREBASE_PROJECT_ID=tu_proyecto_id
+    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=tu_proyecto.appspot.com
+    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=1234567890
+    NEXT_PUBLIC_FIREBASE_APP_ID=1:1234567890:web:abcdef123456
     ```
 
 ### Ejecutar la Aplicación

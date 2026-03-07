@@ -1,5 +1,10 @@
 const en = {
-  appName: "WeatherWise",
+  appName: "MeteoClan",
+  appTitle: "MeteoClan - AI Weather Forecast",
+  appDescription: "Accurate forecasts and dynamic AI-generated landscapes that reflect real-time weather.",
+  seoTitle: "MeteoClan: Accurate AI Weather Forecasts & Real-Time Dynamic Landscapes",
+  seoDescription: "Check the weather with MeteoClan: accurate hourly forecasts, global city search, and dynamic AI-generated backgrounds. Real-time temperature, wind, and moon phases.",
+  weatherBackgroundFor: "Weather background for",
   searchPlaceholder: "Search for a city...",
   search: "Search",
   useMyLocationTooltip: "Use my location",
@@ -59,7 +64,7 @@ const en = {
     waxing_gibbous: "Waxing Gibbous",
     full_moon: "Full Moon",
     waning_gibbous: "Waning Gibbous",
-gibbous: "Waning Gibbous",
+    gibbous: "Waning Gibbous",
     third_quarter: "Third Quarter",
     waning_crescent: "Waning Crescent",
   },
@@ -75,7 +80,7 @@ gibbous: "Waning Gibbous",
   },
   support: {
     title: "Support the Project",
-    message1: "Thank you for using WeatherWise! This is a free and open-source project maintained with passion.",
+    message1: "Thank you for using MeteoClan! This is a free and open-source project maintained with passion.",
     message2: "If you find it useful, please consider sharing it.",
     message3: "If you wish to collaborate, you can do so from these links.",
     copied: "Copied!",
@@ -84,6 +89,11 @@ gibbous: "Waning Gibbous",
     button_paypal: "Support with PayPal",
     button_portfolio: "Visit my Portfolio",
     button_github: "See on GitHub",
+  },
+  notFound: {
+    title: "404 - PageNot Found",
+    message: "Oops! It seems you've got lost in the clouds. The page you're looking for doesn't exist or has been moved.",
+    button: "Back to Home",
   }
 };
 

@@ -1,4 +1,4 @@
-# **App Name**: WeatherWise
+# **App Name**: MeteoClan
 
 ## Core Features:
 

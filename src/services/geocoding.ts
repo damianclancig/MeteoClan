@@ -10,7 +10,9 @@ import type { CitySuggestion } from "@/lib/types";
 export async function getCityFromCoords(lat: number, lon: number): Promise<string> {
   const url = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=es`;
   try {
-    const res = await fetch(url);
+    const res = await fetch(url, {
+      next: { revalidate: 86400 } // Cache reverse geocoding for 24 hours
+    });
     if (!res.ok) {
       console.error(`[getCityFromCoords] API Error: ${res.statusText}`);
       return "Current Location";
@@ -46,11 +48,12 @@ export async function getCitySuggestions(query: string, language: string, count:
   if (query.length < 3) {
     return [];
   }
-
   const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=${count}&format=json&language=${language}`;
 
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      next: { revalidate: 86400 } // Cache city suggestions for 24 hours
+    });
     if (!response.ok) {
       console.error(`[getCitySuggestions] API Error: ${response.statusText}`);
       return [];
