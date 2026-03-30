@@ -1,68 +1,124 @@
 
 'use server';
 
-import type { WeatherData, GenerateBackgroundInput, CitySuggestion } from "@/lib/types";
-import { generateBackground } from "@/ai/flows/generate-background-flow";
-import { getCitySuggestions as fetchCitySuggestions, getCityFromCoords as fetchCityFromCoords } from "@/services/geocoding";
-import { getWeatherData as fetchWeatherData } from "@/services/open-meteo";
+import type { WeatherData, NormalizedLocation, CitySuggestion } from '@/lib/types';
+import { generateBackground } from '@/ai/flows/generate-background-flow';
+import {
+  getCitySuggestions as fetchCitySuggestions,
+  getLocationFromCoords,
+  getLocationFromQuery,
+  normalizeLocation,
+} from '@/services/geocoding';
+import { getWeatherData as fetchWeatherData } from '@/services/owm';
 
-// This is the primary server action that orchestrates the data fetching.
+// ============================================================
+// Acción principal: obtiene el clima orquestando geocoding + OWM
+// ============================================================
+
+/**
+ * Server Action principal que gestiona el flujo completo:
+ * 1. Resolver la ubicación a través de OWM Geocoding (GPS o texto).
+ * 2. Normalizar la ubicación para obtener un cityKey estable.
+ * 3. Obtener el clima desde OWM One Call API 3.0 (vía Route Handler con caché).
+ */
 export async function getWeather(prevState: any, formData: FormData): Promise<any> {
-  let locationName = formData.get('location') as string | null;
-  let latitude = formData.get('latitude') as string | null;
-  let longitude = formData.get('longitude') as string | null;
+  const locationQuery = formData.get('location') as string | null;
+  const latStr = formData.get('latitude') as string | null;
+  const lonStr = formData.get('longitude') as string | null;
+  const cityKeyFromForm = formData.get('cityKey') as string | null;
 
   try {
-    // Step 1: Resolve coordinates if not provided
-    if (locationName && !latitude && !longitude) {
-      const suggestions = await fetchCitySuggestions(locationName, 'en', 1);
-      if (suggestions.length > 0) {
-        latitude = suggestions[0].lat.toString();
-        longitude = suggestions[0].lon.toString();
-        locationName = suggestions[0].name; // Use the precise name from the API
-      } else {
-        const errorDetail = `Could not find city: ${locationName}`;
+    let normalizedLocation: NormalizedLocation | null = null;
+
+    // Caso A: El formulario ya trae un cityKey (ej: sugerencia del buscador con coordenadas OWM ya normalizadas)
+    if (latStr && lonStr && cityKeyFromForm && locationQuery) {
+      normalizedLocation = {
+        cityKey: cityKeyFromForm,
+        displayName: locationQuery,
+        lat: parseFloat(latStr),
+        lon: parseFloat(lonStr),
+      };
+    }
+    // Caso B: Coordenadas GPS crudas → normalizar con OWM Reverse Geocoding
+    else if (latStr && lonStr && !locationQuery) {
+      normalizedLocation = await getLocationFromCoords(
+        parseFloat(latStr),
+        parseFloat(lonStr)
+      );
+
+      if (!normalizedLocation) {
+        // Fallback: construir una location básica si OWM falla
+        normalizedLocation = {
+          cityKey: `location-${Math.round(parseFloat(latStr))}-${Math.round(parseFloat(lonStr))}`,
+          displayName: 'Mi ubicación',
+          lat: parseFloat(latStr),
+          lon: parseFloat(lonStr),
+        };
+      }
+    }
+    // Caso C: Solo texto de búsqueda → normalizar con OWM Direct Geocoding
+    else if (locationQuery && !latStr && !lonStr) {
+      normalizedLocation = await getLocationFromQuery(locationQuery);
+
+      if (!normalizedLocation) {
+        const errorDetail = `No se encontró la ciudad: ${locationQuery}`;
         return { ...prevState, success: false, message: 'fetchError', errorDetail };
       }
     }
-    // Step 2: Resolve city name if not provided
-    else if (latitude && longitude && !locationName) {
-      locationName = await fetchCityFromCoords(parseFloat(latitude), parseFloat(longitude));
-    }
-    // Step 3: Handle missing data
-    else if (!latitude || !longitude) {
-      const errorDetail = 'No location information provided.';
+    // Caso D: Datos insuficientes
+    else {
+      const errorDetail = 'No se proporcionó información de ubicación.';
       return { ...prevState, success: false, message: 'fetchError', errorDetail };
     }
 
-    if (!locationName) locationName = "Current Location";
+    // Obtener el clima con la ubicación normalizada
+    const weatherData: WeatherData = await fetchWeatherData(normalizedLocation);
 
-    // Step 4: Fetch and process weather data
-    const weatherData = await fetchWeatherData(latitude, longitude, locationName);
-
-    return { ...prevState, success: true, weatherData, message: '', errorDetail: null };
+    return {
+      ...prevState,
+      success: true,
+      weatherData,
+      normalizedLocation, // Se devuelve al cliente para que lo guarde en localStorage
+      message: '',
+      errorDetail: null,
+    };
 
   } catch (error: any) {
-    const errorDetail = error.message || 'An unknown error occurred.';
-    console.error(`[getWeather] CATCH BLOCK ERROR: ${errorDetail}`);
-    console.error(`[getWeather] RAW ERROR OBJECT:`, error);
-    if (error.cause) console.error(`[getWeather] ERROR CAUSE:`, error.cause);
+    const errorDetail = error.message || 'Ocurrió un error desconocido.';
+    console.error(`[getWeather] Error:`, errorDetail);
+    console.error(`[getWeather] Raw error:`, error);
     return { ...prevState, success: false, message: 'fetchError', errorDetail };
   }
 }
 
-// AI Background Generation Action
-export async function generateAndSetBackground(input: GenerateBackgroundInput): Promise<string> {
+// ============================================================
+// Acción de IA: generación de fondo con Gemini
+// ============================================================
+
+export async function generateAndSetBackground(input: { city: string; weather: string }): Promise<string> {
   try {
     const bg = await generateBackground(input);
     return bg.image;
   } catch (e) {
-    console.error('Failed to generate background image', e);
+    console.error('[generateAndSetBackground] Error:', e);
     return '';
   }
 }
 
-// City Suggestions Action
-export async function getCitySuggestions(query: string, language: string, count: number = 5): Promise<CitySuggestion[]> {
+// ============================================================
+// Acción de geocoding: exponer sugerencias de ciudades al cliente
+// ============================================================
+
+/**
+ * Expone el servicio de sugerencias de ciudades como Server Action.
+ * Llamado por el componente SearchControls con debounce.
+ */
+export async function getCitySuggestions(
+  query: string,
+  language: string,
+  count: number = 5
+): Promise<CitySuggestion[]> {
   return fetchCitySuggestions(query, language, count);
 }
+
+

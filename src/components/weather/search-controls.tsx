@@ -3,12 +3,13 @@
 
 import { useState, useEffect, useRef, useCallback, useTransition } from 'react';
 import { useFormStatus } from 'react-dom';
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Search, Loader, MapPin } from "lucide-react";
-import { useTranslation } from "@/hooks/use-translation";
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Search, Loader, MapPin } from 'lucide-react';
+import { useTranslation } from '@/hooks/use-translation';
 import type { CitySuggestion } from '@/lib/types';
 import { getCitySuggestions } from '@/app/actions';
+import { normalizeLocation } from '@/services/geocoding';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -40,11 +41,21 @@ export function SearchControls({ formAction, onRefreshLocation, locale }: Search
   const handleSuggestionClick = (suggestion: CitySuggestion) => {
     if (!formRef.current) return;
 
+    // Generar el cityKey a partir de los datos de la sugerencia
+    const normalized = normalizeLocation({
+      name: suggestion.name.split(',')[0]?.trim() ?? suggestion.name,
+      lat: suggestion.lat,
+      lon: suggestion.lon,
+      country: suggestion.name.split(',').at(-1)?.trim() ?? '',
+      state: suggestion.name.split(',')[1]?.trim(),
+    });
+
     const formData = new FormData(formRef.current);
     formData.set('location', suggestion.name);
     formData.set('latitude', suggestion.lat.toString());
     formData.set('longitude', suggestion.lon.toString());
-    
+    formData.set('cityKey', normalized.cityKey);
+
     startTransition(() => {
       formAction(formData);
     });
@@ -52,18 +63,18 @@ export function SearchControls({ formAction, onRefreshLocation, locale }: Search
     setQuery('');
     setShowSuggestions(false);
   };
-  
+
   const handleRefresh = () => {
     setQuery('');
     setShowSuggestions(false);
     onRefreshLocation();
-  }
+  };
 
   const handleFormAction = (formData: FormData) => {
-      formAction(formData);
-      setQuery('');
-      setShowSuggestions(false);
-  }
+    formAction(formData);
+    setQuery('');
+    setShowSuggestions(false);
+  };
 
   useEffect(() => {
     if (query.length < 3) {
@@ -76,13 +87,16 @@ export function SearchControls({ formAction, onRefreshLocation, locale }: Search
       const newSuggestions = await getCitySuggestions(query, locale);
       setSuggestions(newSuggestions);
       setShowSuggestions(newSuggestions.length > 0);
-    }, 300);
+    }, 400); // 400ms de debounce para OWM Geocoding
 
     return () => clearTimeout(debounceTimeout);
   }, [query, locale]);
-  
+
   const handleClickOutside = useCallback((event: MouseEvent) => {
-    if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
+    if (
+      searchContainerRef.current &&
+      !searchContainerRef.current.contains(event.target as Node)
+    ) {
       setShowSuggestions(false);
     }
   }, []);
@@ -93,11 +107,16 @@ export function SearchControls({ formAction, onRefreshLocation, locale }: Search
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [handleClickOutside]);
-  
 
   return (
     <div ref={searchContainerRef} className="flex items-center space-x-2 w-full">
-      <Button variant="ghost" size="icon" onClick={handleRefresh} disabled={pending || isPending} aria-label={t('useMyLocationTooltip')}>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={handleRefresh}
+        disabled={pending || isPending}
+        aria-label={t('useMyLocationTooltip')}
+      >
         <MapPin />
       </Button>
       <form ref={formRef} action={handleFormAction} className="relative flex flex-grow items-center space-x-2">
@@ -108,15 +127,16 @@ export function SearchControls({ formAction, onRefreshLocation, locale }: Search
           className="bg-card/80 border-border/60 focus:ring-ring"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          onFocus={() => query.length >=3 && setShowSuggestions(true)}
+          onFocus={() => query.length >= 3 && setShowSuggestions(true)}
           autoComplete="off"
         />
-        {/* Hidden fields for lat/lon, they are populated by suggestion click or refresh */}
+        {/* Campos ocultos: lat, lon y cityKey son populados por selección de sugerencia */}
         <input type="hidden" name="latitude" />
         <input type="hidden" name="longitude" />
-        
+        <input type="hidden" name="cityKey" />
+
         <SubmitButton />
-        
+
         {showSuggestions && (
           <div className="absolute top-full mt-2 w-full bg-popover rounded-md shadow-lg border border-border/60 z-50">
             <ul>

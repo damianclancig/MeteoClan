@@ -1,6 +1,9 @@
 
+// ============================================================
+// App Internal Types (used across the entire application)
+// ============================================================
 
-// Our app's internal weather data structure
+/** Datos meteorológicos del momento actual, normalizados para la UI. */
 export interface CurrentWeather {
   location: string;
   temp: number;
@@ -8,111 +11,161 @@ export interface CurrentWeather {
   humidity: number;
   wind_speed: number;
   wind_direction: number;
-  description: string;
-  main: string;
-  pop: number; // Probability of precipitation
-  dt: string; // ISO Date String
+  description: string; // Clave de traducción (ej: 'clear_sky')
+  main: string;        // Categoría general (ej: 'Clear')
+  pop: number;         // Probabilidad de precipitación (0-100)
+  dt: string;          // ISO Date String
   temp_min: number;
   temp_max: number;
-  sunrise: string; // ISO 8601 Date string
-  sunset: string; // ISO 8601 Date string
-  timezone: string; // e.g., 'Europe/Berlin'
-  weatherCode: number;
+  sunrise: string;     // ISO 8601 Date string
+  sunset: string;      // ISO 8601 Date string
+  timezone: string;    // IANA timezone (ej: 'America/Argentina/Buenos_Aires')
+  weatherCode: number; // OWM weather condition ID (ej: 800)
+  weatherIcon: string; // OWM icon code (ej: '01d')
   latitude: number;
 }
 
+/** Pronóstico para un día específico. */
 export interface DailyForecast {
-  dt: string; // Date string 'YYYY-MM-DD'
+  dt: string;         // Fecha 'YYYY-MM-DD'
   temp_min: number;
   temp_max: number;
   main: string;
   description: string;
-  pop: number;
-  hourly: HourlyForecast[]; 
+  pop: number;        // Probabilidad de precipitación (0-100)
+  hourly: HourlyForecast[];
   humidity: number;
   wind_speed: number;
   wind_direction: number;
   temp: number;
   feels_like: number;
   weatherCode: number;
-  sunrise: string; // ISO 8601 Date string
-  sunset: string; // ISO 8601 Date string
+  weatherIcon: string;
+  sunrise: string;    // ISO 8601 Date string
+  sunset: string;     // ISO 8601 Date string
+  // Datos astronómicos lunares de OWM
+  moonrise?: string;  // ISO 8601 Date string
+  moonset?: string;   // ISO 8601 Date string
+  moon_phase?: number; // Valor 0-1 (OWM)
 }
 
+/** Pronóstico para una hora específica. */
 export interface HourlyForecast {
-  time: string; // ISO 8601 Date String
+  time: string;       // ISO 8601 Date String
   temp: number;
   main: string;
-  pop: number; // Probability of precipitation
+  pop: number;        // Probabilidad de precipitación (0-100)
   weatherCode: number;
+  weatherIcon: string;
 }
 
+/** Estructura principal de datos meteorológicos de la app. */
 export interface WeatherData {
   current: CurrentWeather;
-  forecast: DailyForecast[];
-  hourly: HourlyForecast[];
+  forecast: DailyForecast[]; // 8 días (desde mañana)
+  hourly: HourlyForecast[];  // Horas del día actual
   latitude: number;
-  lastUpdated: string; // ISO string of when the data was generated
+  lastUpdated: string;       // ISO string del momento de generación
+  /** Array diario crudo de OWM para datos astronómicos del MoonCalendar. */
+  owmRawDaily?: OWMWeatherData['daily'];
 }
 
+/** Sugerencia de ciudad para el buscador. */
 export interface CitySuggestion {
   name: string;
   lat: number;
   lon: number;
 }
 
-// WMO Weather code translation structure
+// ============================================================
+// OWM Geocoding API Types
+// ============================================================
+
+/** Resultado de la Geocoding API de OpenWeatherMap. */
+export interface GeocodingResult {
+  name: string;
+  local_names?: Record<string, string>;
+  lat: number;
+  lon: number;
+  country: string;
+  state?: string;
+}
+
+/**
+ * Ubicación normalizada, lista para ser usada como clave de caché.
+ * Se persiste en localStorage para evitar re-geocoding.
+ */
+export interface NormalizedLocation {
+  cityKey: string;    // Formato: "nombre-estado-pais" (ej: "bernal-buenos-aires-ar")
+  displayName: string; // Formato: "Nombre, Estado, País"
+  lat: number;
+  lon: number;
+}
+
+// ============================================================
+// OpenWeatherMap One Call API 3.0 Raw Types
+// ============================================================
+
+/** Respuesta cruda de la OWM One Call API 3.0. */
+export interface OWMWeatherData {
+  lat: number;
+  lon: number;
+  timezone: string;
+  timezone_offset: number;
+  current: {
+    dt: number;
+    sunrise: number;
+    sunset: number;
+    temp: number;
+    feels_like: number;
+    pressure: number;
+    humidity: number;
+    wind_speed: number;
+    wind_deg: number;
+    pop?: number;
+    weather: Array<{ id: number; main: string; description: string; icon: string }>;
+  };
+  hourly: Array<{
+    dt: number;
+    temp: number;
+    feels_like: number;
+    humidity: number;
+    wind_speed: number;
+    wind_deg: number;
+    pop: number; // 0 a 1
+    weather: Array<{ id: number; main: string; description: string; icon: string }>;
+  }>;
+  daily: Array<{
+    dt: number;
+    sunrise: number;
+    sunset: number;
+    moonrise: number;
+    moonset: number;
+    moon_phase: number; // 0 a 1
+    summary?: string;
+    temp: { min: number; max: number; day: number; night: number; eve: number; morn: number };
+    feels_like: { day: number; night: number; eve: number; morn: number };
+    pressure: number;
+    humidity: number;
+    wind_speed: number;
+    wind_deg: number;
+    pop: number; // 0 a 1
+    weather: Array<{ id: number; main: string; description: string; icon: string }>;
+  }>;
+}
+
+// ============================================================
+// Supporting Types
+// ============================================================
+
+/** Información de código WMO para compatibilidad con iconos. */
 export interface WeatherCodeInfo {
   description: string;
   image: string;
 }
 
-// Types for AI Flow
+/** Input para el flujo de IA de generación de fondo. */
 export interface GenerateBackgroundInput {
-    city: string;
-    weather: string;
-}
-
-// Types for Open-Meteo API
-export interface OpenMeteoCurrent {
-  time: string;
-  temperature_2m: number;
-  relative_humidity_2m: number;
-  apparent_temperature: number;
-  is_day: number;
-  weather_code: number;
-  wind_speed_10m: number;
-  wind_direction_10m: number;
-}
-
-export interface OpenMeteoHourly {
-  time: string[];
-  temperature_2m: number[];
-  precipitation_probability: number[];
-  weather_code: number[];
-}
-
-export interface OpenMeteoDaily {
-  time: string[];
-  weather_code: number[];
-  temperature_2m_max: number[];
-  temperature_2m_min: number[];
-  sunrise: string[];
-  sunset: string[];
-  precipitation_probability_max: number[];
-  wind_speed_10m_max: number[];
-  wind_direction_10m_dominant: number[];
-}
-
-export interface OpenMeteoWeatherData {
-  latitude: number;
-  longitude: number;
-  generationtime_ms: number;
-  utc_offset_seconds: number;
-  timezone: string;
-  timezone_abbreviation: string;
-  elevation: number;
-  current?: OpenMeteoCurrent; // Current can now be optional
-  hourly: OpenMeteoHourly;
-  daily: OpenMeteoDaily;
+  city: string;
+  weather: string;
 }
