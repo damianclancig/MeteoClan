@@ -235,24 +235,44 @@ export function WeatherMain({ initialLocale }: { initialLocale?: Locale }) {
     }
   }, [state]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const [isBackgroundLoading, setIsBackgroundLoading] = useState(false);
+
   // Generar imagen de fondo con IA cuando cambia la ciudad o el clima
   useEffect(() => {
     const location = weatherData?.current?.location;
-    const description = weatherData?.current?.description;
-    if (location && description) {
+    const condition = weatherData?.current?.description; // Clave de traducción (ej: 'clear_sky')
+    const main = weatherData?.current?.main; // Categoría principal (ej: 'Clear')
+    
+    if (location && condition) {
       const generate = async () => {
+        setIsBackgroundLoading(true);
         try {
-          const response = await generateCityBackgroundAction(location, description);
-          if (response.imageUrl) setBackgroundImage(response.imageUrl);
-          else setBackgroundImage('');
+          const device = window.innerWidth < 768 ? 'mobile' : 'desktop';
+          const params = new URLSearchParams({
+            city: location,
+            condition: condition,
+            main: main || '',
+            device: device
+          });
+
+          const response = await fetch(`/api/ai-background?${params.toString()}`);
+          const data = await response.json();
+          
+          if (data.imageBase64) {
+            setBackgroundImage(data.imageBase64);
+          } else {
+            setBackgroundImage('');
+          }
         } catch (e) {
           console.error('Error generando imagen de fondo:', e);
           setBackgroundImage('');
+        } finally {
+          setIsBackgroundLoading(false);
         }
       };
       generate();
     }
-  }, [weatherData?.current?.location, weatherData?.current?.description]);
+  }, [weatherData?.current?.location, weatherData?.current?.description, weatherData?.current?.main]);
 
   const latitudeForMoon = weatherData?.latitude;
   const owmRawDaily = weatherData?.owmRawDaily;
@@ -262,6 +282,21 @@ export function WeatherMain({ initialLocale }: { initialLocale?: Locale }) {
 
       {/* 1. Capa de Fondo */}
       <div className="fixed inset-0 z-0 bg-background" onClick={toggleContent}>
+        {/* Skeleton de Gradiente Dinámico */}
+        {isBackgroundLoading && (
+          <div 
+            className={cn(
+              "absolute inset-0 transition-opacity duration-1000 animate-pulse bg-gradient-to-br",
+              weatherData?.current?.main === 'Clear' ? "from-amber-400 to-blue-500" :
+              weatherData?.current?.main === 'Clouds' ? "from-gray-400 to-slate-600" :
+              weatherData?.current?.main === 'Rain' ? "from-blue-700 to-slate-900" :
+              weatherData?.current?.main === 'Thunderstorm' ? "from-purple-900 to-black" :
+              weatherData?.current?.main === 'Snow' ? "from-blue-100 to-white" :
+              "from-slate-700 to-slate-900"
+            )}
+          />
+        )}
+
         {backgroundImage ? (
           <NextImage
             src={backgroundImage}
@@ -271,14 +306,17 @@ export function WeatherMain({ initialLocale }: { initialLocale?: Locale }) {
                 : 'Weather background'
             }
             fill
-            className="object-cover transition-opacity duration-1000 ease-in-out"
+            className={cn(
+              "object-cover transition-opacity duration-1000 ease-in-out",
+              isBackgroundLoading ? "opacity-0" : "opacity-100"
+            )}
             priority
-            unoptimized={backgroundImage.startsWith('http')}
+            unoptimized={backgroundImage.startsWith('data:')}
           />
         ) : (
           <div className="h-full w-full bg-background" />
         )}
-        <div className="absolute inset-0 bg-black/50" />
+        <div className="absolute inset-0 bg-black/40" />
       </div>
 
       <h1 className="sr-only">
