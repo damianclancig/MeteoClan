@@ -1,4 +1,3 @@
-
 import type { WeatherData, NormalizedLocation, OWMWeatherData } from '@/lib/types';
 import { processOWMData } from '@/lib/weather-utils';
 import { getBaseUrl } from '@/lib/utils';
@@ -16,6 +15,13 @@ export async function getWeatherData(location: NormalizedLocation): Promise<Weat
   const url =
     `${getBaseUrl()}/api/weather` +
     `?lat=${lat}&lon=${lon}&cityKey=${encodeURIComponent(cityKey)}`;
+
+  console.log(`[getWeatherData] Fetching URL: ${url}`);
+
+  // LOG DE DEPURECIÓN PARA DESPLIEGUES
+  if (process.env.NODE_ENV === 'production') {
+    console.log(`[getWeatherData] Fetching: ${url}`);
+  }
 
   const res = await fetch(url);
 
