@@ -116,9 +116,11 @@ export async function generateAndSetBackground(input: { city: string; weather: s
 export async function getCitySuggestions(
   query: string,
   language: string,
-  count: number = 5
+  count: number = 5,
+  userLat?: number,
+  userLon?: number
 ): Promise<CitySuggestion[]> {
-  return fetchCitySuggestions(query, language, count);
+  return fetchCitySuggestions(query, language, count, userLat, userLon);
 }
 
 

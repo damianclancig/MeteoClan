@@ -125,51 +125,86 @@ export async function getLocationFromCoords(
 // ============================================================
 
 /**
+ * Calcula la distancia en kilómetros entre dos puntos geográficos (Fórmula de Haversine).
+ */
+function getDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371; // Radio de la Tierra en km
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * (Math.PI / 180)) *
+      Math.cos(lat2 * (Math.PI / 180)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+/**
  * Busca sugerencias de ciudades usando OWM Direct Geocoding.
  * Llama directamente a la API de OWM (se ejecuta en el servidor con acceso a OWM_API_KEY).
- * @param query - Texto de búsqueda (mínimo 3 caracteres por convención).
- * @param count - Número máximo de resultados.
- * @returns Array de CitySuggestion para el buscador de la UI.
+ * @param query - Texto de búsqueda.
+ * @param _language - Parámetro de compatibilidad.
+ * @param count - Número máximo de resultados retornar.
+ * @param userLat - Latitud del usuario para priorización por cercanía.
+ * @param userLon - Longitud del usuario para priorización por cercanía.
+ * @returns Array de CitySuggestion ordenado por relevancia y cercanía.
  */
 export async function getCitySuggestions(
   query: string,
-  _language: string, // Mantenemos el parámetro para compatibilidad de interfaz
-  count: number = 5
+  _language: string,
+  count: number = 5,
+  userLat?: number,
+  userLon?: number
 ): Promise<CitySuggestion[]> {
   if (query.length < 3) return [];
 
   try {
     const apiKey = getApiKey();
+    // Aumentamos el límite interno para tener más candidatos que ordenar por cercanía
+    const internalLimit = userLat && userLon ? 15 : count + 5;
     const owmUrl =
       `https://api.openweathermap.org/geo/1.0/direct` +
-      `?q=${encodeURIComponent(query)}&limit=${count}&appid=${apiKey}`;
+      `?q=${encodeURIComponent(query)}&limit=${internalLimit}&appid=${apiKey}`;
 
-    console.log(`[getCitySuggestions] Llamando directamente a OWM para query="${query}"`);
+    console.log(`[getCitySuggestions] Query="${query}" (UserLoc: ${userLat}, ${userLon})`);
 
-    const res = await fetch(owmUrl, { next: { revalidate: 86400 } }); // 24h caché
-    if (!res.ok) {
-      console.error(`[getCitySuggestions] Error OWM: ${res.status}`);
-      return [];
-    }
+    const res = await fetch(owmUrl, { next: { revalidate: 86400 } });
+    if (!res.ok) return [];
+
     const results: GeocodingResult[] = await res.json();
     if (!results || results.length === 0) return [];
 
     const seen = new Set<string>();
-    const suggestions: CitySuggestion[] = [];
+    let suggestionsWithDistance: (CitySuggestion & { distance?: number })[] = [];
 
     results.forEach(item => {
       const normalized = normalizeLocation(item);
       if (!seen.has(normalized.cityKey)) {
         seen.add(normalized.cityKey);
-        suggestions.push({
+        
+        const suggestion: CitySuggestion & { distance?: number } = {
           name: normalized.displayName,
           lat: item.lat,
           lon: item.lon,
-        });
+        };
+
+        if (userLat !== undefined && userLon !== undefined) {
+          suggestion.distance = getDistance(userLat, userLon, item.lat, item.lon);
+        }
+        
+        suggestionsWithDistance.push(suggestion);
       }
     });
 
-    return suggestions;
+    // Ordenar por cercanía si tenemos la ubicación del usuario
+    if (userLat !== undefined && userLon !== undefined) {
+      suggestionsWithDistance.sort((a, b) => (a.distance || 0) - (b.distance || 0));
+    }
+
+    // Retornar solo el número solicitado de sugerencias
+    return suggestionsWithDistance.slice(0, count).map(({ distance, ...rest }) => rest);
   } catch (error: any) {
     console.error('[getCitySuggestions] Error:', error.message);
     return [];

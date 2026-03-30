@@ -9,7 +9,7 @@ import { Search, Loader, MapPin } from 'lucide-react';
 import { useTranslation } from '@/hooks/use-translation';
 import type { CitySuggestion } from '@/lib/types';
 import { getCitySuggestions } from '@/app/actions';
-import { normalizeLocation } from '@/services/geocoding';
+import { normalizeLocation, getCachedLocation } from '@/services/geocoding';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -84,7 +84,14 @@ export function SearchControls({ formAction, onRefreshLocation, locale }: Search
     }
 
     const debounceTimeout = setTimeout(async () => {
-      const newSuggestions = await getCitySuggestions(query, locale);
+      const cached = getCachedLocation();
+      const newSuggestions = await getCitySuggestions(
+        query, 
+        locale, 
+        10, 
+        cached?.lat, 
+        cached?.lon
+      );
       setSuggestions(newSuggestions);
       setShowSuggestions(newSuggestions.length > 0);
     }, 400); // 400ms de debounce para OWM Geocoding
