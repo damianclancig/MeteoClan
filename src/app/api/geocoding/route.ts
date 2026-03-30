@@ -26,6 +26,10 @@ export async function GET(request: NextRequest) {
     );
   }
 
+  // MASKED LOG PARA VALIDAR LA CLAVE EN VERCEL
+  const maskedKey = `${apiKey.substring(0, 4)}...${apiKey.substring(apiKey.length - 4)}`;
+  console.log(`[/api/geocoding] API Key Info - Length: ${apiKey.length} | Mask: ${maskedKey}`);
+
   let owmUrl: string;
 
   if (lat && lon) {

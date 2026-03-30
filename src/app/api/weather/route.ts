@@ -34,6 +34,10 @@ export async function GET(request: NextRequest) {
     );
   }
 
+  // MASKED LOG PARA VALIDAR LA CLAVE EN VERCEL
+  const maskedKey = `${apiKey.substring(0, 4)}...${apiKey.substring(apiKey.length - 4)}`;
+  console.log(`[/api/weather] API Key Info - Length: ${apiKey.length} | Mask: ${maskedKey}`);
+
   const owmUrl =
     `https://api.openweathermap.org/data/3.0/onecall` +
     `?lat=${lat}&lon=${lon}` +
