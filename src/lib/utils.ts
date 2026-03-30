@@ -11,12 +11,12 @@ export function cn(...inputs: ClassValue[]) {
 export function getBaseUrl(): string {
   if (typeof window !== 'undefined') return ''; // En el cliente, las rutas relativas funcionan
 
-  // 1. Prioridad: Variable de entorno explícita (Producción fija)
-  if (process.env.NEXT_PUBLIC_APP_URL) return process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '');
-
-  // 2. Automático para despliegues de Vercel (incluye Preview)
+  // 1. Prioridad: Automático para Vercel (garantiza usar la URL del despliegue actual, ya sea preview o prod)
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
 
-  // 3. Fallback para desarrollo local (puerto estándar de Next.js)
+  // 2. Variable de entorno explícita (como respaldo o producción fija en otros hosts)
+  if (process.env.NEXT_PUBLIC_APP_URL) return process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '');
+
+  // 3. Fallback para desarrollo local
   return 'http://localhost:3000';
 }
