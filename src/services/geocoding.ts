@@ -1,6 +1,4 @@
-
 import type { GeocodingResult, NormalizedLocation, CitySuggestion } from '@/lib/types';
-import { getBaseUrl } from '@/lib/utils';
 
 // ============================================================
 // Persistencia local de la ubicación normalizada
@@ -69,12 +67,28 @@ export function normalizeLocation(result: GeocodingResult): NormalizedLocation {
 }
 
 // ============================================================
+// Helper privado: valida y retorna la OWM_API_KEY del servidor
+// ============================================================
+
+/**
+ * Obtiene y valida la OWM_API_KEY del entorno del servidor.
+ * Lanza un error si no está configurada, para hacer el fallo explícito.
+ */
+function getApiKey(): string {
+  const apiKey = process.env.OWM_API_KEY;
+  if (!apiKey) {
+    throw new Error('[geocoding] OWM_API_KEY no está configurada en el entorno del servidor.');
+  }
+  return apiKey;
+}
+
+// ============================================================
 // Reverse Geocoding: coordenadas GPS → NormalizedLocation
 // ============================================================
 
 /**
  * Obtiene la ciudad más cercana a unas coordenadas GPS usando OWM Reverse Geocoding.
- * Las llamadas se realizan a través del Route Handler /api/geocoding para proteger la API Key.
+ * Llama directamente a la API de OWM (se ejecuta en el servidor con acceso a OWM_API_KEY).
  * @param lat - Latitud GPS.
  * @param lon - Longitud GPS.
  * @returns NormalizedLocation o null si falla.
@@ -84,9 +98,16 @@ export async function getLocationFromCoords(
   lon: number
 ): Promise<NormalizedLocation | null> {
   try {
-    const res = await fetch(`${getBaseUrl()}/api/geocoding?lat=${lat}&lon=${lon}`);
+    const apiKey = getApiKey();
+    const owmUrl =
+      `https://api.openweathermap.org/geo/1.0/reverse` +
+      `?lat=${lat}&lon=${lon}&limit=1&appid=${apiKey}`;
+
+    console.log(`[getLocationFromCoords] Llamando directamente a OWM para lat=${lat}, lon=${lon}`);
+
+    const res = await fetch(owmUrl, { next: { revalidate: 86400 } }); // 24h caché
     if (!res.ok) {
-      console.error(`[getLocationFromCoords] Error: ${res.status}`);
+      console.error(`[getLocationFromCoords] Error OWM: ${res.status}`);
       return null;
     }
     const results: GeocodingResult[] = await res.json();
@@ -94,7 +115,7 @@ export async function getLocationFromCoords(
 
     return normalizeLocation(results[0]);
   } catch (error: any) {
-    console.error('[getLocationFromCoords] Error de red:', error.message);
+    console.error('[getLocationFromCoords] Error:', error.message);
     return null;
   }
 }
@@ -105,7 +126,7 @@ export async function getLocationFromCoords(
 
 /**
  * Busca sugerencias de ciudades usando OWM Direct Geocoding.
- * Las llamadas se realizan a través del Route Handler /api/geocoding.
+ * Llama directamente a la API de OWM (se ejecuta en el servidor con acceso a OWM_API_KEY).
  * @param query - Texto de búsqueda (mínimo 3 caracteres por convención).
  * @param count - Número máximo de resultados.
  * @returns Array de CitySuggestion para el buscador de la UI.
@@ -118,11 +139,16 @@ export async function getCitySuggestions(
   if (query.length < 3) return [];
 
   try {
-    const res = await fetch(
-      `${getBaseUrl()}/api/geocoding?q=${encodeURIComponent(query)}&limit=${count}`
-    );
+    const apiKey = getApiKey();
+    const owmUrl =
+      `https://api.openweathermap.org/geo/1.0/direct` +
+      `?q=${encodeURIComponent(query)}&limit=${count}&appid=${apiKey}`;
+
+    console.log(`[getCitySuggestions] Llamando directamente a OWM para query="${query}"`);
+
+    const res = await fetch(owmUrl, { next: { revalidate: 86400 } }); // 24h caché
     if (!res.ok) {
-      console.error(`[getCitySuggestions] Error: ${res.status}`);
+      console.error(`[getCitySuggestions] Error OWM: ${res.status}`);
       return [];
     }
     const results: GeocodingResult[] = await res.json();
@@ -145,7 +171,7 @@ export async function getCitySuggestions(
 
     return suggestions;
   } catch (error: any) {
-    console.error('[getCitySuggestions] Error de red:', error.message);
+    console.error('[getCitySuggestions] Error:', error.message);
     return [];
   }
 }
@@ -153,6 +179,7 @@ export async function getCitySuggestions(
 /**
  * Obtiene la primera ciudad que coincide con un texto de búsqueda exacto.
  * Útil cuando el usuario escribe un nombre de ciudad directamente en el formulario.
+ * Llama directamente a la API de OWM (se ejecuta en el servidor con acceso a OWM_API_KEY).
  * @param query - Nombre de la ciudad.
  * @returns NormalizedLocation o null si no se encuentra.
  */
@@ -162,11 +189,16 @@ export async function getLocationFromQuery(
   if (query.length < 2) return null;
 
   try {
-    const res = await fetch(
-      `${getBaseUrl()}/api/geocoding?q=${encodeURIComponent(query)}&limit=1`
-    );
+    const apiKey = getApiKey();
+    const owmUrl =
+      `https://api.openweathermap.org/geo/1.0/direct` +
+      `?q=${encodeURIComponent(query)}&limit=1&appid=${apiKey}`;
+
+    console.log(`[getLocationFromQuery] Llamando directamente a OWM para query="${query}"`);
+
+    const res = await fetch(owmUrl, { next: { revalidate: 86400 } }); // 24h caché
     if (!res.ok) {
-      console.error(`[getLocationFromQuery] Error: ${res.status}`);
+      console.error(`[getLocationFromQuery] Error OWM: ${res.status}`);
       return null;
     }
     const results: GeocodingResult[] = await res.json();
@@ -174,7 +206,7 @@ export async function getLocationFromQuery(
 
     return normalizeLocation(results[0]);
   } catch (error: any) {
-    console.error('[getLocationFromQuery] Error de red:', error.message);
+    console.error('[getLocationFromQuery] Error:', error.message);
     return null;
   }
 }
