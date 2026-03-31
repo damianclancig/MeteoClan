@@ -14,10 +14,11 @@ const es = {
   humidity: "Humedad",
   wind: "Viento",
   precipitation: "Precip.",
-  forecastTitle: "Pronóstico 6 días",
+  forecastTitle: "Pronóstico 8 días",
   today: "Hoy",
   sunrise: "Amanecer",
   sunset: "Atardecer",
+  sunCycle: "Ciclo Solar",
   lastUpdated: "Actualizado: {time}",
   errorTitle: "Error",
   fetchError: "No se pudieron obtener los datos del tiempo. Inténtalo de nuevo.",
@@ -27,6 +28,9 @@ const es = {
   technicalDetails: "Ver detalles técnicos",
   moonCalendarTitle: "Fases de la Luna",
   illumination: "{percent}% iluminada",
+  moonrise: "Salida de la Luna",
+  moonset: "Puesta de la Luna",
+  moonCycle: "Ciclo Lunar",
   weather: {
     clear_sky: "Cielo despejado",
     mainly_clear: "Mayormente despejado",
@@ -71,7 +75,7 @@ const es = {
     weather: "Datos del tiempo provistos por",
     geocoding: "Geocodificación por",
     images: "Imágenes de fondo generadas por",
-    moon: "Los cálculos de las fases lunares se realizan localmente."
+    moon: "Datos lunares provistos por OpenWeatherMap. Próximas fases calculadas localmente."
   },
   footer: {
     rights: "Todos los derechos reservados - Licencia MIT",

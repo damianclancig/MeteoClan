@@ -1,176 +1,191 @@
 
 
-import type { WeatherData, DailyForecast, HourlyForecast, OpenMeteoWeatherData, WeatherCodeInfo } from "@/lib/types";
-import { weatherCodes } from "@/lib/weather-codes";
+import type {
+  WeatherData,
+  DailyForecast,
+  HourlyForecast,
+  OWMWeatherData,
+  CurrentWeather,
+} from '@/lib/types';
+import { getWeatherKeyFromOwmId, getMainCategoryFromOwmId } from '@/lib/weather-codes';
+
+// ============================================================
+// Helpers de conversión de timestamps UNIX
+// ============================================================
 
 /**
- * Gets a sanitized, key-friendly weather description from a WMO code.
- * @param code - The WMO weather code.
- * @returns A string key for translation (e.g., 'clear_sky').
+ * Convierte un timestamp UNIX (segundos) a un string ISO 8601.
+ * OWM devuelve todos los timestamps en segundos; se multiplica por 1000 para Date.
  */
-export const getWeatherDescriptionFromCode = (code: number): string => {
-  const codeInfo: WeatherCodeInfo = weatherCodes[code] || weatherCodes[0];
-  // Sanitize the description to create a valid key: lowercase and replace non-alphanumerics with underscores.
-  return codeInfo.description.replace(/: /g, '_').replace(/ /g, '_').toLowerCase();
+const unixToISO = (unixSeconds: number): string =>
+  new Date(unixSeconds * 1000).toISOString();
+
+/**
+ * Convierte un timestamp UNIX (segundos) a una fecha 'YYYY-MM-DD' en la zona horaria local
+ * del lugar consultado, usando el desplazamiento provisto por OWM.
+ * Usado para agrupar las horas correctamente bajo su día local.
+ */
+const unixToDateString = (unixSeconds: number, timezoneOffset: number = 0): string => {
+  // Aplicamos el offset al timestamp para que toISOString devuelva la fecha local 'UTC'
+  const localTime = (unixSeconds + timezoneOffset) * 1000;
+  return new Date(localTime).toISOString().split('T')[0];
+};
+
+// ============================================================
+// Helpers de fase lunar (para fallback si no hay datos de OWM)
+// ============================================================
+
+/**
+ * Devuelve el nombre de la fase lunar a partir del valor de OWM (0-1).
+ * Implementa la lógica completa de 8 fases según el TRD.
+ * @param phase - Valor de moon_phase de OWM (0 a 1).
+ * @returns Clave de traducción de la fase (ej: 'new_moon').
+ */
+export const getMoonPhaseName = (phase: number): string => {
+  if (phase === 0 || phase === 1) return 'new_moon';
+  if (phase > 0 && phase < 0.25) return 'waxing_crescent';
+  if (phase === 0.25) return 'first_quarter';
+  if (phase > 0.25 && phase < 0.5) return 'waxing_gibbous';
+  if (phase === 0.5) return 'full_moon';
+  if (phase > 0.5 && phase < 0.75) return 'waning_gibbous';
+  if (phase === 0.75) return 'third_quarter';
+  return 'waning_crescent';
 };
 
 /**
- * Gets a general weather category (e.g., 'Clear', 'Rain') from a WMO code.
- * @param code - The WMO weather code.
- * @returns A general weather category string.
+ * Calcula el porcentaje de iluminación lunar según el TRD.
+ * @param phase - Valor de moon_phase de OWM (0 a 1).
+ * @returns Porcentaje de iluminación redondeado (0-100).
  */
-export const getMainWeatherFromCode = (code: number): string => {
-  if ([0, 1].includes(code)) return 'Clear';
-  if ([2, 3].includes(code)) return 'Clouds';
-  if ([45, 48].includes(code)) return 'Fog';
-  if (code >= 51 && code <= 67) return 'Rain';
-  if (code >= 71 && code <= 77) return 'Snow';
-  if (code >= 80 && code <= 82) return 'Rain';
-  if (code >= 95 && code <= 99) return 'Thunderstorm';
-  return 'Clear';
+export const getMoonIllumination = (phase: number): number => {
+  const illumination = phase <= 0.5
+    ? phase * 2 * 100
+    : (1 - phase) * 2 * 100;
+  return Math.round(illumination);
 };
 
-/**
- * Determines the most frequent weather code for daytime hours (7am-7pm) from a list of hourly codes.
- * @param hourlyCodes - An array of WMO weather codes for a single day.
- * @returns The dominant daytime weather code.
- */
-export const getDominantWeatherCode = (hourlyCodes: number[]): number => {
-    if (!hourlyCodes || hourlyCodes.length === 0) return 0;
-
-    // We only care about daytime weather for the daily summary icon (e.g. 7am to 7pm)
-    const daytimeCodes = hourlyCodes.slice(7, 19);
-
-    if (daytimeCodes.length === 0) {
-        return hourlyCodes[Math.floor(hourlyCodes.length / 2)] || 0;
-    }
-    
-    const codeCounts = daytimeCodes.reduce((acc, code) => {
-        acc[code] = (acc[code] || 0) + 1;
-        return acc;
-    }, {} as Record<number, number>);
-
-    // Find the most frequent code
-    const dominantCode = Object.entries(codeCounts).reduce((a, b) => (b[1] > a[1] ? b : a))[0];
-
-    return parseInt(dominantCode, 10);
-};
+// ============================================================
+// Helpers de verificación de horario
+// ============================================================
 
 /**
- * Determines if the current time is considered night based on sunrise and sunset times.
- * @param sunrise - ISO string for sunrise.
- * @param sunset - ISO string for sunset.
- * @returns True if it is currently night, false otherwise.
+ * Determina si la hora actual es de noche según amanecer y atardecer.
+ * @param sunrise - ISO string del amanecer.
+ * @param sunset - ISO string del atardecer.
+ * @returns true si es de noche.
  */
 export const isNightTime = (sunrise?: string, sunset?: string): boolean => {
-    if (!sunrise || !sunset) return false;
+  if (!sunrise || !sunset) return false;
+  const nowTimestamp = Date.now();
+  return (
+    nowTimestamp < new Date(sunrise).getTime() ||
+    nowTimestamp > new Date(sunset).getTime()
+  );
+};
 
-    const sunriseTimestamp = new Date(sunrise).getTime();
-    const sunsetTimestamp = new Date(sunset).getTime();
-    const nowTimestamp = Date.now();
-
-    return nowTimestamp < sunriseTimestamp || nowTimestamp > sunsetTimestamp;
-}
+// ============================================================
+// Procesador principal: OWM → WeatherData interno
+// ============================================================
 
 /**
- * Processes the raw API response from Open-Meteo into the structured WeatherData format used by the app.
- * @param apiData - The raw weather data from the Open-Meteo API.
- * @param locationName - The name of the location for which the weather is being fetched.
- * @returns A structured WeatherData object.
+ * Procesa la respuesta cruda de OWM One Call API 3.0 al formato interno WeatherData.
+ * @param apiData - Datos crudos de la OWM One Call API 3.0.
+ * @param locationName - Nombre de visualización de la ubicación.
+ * @returns Estructura WeatherData normalizada para la UI.
  */
-export function processWeatherData(apiData: OpenMeteoWeatherData, locationName: string): WeatherData {
-    const { daily: dailyData, hourly: hourlyData, current: currentData, timezone, latitude: apiLatitude } = apiData;
+export function processOWMData(apiData: OWMWeatherData, locationName: string): WeatherData {
+  const { current, hourly, daily, timezone, timezone_offset, lat } = apiData;
 
-    if (!currentData) {
-        throw new Error("API response did not include 'current' weather data.");
-    }
-    
-    // Process 6-day forecast (from tomorrow, so i=1 to i=6)
-    const forecastData: DailyForecast[] = [];
-    for (let i = 1; i <= 6; i++) {
-        const forecastDateStr = dailyData.time[i]; // e.g. "2024-07-30"
-        
-        const dayHourlyData = hourlyData.time
-            .map((t, index) => ({ time: t, index })) // Keep original index
-            .filter(item => item.time.startsWith(forecastDateStr))
-            .map(item => ({
-                time: item.time,
-                temp: Math.round(hourlyData.temperature_2m[item.index]),
-                main: getMainWeatherFromCode(hourlyData.weather_code[item.index]),
-                pop: hourlyData.precipitation_probability[item.index],
-                weatherCode: hourlyData.weather_code[item.index],
-            }));
-        
-        const hourlyCodesForDay = dayHourlyData.map(h => h.weatherCode);
-        const dominantCode = getDominantWeatherCode(hourlyCodesForDay);
-        
-        const dayForecast: DailyForecast = {
-            dt: forecastDateStr,
-            temp_min: Math.round(dailyData.temperature_2m_min[i]),
-            temp_max: Math.round(dailyData.temperature_2m_max[i]),
-            main: getMainWeatherFromCode(dominantCode),
-            description: getWeatherDescriptionFromCode(dominantCode),
-            pop: dailyData.precipitation_probability_max[i],
-            hourly: dayHourlyData,
-            humidity: 0, // Not available in daily forecast, would need to average hourly
-            wind_speed: dailyData.wind_speed_10m_max[i], 
-            wind_direction: dailyData.wind_direction_10m_dominant[i],
-            temp: Math.round((dailyData.temperature_2m_max[i] + dailyData.temperature_2m_min[i]) / 2),
-            feels_like: Math.round((dailyData.temperature_2m_max[i] + dailyData.temperature_2m_min[i]) / 2), // Approximation
-            weatherCode: dominantCode,
-            sunrise: dailyData.sunrise[i],
-            sunset: dailyData.sunset[i],
-        };
-        forecastData.push(dayForecast);
-    }
-    
-    // Process Today's hourly data
-    const todayDateStr = dailyData.time[0];
-    const todayHourlyForecast: HourlyForecast[] = hourlyData.time
-        .map((t, index) => ({ time: t, index }))
-        .filter(item => item.time.startsWith(todayDateStr))
-        .map(item => ({
-            time: item.time,
-            temp: Math.round(hourlyData.temperature_2m[item.index]),
-            main: getMainWeatherFromCode(hourlyData.weather_code[item.index]),
-            pop: hourlyData.precipitation_probability[item.index],
-            weatherCode: hourlyData.weather_code[item.index],
-        }));
-    
-    // Use hourly data for current pop, find the closest hour
-    const now = new Date();
-    const closestHourIndex = hourlyData.time.findIndex(
-      (timeStr) => new Date(timeStr).getTime() >= now.getTime()
-    );
-    const currentPop = closestHourIndex >= 0 
-      ? hourlyData.precipitation_probability[closestHourIndex]
-      : hourlyData.precipitation_probability[0] || 0;
+  // ── Current weather ──────────────────────────────────────────
+  const currentWeatherId = current.weather[0]?.id ?? 800;
+  const currentWeatherIcon = current.weather[0]?.icon ?? '01d';
 
-    const weatherData: WeatherData = {
-      current: {
-        location: locationName,
-        temp: currentData.temperature_2m,
-        feels_like: currentData.apparent_temperature,
-        humidity: currentData.relative_humidity_2m,
-        wind_speed: currentData.wind_speed_10m,
-        wind_direction: currentData.wind_direction_10m,
-        description: getWeatherDescriptionFromCode(currentData.weather_code),
-        main: getMainWeatherFromCode(currentData.weather_code),
-        pop: currentPop,
-        dt: new Date().toISOString(),
-        temp_min: dailyData.temperature_2m_min[0],
-        temp_max: dailyData.temperature_2m_max[0],
-        sunrise: dailyData.sunrise[0],
-        sunset: dailyData.sunset[0],
-        timezone: timezone,
-        weatherCode: currentData.weather_code,
-        latitude: apiLatitude,
-      },
-      forecast: forecastData,
-      hourly: todayHourlyForecast,
-      latitude: apiLatitude,
-      lastUpdated: currentData.time,
+  // POP en current puede no venir; buscar en la primera hora como fallback
+  const currentPop = (current.pop !== undefined && current.pop !== null)
+    ? Math.round(current.pop * 100)
+    : (hourly[0]?.pop !== undefined ? Math.round(hourly[0].pop * 100) : 0);
+
+  const currentWeatherData: CurrentWeather = {
+    location: locationName,
+    temp: current.temp,
+    feels_like: current.feels_like,
+    humidity: current.humidity,
+    wind_speed: Math.round(current.wind_speed * 3.6), // m/s → km/h
+    wind_direction: current.wind_deg,
+    description: getWeatherKeyFromOwmId(currentWeatherId),
+    main: getMainCategoryFromOwmId(currentWeatherId),
+    pop: currentPop,
+    dt: new Date().toISOString(),
+    temp_min: daily[0]?.temp.min ?? current.temp,
+    temp_max: daily[0]?.temp.max ?? current.temp,
+    sunrise: unixToISO(current.sunrise),
+    sunset: unixToISO(current.sunset),
+    timezone: timezone,
+    weatherCode: currentWeatherId,
+    weatherIcon: currentWeatherIcon,
+    latitude: lat,
+  };
+
+  // ── Hourly forecast (horas del día actual, hasta 24h) ────────
+  const todayDateStr = unixToDateString(current.dt, timezone_offset);
+  const todayHourlyForecast: HourlyForecast[] = hourly
+    .filter(h => unixToDateString(h.dt, timezone_offset) === todayDateStr)
+    .slice(0, 24)
+    .map(h => ({
+      time: unixToISO(h.dt),
+      temp: Math.round(h.temp),
+      main: getMainCategoryFromOwmId(h.weather[0]?.id ?? 800),
+      pop: Math.round(h.pop * 100),
+      weatherCode: h.weather[0]?.id ?? 800,
+      weatherIcon: h.weather[0]?.icon ?? '01d',
+    }));
+
+  // ── Daily forecast (días siguientes, máximo 8) ───────────────
+  // ── Daily forecast (incluyendo hoy para completar 8 días en el grid) ─
+  const forecastData: DailyForecast[] = daily.slice(0, 8).map(day => {
+    const dayWeatherId = day.weather[0]?.id ?? 800;
+    const dayWeatherIcon = day.weather[0]?.icon ?? '01d';
+    const dayDateStr = unixToDateString(day.dt, timezone_offset);
+
+    return {
+      dt: dayDateStr,
+      temp_min: Math.round(day.temp.min),
+      temp_max: Math.round(day.temp.max),
+      main: getMainCategoryFromOwmId(dayWeatherId),
+      description: getWeatherKeyFromOwmId(dayWeatherId),
+      pop: Math.round(day.pop * 100),
+      hourly: hourly
+        .filter(h => unixToDateString(h.dt, timezone_offset) === dayDateStr)
+        .map(h => ({
+          time: unixToISO(h.dt),
+          temp: Math.round(h.temp),
+          main: getMainCategoryFromOwmId(h.weather[0]?.id ?? 800),
+          pop: Math.round(h.pop * 100),
+          weatherCode: h.weather[0]?.id ?? 800,
+          weatherIcon: h.weather[0]?.icon ?? '01d',
+        })),
+      humidity: day.humidity,
+      wind_speed: Math.round(day.wind_speed * 3.6), // m/s → km/h
+      wind_direction: day.wind_deg,
+      temp: Math.round(day.temp.day),
+      feels_like: Math.round(day.feels_like.day),
+      weatherCode: dayWeatherId,
+      weatherIcon: dayWeatherIcon,
+      sunrise: unixToISO(day.sunrise),
+      sunset: unixToISO(day.sunset),
+      // Datos astronómicos lunares
+      moonrise: day.moonrise ? unixToISO(day.moonrise) : undefined,
+      moonset: day.moonset ? unixToISO(day.moonset) : undefined,
+      moon_phase: day.moon_phase,
     };
+  });
 
-    return weatherData;
+  return {
+    current: currentWeatherData,
+    forecast: forecastData,
+    hourly: todayHourlyForecast,
+    latitude: lat,
+    lastUpdated: new Date().toISOString(),
+    owmRawDaily: daily, // Array completo para el MoonCalendar
+  };
 }

@@ -4,12 +4,12 @@
 const aiCache = new Map<string, string>();
 
 /**
- * Server Action que genera una imagen de fondo para una ciudad y clima específicos
- * utilizando Google AI (Gemini / Imagen 4) con API Key.
- * 
- * Versión de Velocidad Extrema: Imagen 4 Fast, JPEG Quality 40, Prompt Minimalista y Caché.
+ * @deprecated Esta Server Action ha sido reemplazada por el Route Handler `/api/ai-background`
+ * para permitir el uso de `sharp` (optimización WebP) y Streaming.
+ * Se mantiene por compatibilidad temporal pero se debe evitar su uso.
  */
 export async function generateCityBackgroundAction(city: string, weatherDescription: string): Promise<{ imageUrl: string; cached: boolean }> {
+    console.warn("[AI Server Action] generateCityBackgroundAction está depreciada. Usa el Route Handler /api/ai-background.");
     const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {

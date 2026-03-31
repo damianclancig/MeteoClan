@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { Sun, Sunrise, Sunset, Clock } from 'lucide-react';
+import { useTranslation } from '@/hooks/use-translation';
 
 interface SunriseSunsetProps {
   sunrise: string; // ISO 8601 string
@@ -26,6 +27,7 @@ const formatDuration = (durationMs: number) => {
 }
 
 export function SunriseSunset({ sunrise: sunriseStr, sunset: sunsetStr, timezone }: SunriseSunsetProps) {
+  const { t } = useTranslation();
   const [sunPosition, setSunPosition] = useState(0);
   const [isDay, setIsDay] = useState(false);
 
@@ -49,8 +51,6 @@ export function SunriseSunset({ sunrise: sunriseStr, sunset: sunsetStr, timezone
         setSunPosition(progress);
       } else {
         setIsDay(false);
-        // Position sun at beginning or end if it's night
-        setSunPosition(now < sunrise ? -5 : 105); // Move it off-screen
       }
     };
 
@@ -63,7 +63,11 @@ export function SunriseSunset({ sunrise: sunriseStr, sunset: sunsetStr, timezone
   const dayDuration = sunset - sunrise;
 
   return (
-    <div className="flex flex-col items-center w-full px-4 pt-4 pb-2">
+    <div className="bg-white/5 p-4 rounded-lg flex flex-col items-center w-full">
+      <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground/60 mb-4 w-full text-left">
+        {t('sunCycle')}
+      </h4>
+      
       <div className="relative w-full h-8">
         {/* The dotted path */}
         <div className="absolute top-1/2 left-0 w-full border-t-2 border-dotted border-amber-400/50" />

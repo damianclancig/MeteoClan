@@ -34,14 +34,15 @@ export function Footer() {
           <div className="text-[10px] sm:text-xs order-1 md:order-2 text-center flex flex-col gap-1 px-2">
             <p>
               {t('attribution.weather')}{' '}
-              <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground/80">
-                Open-Meteo
+              <a href="https://openweathermap.org/" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground/80">
+                OpenWeatherMap
               </a>
               . {t('attribution.geocoding')}{' '}
-              <a href="https://www.bigdatacloud.com/" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground/80">
-                BigDataCloud
+              <a href="https://openweathermap.org/api/geocoding-api" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground/80">
+                OWM Geocoding
               </a>
               .
+
             </p>
             <p>
               {t('attribution.images')}{' '}

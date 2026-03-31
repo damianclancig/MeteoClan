@@ -14,10 +14,11 @@ const pt = {
   humidity: "Umidade",
   wind: "Vento",
   precipitation: "Precip.",
-  forecastTitle: "Previsão 6 dias",
+  forecastTitle: "Previsão 8 dias",
   today: "Hoje",
-  sunrise: "Nascer do sol",
-  sunset: "Pôr do sol",
+  sunrise: "Nascer do Sol",
+  sunset: "Pôr do Sol",
+  sunCycle: "Ciclo Solar",
   lastUpdated: "Atualizado: {time}",
   errorTitle: "Erro",
   fetchError: "Não foi possível obter os dados meteorológicos. Por favor, tente novamente.",
@@ -27,6 +28,9 @@ const pt = {
   technicalDetails: "Ver detalhes técnicos",
   moonCalendarTitle: "Fases da Lua",
   illumination: "{percent}% iluminada",
+  moonrise: "Nascente da Lua",
+  moonset: "Pôr da Lua",
+  moonCycle: "Ciclo Lunar",
   weather: {
     clear_sky: "Céu limpo",
     mainly_clear: "Céu maiormente limpo",
@@ -71,7 +75,7 @@ const pt = {
     weather: "Dados meteorológicos fornecidos por",
     geocoding: "Geocodificação por",
     images: "Imagens de fundo geradas por",
-    moon: "Os cálculos das fases da lua são realizados localmente."
+    moon: "Dados lunares fornecidos pela OpenWeatherMap. Próximas fases calculadas localmente."
   },
   footer: {
     rights: "Todos os direitos reservados - Licença MIT",

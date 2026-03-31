@@ -1,72 +1,57 @@
 'use client';
 
 import { useId, memo } from 'react';
-import { useTranslation } from "@/hooks/use-translation";
+import { useTranslation } from '@/hooks/use-translation';
+import type { OWMWeatherData } from '@/lib/types';
+import { getMoonPhaseName, getMoonIllumination } from '@/lib/weather-utils';
+import { MoonArc } from './moon-arc';
 
-// Synodic month length (in days)
+// ============================================================
+// Constantes para cálculo de próximas fases mayores (local)
+// ============================================================
+
+/** Duración del mes sinódico en días */
 const SYNODIC_MONTH = 29.530588853;
-// Known new moon date (Julian date for Jan 6, 2000)
+/** Número de día juliano de una Luna Nueva conocida (6 Ene 2000) */
 const KNOWN_NEW_MOON_JD = 2451549.5;
-const PHASES = ['new_moon', 'waxing_crescent', 'first_quarter', 'waxing_gibbous', 'full_moon', 'waning_gibbous', 'third_quarter', 'waning_crescent'];
 const MAJOR_PHASES = ['new_moon', 'first_quarter', 'full_moon', 'third_quarter'];
 
-interface MoonCalendarProps {
-  date: Date;
-  latitude: number;
-}
+// ============================================================
+// Utilidades de fecha
+// ============================================================
 
 function toJulian(date: Date): number {
   if (!date || isNaN(date.getTime())) return 0;
   const time = date.getTime();
   const tzoffset = date.getTimezoneOffset() * 60000;
-  // Calculate Julian Day for UTC
   return (time - tzoffset) / 86400000 + 2440587.5;
 }
 
 function fromJulian(jd: number): Date {
   if (jd === 0) return new Date();
-  const date = new Date((jd - 2440587.5) * 86400000);
-  // The date is in UTC, return it as is. Formatting should handle timezone.
-  return date;
+  return new Date((jd - 2440587.5) * 86400000);
 }
 
-function getMoonInfo(currentDate: Date): { phaseName: string; illumination: number, age: number } {
-  if (!currentDate || isNaN(currentDate.getTime())) {
-    return { phaseName: 'new_moon', illumination: 0, age: 0 };
-  }
-  const currentJD = toJulian(currentDate);
-  const age = (currentJD - KNOWN_NEW_MOON_JD) % SYNODIC_MONTH;
-  const phaseValue = age / SYNODIC_MONTH; // value from 0 to 1
-
-  const phaseIndex = Math.floor(phaseValue * 8 + 0.5) % 8;
-  const illumination = 0.5 * (1 - Math.cos(2 * Math.PI * phaseValue));
-
-  return {
-    phaseName: PHASES[phaseIndex],
-    illumination: Math.round(illumination * 100),
-    age: age
-  };
-}
+// ============================================================
+// Cálculo de próximas fases mayores (se mantiene local)
+// ============================================================
 
 function getUpcomingMajorPhases(currentDate: Date): { name: string; date: Date }[] {
-  if (!currentDate || isNaN(currentDate.getTime())) {
-    return [];
-  }
+  if (!currentDate || isNaN(currentDate.getTime())) return [];
+
   const currentJD = toJulian(currentDate);
   const cycles = (currentJD - KNOWN_NEW_MOON_JD) / SYNODIC_MONTH;
   const currentCycle = Math.floor(cycles);
-
   const results: { name: string; date: Date }[] = [];
 
-  // Look in the current and next two cycles to find the next 4 unique major phases
   for (let cycle = 0; cycle < 3 && results.length < 4; cycle++) {
     for (let i = 0; i < MAJOR_PHASES.length; i++) {
       const phaseOffset = i * 0.25;
-      const phaseJD = KNOWN_NEW_MOON_JD + (currentCycle + cycle + phaseOffset) * SYNODIC_MONTH;
+      const phaseJD =
+        KNOWN_NEW_MOON_JD + (currentCycle + cycle + phaseOffset) * SYNODIC_MONTH;
 
       if (phaseJD >= currentJD) {
         const phaseName = MAJOR_PHASES[i];
-        // Ensure we don't add duplicates
         if (!results.some(p => p.name === phaseName)) {
           results.push({ name: phaseName, date: fromJulian(phaseJD) });
         }
@@ -74,33 +59,42 @@ function getUpcomingMajorPhases(currentDate: Date): { name: string; date: Date }
     }
   }
 
-  // Sort and slice to get the next 4
   return results.sort((a, b) => a.date.getTime() - b.date.getTime()).slice(0, 4);
 }
 
-const PhaseIcon = ({ phaseName, latitude }: { phaseName: string, latitude: number }) => {
-  const isSouthernHemisphere = latitude < 0;
+// ============================================================
+// Componentes de iconos lunares
+// ============================================================
 
+const PhaseIcon = ({ phaseName, latitude }: { phaseName: string; latitude: number }) => {
+  const isSouthernHemisphere = latitude < 0;
   let path;
-  // For major phases, we flip the quarter moon drawing
+
   switch (phaseName) {
     case 'new_moon':
       path = <circle cx="12" cy="12" r="10" fill="black" stroke="currentColor" strokeWidth="0.5" />;
       break;
     case 'first_quarter':
-      // In the South, first quarter looks like a "D" shape on the left
-      path = <path d={isSouthernHemisphere ? "M12 2 a 10 10 0 0 0 0 20 V2z" : "M12 2 a 10 10 0 0 1 0 20 V2z"} fill="currentColor" />;
+      path = (
+        <path
+          d={isSouthernHemisphere ? 'M12 2 a 10 10 0 0 0 0 20 V2z' : 'M12 2 a 10 10 0 0 1 0 20 V2z'}
+          fill="currentColor"
+        />
+      );
       break;
     case 'full_moon':
       path = <circle cx="12" cy="12" r="10" fill="currentColor" />;
       break;
     case 'third_quarter':
-      // In the South, third quarter looks like a "D" shape on the right
-      path = <path d={isSouthernHemisphere ? "M12 2 a 10 10 0 0 1 0 20 V2z" : "M12 2 a 10 10 0 0 0 0 20 V2z"} fill="currentColor" />;
+      path = (
+        <path
+          d={isSouthernHemisphere ? 'M12 2 a 10 10 0 0 1 0 20 V2z' : 'M12 2 a 10 10 0 0 0 0 20 V2z'}
+          fill="currentColor"
+        />
+      );
       break;
-    default: // Should not happen for major phases
+    default:
       path = <circle cx="12" cy="12" r="10" fill="black" stroke="currentColor" strokeWidth="0.5" />;
-      break;
   }
 
   return (
@@ -110,97 +104,185 @@ const PhaseIcon = ({ phaseName, latitude }: { phaseName: string, latitude: numbe
   );
 };
 
-
-const CurrentMoonIcon = ({ age, latitude }: { age: number; latitude: number }) => {
+/**
+ * Icono fotorrealista de la Luna que utiliza moon.webp y una máscara dinámica
+ * para representar las fases con precisión.
+ * @param phase - Valor de moon_phase de OWM (0 a 1).
+ * @param latitude - Latitud para determinar la orientación (Norte vs Sur).
+ * @param shadowOpacity - Opacidad de la sombra (0.9 por defecto para que se vea un poco el relieve).
+ */
+const CurrentMoonIcon = ({ 
+  phase, 
+  latitude, 
+  shadowOpacity = 0.9 
+}: { 
+  phase: number; 
+  latitude: number; 
+  shadowOpacity?: number 
+}) => {
   const maskId = useId();
   const isSouthernHemisphere = latitude < 0;
-  const phaseAngle = (age / SYNODIC_MONTH) * 2 * Math.PI; // Phase angle in radians
 
-  // Size of the moon
-  const size = 24;
-  const radius = size / 2;
+  // Ajustar la fase para el hemisferio sur (la visualización es inversa)
+  // En el norte, la luna crece de derecha a izquierda. 
+  // En el sur, de izquierda a derecha.
+  const normalizedPhase = phase;
 
-  // Calculate the position of the terminator (shadow line)
-  // This value goes from -radius to +radius and back
-  const terminatorX = radius * Math.cos(phaseAngle);
+  // Determinar el radio y centro del SVG (usamos 50 para un viewBox de 100)
+  const r = 50;
+  const c = 50;
 
-  // The hemisphere determines the direction of the shadow.
-  // The base drawing is for the Southern Hemisphere.
-  // We flip it for the Northern Hemisphere.
-  const transform = !isSouthernHemisphere ? `scale(-1, 1)` : '';
-  const transformOrigin = 'center center';
+  /**
+   * Genera el path del terminador lunar.
+   * La fase 0.5 es llena, 0 y 1 son nuevas.
+   * Utilizamos una técnica de dos arcos para crear la elipse del terminador.
+   */
+  const getTerminatorPath = () => {
+    // Mapeamos phase 0-1 a un valor de -1 a 1 para el ancho de la elipse del terminador
+    // 0 -> 1 (sombra completa derecha), 0.25 -> 0 (media luna), 0.5 -> -1 (luna llena), etc.
+    const sweep = normalizedPhase <= 0.5 ? 0 : 1;
+    const x = Math.cos(normalizedPhase * 2 * Math.PI) * r;
+    
+    // El terminador es una elipse que une el polo norte (c, c-r) con el sur (c, c+r)
+    // El parámetro 'x' define el radio horizontal de esa elipse.
+    return `M ${c} ${c - r} 
+            A ${Math.abs(x)} ${r} 0 0 ${sweep} ${c} ${c + r} 
+            A ${r} ${r} 0 0 ${1 - sweep} ${c} ${c - r} Z`;
+  };
+
+  // En el hemisferio sur la luna se ve "invertida" respecto al norte
+  const rotation = isSouthernHemisphere ? 'rotate(180deg)' : 'none';
 
   return (
-    <svg
-      viewBox={`0 0 ${size} ${size}`}
-      className="w-24 h-24 text-foreground"
-      style={{ transform, transformOrigin }}
-    >
-      <defs>
-        <mask id={maskId}>
-          {/* The mask is a white background */}
-          <rect x="0" y="0" width={size} height={size} fill="white" />
-          {/* A black circle moves across to create the shadow */}
-          <circle
-            cx={terminatorX}
-            cy={radius}
-            r={radius}
-            fill="black"
-          />
-        </mask>
-      </defs>
+    <div className="relative w-36 h-36 md:w-52 md:h-52 rounded-full overflow-hidden shadow-2xl ring-1 ring-white/10">
+      <svg
+        viewBox="0 0 100 100"
+        className="w-full h-full"
+        style={{ transform: rotation }}
+      >
+        <defs>
+          {/* Máscara que define la parte OSCURA (la sombra) */}
+          <mask id={maskId}>
+            <rect x="0" y="0" width="100" height="100" fill="black" />
+            <path d={getTerminatorPath()} fill="white" />
+          </mask>
+        </defs>
 
-      {/* Black circle for the "dark side" of the moon */}
-      <circle cx={radius} cy={radius} r={radius} fill="black" />
+        {/* 1. Imagen de la Luna Llena de fondo */}
+        <image
+          href="/assets/moon.webp"
+          x="0"
+          y="0"
+          width="100"
+          height="100"
+          preserveAspectRatio="xMidYMid slice"
+        />
 
-      {/* White circle for the lit side, with the shadow mask applied */}
-      <circle
-        cx={radius}
-        cy={radius}
-        r={radius}
-        fill="currentColor"
-        mask={`url(#${maskId})`}
-      />
-    </svg>
+        {/* 2. Capa de sombra (Overlay negro) con máscara dinámica */}
+        <circle
+          cx={c}
+          cy={c}
+          r={r}
+          fill="black"
+          fillOpacity={shadowOpacity}
+          mask={`url(#${maskId})`}
+        />
+      </svg>
+    </div>
   );
 };
 
+// ============================================================
+// Props y componente principal
+// ============================================================
 
+interface MoonCalendarProps {
+  date: Date;
+  latitude: number;
+  /** Array daily crudo de OWM para datos astronómicos precisos del día actual. */
+  owmRawDaily?: OWMWeatherData['daily'];
+  timezone?: string;
+}
 
-export const MoonCalendar = memo(function MoonCalendar({ date, latitude }: MoonCalendarProps) {
+export const MoonCalendar = memo(function MoonCalendar({
+  date,
+  latitude,
+  owmRawDaily,
+  timezone,
+}: MoonCalendarProps) {
   const { t, locale } = useTranslation();
 
-  if (!date || isNaN(date.getTime())) {
-    // When a forecast day is selected, it first renders with the old 'today' date
-    // which might be invalid if it was an ISO string. This prevents a crash.
-    return null;
-  }
+  if (!date || isNaN(date.getTime())) return null;
 
   const upcomingPhases = getUpcomingMajorPhases(date);
-  const currentPhase = getMoonInfo(date);
+
+  // Usar moon_phase de OWM si está disponible (más preciso que el cálculo local)
+  const owmToday = owmRawDaily?.[0];
+  const currentPhaseValue = owmToday?.moon_phase ?? 0;
+  const currentPhaseName = getMoonPhaseName(currentPhaseValue);
+  const currentIllumination = getMoonIllumination(currentPhaseValue);
+
+  // Moonrise / moonset del día actual desde OWM (en segundos UNIX)
+  const moonriseISO = owmToday?.moonrise ? new Date(owmToday.moonrise * 1000).toISOString() : null;
+  const moonsetISO = owmToday?.moonset ? new Date(owmToday.moonset * 1000).toISOString() : null;
+
+  const formatMoonTime = (isoString: string | null): string | null => {
+    if (!isoString) return null;
+    return new Date(isoString).toLocaleTimeString(locale, {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
+  };
+
+  const moonriseTime = formatMoonTime(moonriseISO);
+  const moonsetTime = formatMoonTime(moonsetISO);
 
   return (
     <div className="p-1">
       <h3 className="text-xl font-bold mb-4">{t('moonCalendarTitle')}</h3>
 
-      {/* Current Moon Phase Display */}
-      <div className="flex flex-col items-center justify-center text-center gap-2 mb-6">
-        <CurrentMoonIcon age={currentPhase.age} latitude={latitude} />
-        <p className="text-lg font-semibold capitalize">{t(`moon.${currentPhase.phaseName}`)}</p>
-        <p className="text-sm text-foreground/80">{t('illumination', { percent: currentPhase.illumination })}</p>
+      {/* Fase lunar actual y Arco */}
+      <div className="flex flex-col items-center gap-2 mb-4">
+        <div className="flex flex-col items-center text-center gap-2">
+          <CurrentMoonIcon phase={currentPhaseValue} latitude={latitude} />
+          <p className="text-lg font-semibold capitalize">{t(`moon.${currentPhaseName}`)}</p>
+          <p className="text-sm text-foreground/80">
+            {t('illumination', { percent: currentIllumination })}
+          </p>
+        </div>
+
+        {/* Arco de salida y puesta con icono genérico */}
+        {moonriseISO && moonsetISO && timezone && (
+          <div className="w-full bg-white/5 p-3 rounded-lg">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground/60 mb-2 text-left">
+              {t('moonCycle')}
+            </h4>
+            <MoonArc
+              moonrise={moonriseISO}
+              moonset={moonsetISO}
+              timezone={timezone}
+            />
+          </div>
+        )}
       </div>
 
-      {/* Upcoming Major Phases */}
+      {/* Próximas fases mayores (cálculo local, OWM no las provee) */}
       <div className="grid grid-cols-4 gap-2 text-center">
-        {upcomingPhases.map((phase) => (
-          <div key={phase.name} className="flex flex-col items-center p-2 rounded-lg bg-white/5 gap-1">
+        {upcomingPhases.map(phase => (
+          <div
+            key={phase.name}
+            className="flex flex-col items-center p-2 rounded-lg bg-white/5 gap-1"
+          >
             <PhaseIcon phaseName={phase.name} latitude={latitude} />
             <p className="font-semibold capitalize text-xs">{t(`moon.${phase.name}`)}</p>
-            <p className="text-xs text-foreground/80">{phase.date.toLocaleDateString(locale, {
-              month: 'short',
-              day: 'numeric',
-              timeZone: 'UTC'
-            })}</p>
+            <p className="text-xs text-foreground/80">
+              {phase.date.toLocaleDateString(locale, {
+                month: 'short',
+                day: 'numeric',
+                timeZone: 'UTC',
+              })}
+            </p>
           </div>
         ))}
       </div>
