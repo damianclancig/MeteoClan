@@ -11,6 +11,7 @@ import { Thermometer, Droplets, Wind, MapPin, Umbrella, History } from 'lucide-r
 import { SunriseSunset } from './sunrise-sunset';
 import { DetailItem } from './detail-item';
 import { WindArrow } from './wind-arrow';
+import { RainEffect } from './RainEffect';
 
 // This new type will hold the data for the main display card.
 // It must include all properties needed by child components.
@@ -95,12 +96,21 @@ export const CurrentWeather = memo(function CurrentWeather({ data, hourlyData, l
               {t('max')}: {Math.round(data.temp_max)}° / {t('min')}: {Math.round(data.temp_min)}°
             </div>
           </div>
-          <AnimatedWeatherIcon
-            code={data.weatherCode}
-            className="w-24 h-24 md:w-32 md:h-32"
-            isNight={isNight}
-            aria-label={t(weatherDescriptionKey)}
-          />
+          {((data.weatherCode >= 500 && data.weatherCode < 600) || 
+            (data.weatherCode >= 300 && data.weatherCode < 400) || 
+            [200, 201, 202, 230, 231, 232].includes(data.weatherCode)) && 
+            data.pop > 15 ? (
+            <div className="w-24 h-24 md:w-32 md:h-32 relative overflow-hidden flex items-center justify-center rounded-2xl bg-white/5">
+               <RainEffect pop={data.pop} className="w-full h-full" />
+            </div>
+          ) : (
+            <AnimatedWeatherIcon
+              code={data.weatherCode}
+              className="w-24 h-24 md:w-32 md:h-32"
+              isNight={isNight}
+              aria-label={t(weatherDescriptionKey)}
+            />
+          )}
         </div>
       </div>
 
