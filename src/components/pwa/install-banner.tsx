@@ -131,8 +131,8 @@ export function InstallBanner() {
             <RefreshCcw className="w-5 h-5 text-blue-500" />
           </div>
           <div className="min-w-0 flex-1">
-            <h3 className="text-sm font-semibold text-foreground truncate">{t('pwa.updateTitle') || 'Nueva versión'}</h3>
-            <p className="text-xs text-muted-foreground truncate mt-0.5">{t('pwa.updateDesc')}</p>
+            <h3 className="text-sm font-semibold text-foreground">{t('pwa.updateTitle') || 'Nueva versión'}</h3>
+            <p className="text-xs text-muted-foreground mt-0.5">{t('pwa.updateDesc')}</p>
           </div>
         </div>
         
@@ -156,14 +156,14 @@ export function InstallBanner() {
           <Download className="w-5 h-5 text-primary" />
         </div>
         <div className="min-w-0 flex-1">
-          <h3 className="text-sm font-semibold text-foreground truncate">{t('pwa.installTitle')}</h3>
+          <h3 className="text-sm font-semibold text-foreground">{t('pwa.installTitle')}</h3>
           {isIOS && !deferredPrompt ? (
             <div className="text-xs text-muted-foreground mt-0.5 leading-snug flex items-start">
               <Share className="w-3 h-3 inline mr-1 shrink-0 mt-0.5" />
               <span>{t('pwa.iosInstructions')}</span>
             </div>
           ) : (
-            <p className="text-xs text-muted-foreground truncate mt-0.5">{t('pwa.installDesc')}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">{t('pwa.installDesc')}</p>
           )}
         </div>
       </div>
