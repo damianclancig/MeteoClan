@@ -36,5 +36,3 @@ next-env.d.ts
 # logs
 *.log
 *.txt
-
-.agent
