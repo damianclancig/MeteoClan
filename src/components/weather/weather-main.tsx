@@ -27,6 +27,7 @@ import {
 } from '@/components/ui/accordion';
 import { cn } from '@/lib/utils';
 import { getCachedLocation, setCachedLocation } from '@/services/geocoding';
+import { InstallBanner } from '@/components/pwa/install-banner';
 
 type FormState = {
   message: string;
@@ -329,6 +330,7 @@ export function WeatherMain({ initialLocale }: { initialLocale?: Locale }) {
         {/* Header */}
         <header className="shrink-0 pointer-events-auto" onClick={e => e.stopPropagation()}>
           <Header />
+          <InstallBanner />
         </header>
 
         {/* Formulario oculto para carga inicial - incluye campo cityKey */}

@@ -130,8 +130,6 @@ export default function RootLayout({
           <Toaster />
           <Analytics />
           <SpeedInsights />
-          {/* Registro estándar y tradicional para máxima compatibilidad de Service Worker */}
-          <script defer src="/register-sw.js"></script>
         </TranslationProvider>
       </body>
     </html>

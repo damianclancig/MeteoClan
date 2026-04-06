@@ -94,6 +94,16 @@ const en = {
     button_portfolio: "Visit my Portfolio",
     button_github: "See on GitHub",
   },
+  pwa: {
+    installTitle: "MeteoClan",
+    installDesc: "Install our App for quick access and a better experience.",
+    installButton: "Install",
+    iosInstructions: "To install on iOS, tap the share icon and then 'Add to Home Screen'.",
+    dismiss: "Later",
+    updateTitle: "New version available!",
+    updateDesc: "Improvements are available. Update to apply changes.",
+    updateButton: "Update",
+  },
   notFound: {
     title: "404 - PageNot Found",
     message: "Oops! It seems you've got lost in the clouds. The page you're looking for doesn't exist or has been moved.",
