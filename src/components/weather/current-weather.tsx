@@ -39,7 +39,13 @@ const parseDateString = (dt: string | number) => {
 export const CurrentWeather = memo(function CurrentWeather({ data, hourlyData, locale, lastUpdated }: CurrentWeatherProps) {
   const { t } = useTranslation();
 
-  const weatherDescriptionKey = `weather.${data.description}`;
+  // MODO TEST (v3.01): Forzar soleado para probar sunny.webp
+  const isSunnyTest = true;
+  const currentCode = isSunnyTest ? 800 : data.weatherCode;
+  const currentDesc = isSunnyTest ? 'clear_sky' : data.description;
+  const currentPop = isSunnyTest ? 0 : data.pop;
+
+  const weatherDescriptionKey = `weather.${currentDesc}`;
   const date = parseDateString(data.dt);
   const updatedDate = new Date(lastUpdated);
 
@@ -96,16 +102,30 @@ export const CurrentWeather = memo(function CurrentWeather({ data, hourlyData, l
               {t('max')}: {Math.round(data.temp_max)}° / {t('min')}: {Math.round(data.temp_min)}°
             </div>
           </div>
-          {((data.weatherCode >= 500 && data.weatherCode < 600) || 
-            (data.weatherCode >= 300 && data.weatherCode < 400) || 
-            [200, 201, 202, 230, 231, 232].includes(data.weatherCode)) && 
-            data.pop > 15 ? (
+          {((currentCode >= 500 && currentCode < 600) || 
+            (currentCode >= 300 && currentCode < 400) || 
+            [200, 201, 202, 230, 231, 232].includes(currentCode)) && 
+            currentPop > 15 ? (
             <div className="w-24 h-24 md:w-32 md:h-32 relative overflow-hidden flex items-center justify-center rounded-2xl bg-white/5">
-               <RainEffect pop={data.pop} className="w-full h-full" />
+               <RainEffect pop={currentPop} className="w-full h-full" />
+            </div>
+          ) : currentCode === 800 ? (
+            <div className="w-24 h-24 md:w-32 md:h-32 relative flex items-center justify-center">
+              {/* Brillo ambiental suave para el sol v3.01 */}
+              <div className="absolute inset-0 bg-yellow-400/20 blur-3xl animate-pulse rounded-full" />
+              <img 
+                src="/assets/weather/sunny.webp" 
+                alt="Soleado" 
+                className="w-full h-full object-contain drop-shadow-xl z-10"
+                style={{ 
+                  animation: 'spin 10s linear infinite',
+                  transformOrigin: 'center'
+                }}
+              />
             </div>
           ) : (
             <AnimatedWeatherIcon
-              code={data.weatherCode}
+              code={currentCode}
               className="w-24 h-24 md:w-32 md:h-32"
               isNight={isNight}
               aria-label={t(weatherDescriptionKey)}
