@@ -114,13 +114,14 @@ const PhaseIcon = ({ phaseName, latitude }: { phaseName: string; latitude: numbe
 const CurrentMoonIcon = ({ 
   phase, 
   latitude, 
-  shadowOpacity = 0.9 
+  shadowOpacity = 0.8 
 }: { 
   phase: number; 
   latitude: number; 
   shadowOpacity?: number 
 }) => {
   const maskId = useId();
+  const filterId = useId();
   const isSouthernHemisphere = latitude < 0;
 
   // Ajustar la fase para el hemisferio sur (la visualización es inversa)
@@ -161,10 +162,19 @@ const CurrentMoonIcon = ({
         style={{ transform: rotation }}
       >
         <defs>
+          {/* Filtro para suavizar el terminador (blur) */}
+          <filter id={filterId}>
+            <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" />
+          </filter>
+
           {/* Máscara que define la parte OSCURA (la sombra) */}
           <mask id={maskId}>
             <rect x="0" y="0" width="100" height="100" fill="black" />
-            <path d={getTerminatorPath()} fill="white" />
+            <path 
+              d={getTerminatorPath()} 
+              fill="white" 
+              filter={`url(#${filterId})`}
+            />
           </mask>
         </defs>
 
