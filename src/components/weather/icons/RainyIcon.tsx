@@ -1,6 +1,5 @@
 import React from 'react';
 import { RainEffect } from '../RainEffect';
-import { Zap } from 'lucide-react';
 
 interface RainyIconProps {
   pop: number;
@@ -9,13 +8,14 @@ interface RainyIconProps {
 }
 
 /**
- * RainyIcon - v7.08 (Tormenta Eléctrica Completa)
- * Nubes superiores de tormenta, motor de lluvia en cascada
- * y efectos visuales de rayos (rayos dibujados + relámpagos de fondo luminosos).
+ * RainyIcon - v9.5 (Solución de Flash de Alta Visibilidad)
+ * Flash ambiental rediseñado para máxima visibilidad en entornos React/Next.
  */
 export const RainyIcon: React.FC<RainyIconProps> = ({ pop, className = "w-24 h-24 md:w-32 md:h-32", isThunderstorm = false }) => {
+  const strikeCycle = "4s";
+
   return (
-    <div className={`${className} relative overflow-hidden rounded-2xl bg-white/5`}>
+    <div className={`${className} relative flex items-center justify-center transition-all duration-700 overflow-visible`}>
       <style>{`
         @keyframes rainCloudLayer1 {
           0% { transform: translate(-8%, -5%) scale(1.1); }
@@ -27,84 +27,83 @@ export const RainyIcon: React.FC<RainyIconProps> = ({ pop, className = "w-24 h-2
           50% { transform: translate(-5%, -8%) scale(1.1); }
           100% { transform: translate(5%, 8%) scale(1.1); }
         }
-        @keyframes lightningFlash {
-          0%, 90%, 100% { opacity: 0; background-color: transparent; }
-          92% { opacity: 1; background-color: rgba(255, 255, 255, 0.9); }
-          94% { opacity: 0; background-color: transparent; }
-          96% { opacity: 0.5; background-color: rgba(255, 255, 255, 0.5); }
-          98% { opacity: 0; background-color: transparent; }
+
+        /* RAYOS */
+        @keyframes boltRight {
+          0%, 19%, 26%, 100% { opacity: 0; transform: scale(1.1); }
+          20% { opacity: 1; transform: scale(1.2); }
+          22% { opacity: 0.4; transform: scale(1.2); }
+          24% { opacity: 0.9; transform: scale(1.2); }
         }
-        @keyframes boltStrike {
-          0%, 85%, 100% { opacity: 0; transform: scale(1); filter: brightness(1); }
-          87% { opacity: 1; transform: translateX(15%) scale(1.1); filter: brightness(1.6) contrast(1.3); }
-          89% { opacity: 0; }
-          91% { opacity: 1; transform: translateX(-15%) scale(1.05) scaleX(-1); filter: brightness(1.4) contrast(1.2); }
-          93% { opacity: 0; }
-          95% { opacity: 1; transform: translateX(10%) scale(1.3); filter: brightness(1.8) contrast(1.4); }
-          98% { opacity: 0; }
+        @keyframes boltLeft {
+          0%, 69%, 76%, 100% { opacity: 0; transform: scale(1.1) scaleX(-1); }
+          70% { opacity: 1; transform: scale(1.3) scaleX(-1); }
+          72% { opacity: 0.4; transform: scale(1.2) scaleX(-1); }
+          74% { opacity: 0.85; transform: scale(1.3) scaleX(-1); }
         }
-        @keyframes cloudThunder {
-          0%, 85%, 100% { filter: brightness(0.4) contrast(1.3); }
-          87% { filter: brightness(1.4) contrast(1.1); }
-          89% { filter: brightness(0.4) contrast(1.3); }
-          91% { filter: brightness(1.2) contrast(1.1); }
-          93% { filter: brightness(0.4) contrast(1.3); }
-          95% { filter: brightness(1.6) contrast(1.2); }
-          98% { filter: brightness(0.4) contrast(1.3); }
+
+        /* LUMINOSIDAD NUBES */
+        @keyframes cloudsBurn {
+          0%, 19%, 28%, 69%, 78%, 100% { filter: brightness(0.35) contrast(1.4); }
+          20%, 70% { filter: brightness(2.8) contrast(1.1); }
+          22%, 72% { filter: brightness(1.2) contrast(1.3); }
+          24%, 74% { filter: brightness(2.4) contrast(1.2); }
         }
       `}</style>
-      
-      {/* 1. Relámpago de Fondo Independiente (z-2) - Ciclo 7s */}
-      {isThunderstorm && (
-        <div 
-          className="absolute inset-0 z-[2] pointer-events-none mix-blend-overlay"
-          style={{ animation: 'lightningFlash 7s infinite' }}
-        />
-      )}
 
-      {/* 2. Efecto de Lluvia Ligera (Capa de Fondo - z-5) */}
-      <RainEffect pop={pop} className="absolute inset-0 z-[5] top-0 left-0" />
+      {/* 1. Lluvia con Flash de Fondo Integrado */}
+      <div className="absolute inset-0 z-[5] pointer-events-none flex justify-center items-center overflow-visible">
+        <RainEffect pop={pop} isThunderstorm={isThunderstorm} className="w-full h-full" delay="0s" />
+      </div>
 
-      {/* 3. Rayo de Usuario (Delante de la lluvia pero Detrás de nubes - z-8) */}
+      {/* 2. Rayos */}
       {isThunderstorm && (
-        <div className="absolute inset-0 flex items-center justify-center z-[8] pointer-events-none">
+        <>
           <img 
-            src="/assets/weather/lightning01.webp?v=1"
-            alt="Rayo"
-            className="w-[240%] md:w-[280%] h-auto object-contain opacity-0"
+            src="/assets/weather/lightning01.webp" 
+            alt="Rayo Normal" 
+            className="absolute w-[240%] md:w-[280%] h-auto object-contain opacity-0 z-[8] pointer-events-none"
             style={{ 
-              animation: 'boltStrike 6s infinite',
-              filter: 'drop-shadow(0 0 45px rgba(255, 255, 255, 0.9))'
+              animation: `boltRight ${strikeCycle} linear infinite`,
+              top: '25%', left: '70%', transform: 'translateX(-50%)',
+              filter: 'drop-shadow(0 0 35px white)'
             }}
           />
-        </div>
+          <img 
+            src="/assets/weather/lightning01.webp" 
+            alt="Rayo Invertido" 
+            className="absolute w-[240%] md:w-[280%] h-auto object-contain opacity-0 z-[8] pointer-events-none"
+            style={{ 
+              animation: `boltLeft ${strikeCycle} linear infinite`,
+              top: '25%', left: '55%', transform: 'translateX(-50%) scaleX(-1)',
+              filter: 'drop-shadow(0 0 35px white)'
+            }}
+          />
+        </>
       )}
 
-      {/* 4. Nubes de Tormenta (Capa de Frente - z-10) */}
+      {/* 3. Capas de Nubes */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none drop-shadow-2xl z-10">
-        {/* Nube Trasera (Negra, con Flash de Rayo) */}
         <img 
-          src="/assets/weather/cloudy.webp" 
+          src="/assets/weather/cloudy_02.webp" 
           alt="Tormenta" 
-          className="absolute w-[180%] h-auto object-contain opacity-70"
+          className="absolute h-auto object-contain opacity-85"
           style={{ 
-            animation: `${isThunderstorm ? 'cloudThunder 6s infinite, ' : ''}rainCloudLayer1 20s ease-in-out infinite`,
-            top: '-15%' 
+            animation: `${isThunderstorm ? `cloudsBurn ${strikeCycle} linear infinite, ` : ''}rainCloudLayer1 20s ease-in-out infinite`,
+            top: '-35%', left: '-10%', width: '250%', minWidth: '250%',
           }}
         />
-        {/* Nube Frontal (Clara, Sin Flash - v7.21) */}
         <img 
-          src="/assets/weather/cloudy.webp" 
+          src="/assets/weather/cloudy_02.webp" 
           alt="Nublado" 
-          className="absolute w-[150%] h-auto object-contain opacity-80"
+          className="absolute h-auto object-contain opacity-80"
           style={{ 
             animation: 'rainCloudLayer2 12s ease-in-out infinite',
             filter: 'brightness(1.1) contrast(0.9)',
-            top: '-5%' 
+            top: '-28%', left: '-20%', width: '220%', minWidth: '220%'
           }}
         />
       </div>
     </div>
   );
 };
-
