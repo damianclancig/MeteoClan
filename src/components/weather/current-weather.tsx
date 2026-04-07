@@ -11,11 +11,11 @@ import { Thermometer, Droplets, Wind, MapPin, Umbrella, History } from 'lucide-r
 import { SunriseSunset } from './sunrise-sunset';
 import { DetailItem } from './detail-item';
 import { WindArrow } from './wind-arrow';
-import { RainEffect } from './RainEffect';
 import { SunnyIcon } from './icons/SunnyIcon';
 import { PartlyCloudyIcon } from './icons/PartlyCloudyIcon';
 import { OvercastIcon } from './icons/OvercastIcon';
 import { RainyIcon } from './icons/RainyIcon';
+import { SnowyIcon } from './icons/SnowyIcon';
 
 // This new type will hold the data for the main display card.
 // It must include all properties needed by child components.
@@ -55,7 +55,7 @@ export const CurrentWeather = memo(function CurrentWeather({ data, hourlyData, l
     { value: '501', label: 'Lluvia Moderada (50%)', code: 501, desc: 'rain_moderate', pop: 50 },
     { value: '502', label: 'Lluvia Fuerte (80%)', code: 502, desc: 'rain_heavy', pop: 80 },
     { value: '200', label: 'Tormenta Eléctrica', code: 200, desc: 'thunderstorm', pop: 95 },
-    { value: '600', label: 'Nieve', code: 600, desc: 'snow', pop: 0 },
+    { value: '600', label: 'Nieve (Snow)', code: 600, desc: 'snow', pop: 50 },
     { value: '741', label: 'Niebla', code: 741, desc: 'fog', pop: 0 },
   ];
 
@@ -146,6 +146,11 @@ export const CurrentWeather = memo(function CurrentWeather({ data, hourlyData, l
               pop={currentPop} 
               className="w-24 h-24 md:w-32 md:h-32" 
               isThunderstorm={currentCode >= 200 && currentCode < 300} 
+            />
+          ) : (currentCode >= 600 && currentCode < 700) ? (
+            <SnowyIcon 
+              pop={currentPop} 
+              className="w-24 h-24 md:w-32 md:h-32" 
             />
           ) : currentCode === 800 ? (
             <SunnyIcon className="w-24 h-24 md:w-32 md:h-32" />
