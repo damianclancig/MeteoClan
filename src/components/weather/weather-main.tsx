@@ -27,6 +27,7 @@ import {
 } from '@/components/ui/accordion';
 import { cn } from '@/lib/utils';
 import { getCachedLocation, setCachedLocation } from '@/services/geocoding';
+import { InstallBanner } from '@/components/pwa/install-banner';
 
 type FormState = {
   message: string;
@@ -326,10 +327,11 @@ export function WeatherMain({ initialLocale }: { initialLocale?: Locale }) {
       {/* 2. Estructura de UI */}
       <div className="relative z-10 flex flex-col min-h-dvh pointer-events-none">
 
-        {/* Header */}
-        <header className="shrink-0 pointer-events-auto" onClick={e => e.stopPropagation()}>
+        {/* Header e InstallBanner persistentes */}
+        <div className="sticky top-0 z-50 shrink-0 pointer-events-auto" onClick={e => e.stopPropagation()}>
           <Header />
-        </header>
+          <InstallBanner />
+        </div>
 
         {/* Formulario oculto para carga inicial - incluye campo cityKey */}
         <form ref={initialFetchFormRef} action={formAction} className="hidden">
@@ -368,7 +370,7 @@ export function WeatherMain({ initialLocale }: { initialLocale?: Locale }) {
               ) : weatherData && displayData ? (
                 <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-8 animate-in fade-in">
                   <div className="lg:col-span-3" onClick={e => e.stopPropagation()}>
-                    <GlassCard id="current-weather">
+                    <GlassCard id="current-weather" className="scroll-mt-20 lg:scroll-mt-24">
                       <CurrentWeatherComponent
                         data={displayData}
                         hourlyData={hourlyData}
@@ -383,7 +385,7 @@ export function WeatherMain({ initialLocale }: { initialLocale?: Locale }) {
                   </div>
 
                   <div className="lg:col-span-3" onClick={e => e.stopPropagation()}>
-                    <GlassCard id="forecast">
+                    <GlassCard id="forecast" className="scroll-mt-20 lg:scroll-mt-24">
                       <Forecast
                         data={weatherData.forecast}
                         onDaySelect={handleDaySelect}
@@ -395,7 +397,7 @@ export function WeatherMain({ initialLocale }: { initialLocale?: Locale }) {
 
                   {currentDate && latitudeForMoon !== undefined && !isNaN(currentDate.getTime()) && (
                     <div className="lg:col-span-3" onClick={e => e.stopPropagation()}>
-                      <GlassCard id="moon-calendar">
+                      <GlassCard id="moon-calendar" className="scroll-mt-20 lg:scroll-mt-24">
                         <MoonCalendar
                           date={currentDate}
                           latitude={latitudeForMoon}

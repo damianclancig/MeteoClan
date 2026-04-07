@@ -1,11 +1,17 @@
 // Service Worker base mínimo para habilitar PWA A2HS en Android
 self.addEventListener('install', (event) => {
-    // Para activar el PWA Prompt de inmediato
-    self.skipWaiting();
+    // Ya no hacemos self.skipWaiting() automáticamente
+    // para permitir al usuario decidir cuándo actualizar su aplicación
 });
 
 self.addEventListener('activate', (event) => {
     event.waitUntil(self.clients.claim());
+});
+
+self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
 });
 
 self.addEventListener('fetch', (event) => {
