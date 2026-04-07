@@ -105,10 +105,46 @@ const en = {
     updateButton: "Update",
   },
   notFound: {
-    title: "404 - PageNot Found",
+    title: "404 - Page Not Found",
     message: "Oops! It seems you've got lost in the clouds. The page you're looking for doesn't exist or has been moved.",
     button: "Back to Home",
-  }
+  },
+  legal: {
+    dialog_title: "Legal Information",
+    tab_terms: "Terms & Conditions",
+    tab_privacy: "Privacy Policy",
+    last_updated: "Last updated: April 2025",
+    link_terms: "Terms & Conditions",
+    link_privacy: "Privacy Policy",
+    terms: {
+      s1_title: "1. Acceptance of Terms",
+      s1_content: "By accessing or using MeteoClan (hereinafter, \"the App\"), you agree to these Terms and Conditions in their entirety. If you disagree with any part of these terms, please do not use the App.",
+      s2_title: "2. Description of Service",
+      s2_content: "MeteoClan is a free web-based weather forecast application that provides real-time weather data, AI-generated images, and other related features. The service is provided \"as is\" and may be modified, suspended, or discontinued at any time without prior notice.",
+      s3_title: "3. Use of Location Services (GPS)",
+      s3_content: "The App may request access to your geographic location (GPS) solely for the purpose of displaying the weather forecast for your current area. Use of this feature is entirely voluntary. If you do not authorize location access, you can still use the App by entering a city manually. The App does not store, transmit to third parties, or use your location for any purpose other than weather forecasting.",
+      s4_title: "4. Intellectual Property",
+      s4_content: "MeteoClan's source code is available under the ISC License. Background images are generated in real time by the Google Gemini API and are subject to that service's terms of use. Weather data is provided by OpenWeatherMap and governed by their own terms. The \"MeteoClan\" brand and visual identity are the property of Damián Clancig.",
+      s5_title: "5. Limitation of Liability",
+      s5_content: "Weather forecasts are informational and based on third-party data. MeteoClan does not guarantee the accuracy, completeness, or timeliness of the information provided. The developer shall not be liable for any direct, indirect, incidental, or consequential damages arising from the use or inability to use the App, including decisions made based on the weather data displayed.",
+      s6_title: "6. Modifications",
+      s6_content: "We reserve the right to modify these Terms and Conditions at any time. Changes take effect upon publication within the App. Continued use of the App after changes are published constitutes acceptance of the new terms.",
+    },
+    privacy: {
+      s1_title: "1. Information We Collect",
+      s1_content: "MeteoClan collects only the minimum information necessary for its operation:\n• Geographic location: only when the user explicitly grants permission, and solely to obtain the local weather forecast.\n• Configuration preferences: language and temperature units, stored locally on your device (localStorage).\n• We do not collect your name, email address, phone number, or any other personally identifiable information.",
+      s2_title: "2. Use of Location Data (GPS)",
+      s2_content: "When you grant location permission, your geographic coordinates are sent directly to the OpenWeatherMap API to obtain the weather forecast. This information is not stored on our servers, is not recorded in any proprietary database, and is not shared with any third party beyond the weather data provider required for the App to function.",
+      s3_title: "3. Third-Party Services",
+      s3_content: "The App uses the following external services, each with its own privacy policy:\n• OpenWeatherMap (weather data and geocoding): openweathermap.org/privacy-policy\n• Google Gemini AI (background image generation): ai.google.dev\n• Firebase / Google Cloud (hosting and backend functions): firebase.google.com/support/privacy\nWe encourage you to review the privacy policies of these services.",
+      s4_title: "4. Data Retention",
+      s4_content: "MeteoClan does not own or operate any user databases. Language and temperature preferences are stored exclusively in your browser or device's local storage (localStorage/sessionStorage) and remain under your control. You can delete them at any time by clearing the site data in your browser settings.",
+      s5_title: "5. Your Rights",
+      s5_content: "Since we do not store personal data on our servers, it is not necessary to exercise rights of access, rectification, or deletion with us. If you have questions about data managed by third-party services, please contact them directly. For any questions related to this policy, you can reach us through the project's GitHub repository.",
+      s6_title: "6. Security and Minors",
+      s6_content: "The App is not directed at children under 13 years of age, and we do not intentionally collect information from minors. Location data is transmitted over secure connections (HTTPS). While we implement reasonable security measures, no Internet transmission system is 100% secure.",
+    },
+  },
 };
 
 export default en;
