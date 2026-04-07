@@ -15,7 +15,7 @@ import { SunnyIcon } from './icons/SunnyIcon';
 import { PartlyCloudyIcon } from './icons/PartlyCloudyIcon';
 import { OvercastIcon } from './icons/OvercastIcon';
 import { RainyIcon } from './icons/RainyIcon';
-import { SnowyIcon } from './icons/SnowyIcon';
+import { WeatherIconResolver } from '@/components/weather-icons/WeatherIconResolver';
 
 // This new type will hold the data for the main display card.
 // It must include all properties needed by child components.
@@ -119,7 +119,7 @@ export const CurrentWeather = memo(function CurrentWeather({ data, hourlyData, l
               {t(weatherDescriptionKey)}
             </span>
           </p>
-          <select 
+          <select
             value={testWeather}
             onChange={(e) => setTestWeather(e.target.value)}
             className="bg-black/40 border border-white/30 rounded-lg px-2 py-1 text-xs font-bold outline-none focus:ring-2 focus:ring-yellow-400/50 transition-all cursor-pointer backdrop-blur-xl text-white shadow-xl hover:bg-black/60"
@@ -138,19 +138,11 @@ export const CurrentWeather = memo(function CurrentWeather({ data, hourlyData, l
               {t('max')}: {Math.round(data.temp_max)}° / {t('min')}: {Math.round(data.temp_min)}°
             </div>
           </div>
-          {((currentCode >= 500 && currentCode < 600) || 
-            (currentCode >= 300 && currentCode < 400) || 
-            [200, 201, 202, 230, 231, 232].includes(currentCode)) && 
-            currentPop > 15 ? (
-            <RainyIcon 
-              pop={currentPop} 
-              className="w-24 h-24 md:w-32 md:h-32" 
-              isThunderstorm={currentCode >= 200 && currentCode < 300} 
-            />
-          ) : (currentCode >= 600 && currentCode < 700) ? (
-            <SnowyIcon 
-              pop={currentPop} 
-              className="w-24 h-24 md:w-32 md:h-32" 
+          {((currentCode >= 200 && currentCode < 700) || (currentCode >= 700 && currentCode < 800)) ? (
+            <WeatherIconResolver
+              weatherId={currentCode}
+              pop={currentPop}
+              className="w-24 h-24 md:w-32 md:h-32 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]"
             />
           ) : currentCode === 800 ? (
             <SunnyIcon className="w-24 h-24 md:w-32 md:h-32" />

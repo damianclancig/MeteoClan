@@ -17,6 +17,7 @@ import {
   CloudHail,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { WeatherIconResolver } from '@/components/weather-icons/WeatherIconResolver';
 
 interface AnimatedWeatherIconProps {
   code: number; // Acepta tanto códigos WMO como OWM IDs

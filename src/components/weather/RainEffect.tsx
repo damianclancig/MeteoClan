@@ -102,8 +102,6 @@ const HeavyRain: React.FC<RainEffectProps> = ({ className, delay = "0s", isThund
     width: '200%', 
     left: '-20%', 
     height: '100%',
-    transform: 'rotate(12deg) scale(1.15)',
-    transformOrigin: 'center center',
     overflow: 'hidden',
     maskImage: 'radial-gradient(ellipse at center, black 35%, transparent 80%)',
     WebkitMaskImage: 'radial-gradient(ellipse at center, black 35%, transparent 80%)'
@@ -134,7 +132,10 @@ const HeavyRain: React.FC<RainEffectProps> = ({ className, delay = "0s", isThund
           }}
         />
       )}
-      <div className="flex w-full h-full relative z-[1]">
+      <div 
+        className="flex w-full h-full relative z-[1]" 
+        style={{ transform: 'rotate(12deg) scale(1.3)', transformOrigin: 'center center' }}
+      >
         <div className="w-1/2 h-full" style={{ ...sharedStyle, animationDelay: `calc(${delay} - 0.1s)`, opacity: 0.7 }} />
         <div className="w-1/2 h-full scale-x-[-1]" style={{ ...sharedStyle, animationDelay: `calc(${delay} - 0.45s)`, opacity: 0.5 }} />
       </div>

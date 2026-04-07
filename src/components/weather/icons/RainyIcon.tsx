@@ -18,9 +18,9 @@ export const RainyIcon: React.FC<RainyIconProps> = ({ pop, className = "w-24 h-2
     <div className={`${className} relative flex items-center justify-center transition-all duration-700 overflow-visible`}>
       <style>{`
         @keyframes rainCloudLayer1 {
-          0% { transform: translate(-8%, -5%) scale(1.1); }
-          50% { transform: translate(8%, 5%) scale(1.1); }
-          100% { transform: translate(-8%, -5%) scale(1.1); }
+          0% { transform: translate(-8%, -5%) scale(1.1) scaleX(-1); }
+          50% { transform: translate(8%, 5%) scale(1.1) scaleX(-1); }
+          100% { transform: translate(-8%, -5%) scale(1.1) scaleX(-1); }
         }
         @keyframes rainCloudLayer2 {
           0% { transform: translate(5%, 8%) scale(1.1); }
@@ -87,20 +87,27 @@ export const RainyIcon: React.FC<RainyIconProps> = ({ pop, className = "w-24 h-2
         <img 
           src="/assets/weather/cloudy_02.webp" 
           alt="Tormenta" 
-          className="absolute h-auto object-contain opacity-85"
+          className="absolute h-auto object-contain opacity-80"
           style={{ 
             animation: `${isThunderstorm ? `cloudsBurn ${strikeCycle} linear infinite, ` : ''}rainCloudLayer1 20s ease-in-out infinite`,
-            top: '-35%', left: '-10%', width: '250%', minWidth: '250%',
+            top: '-35%', left: '-56%', width: '212%', minWidth: '212%',
+            filter: 'brightness(0.85) blur(2px)',
+            marginLeft: '30px'
           }}
         />
         <img 
           src="/assets/weather/cloudy_02.webp" 
           alt="Nublado" 
-          className="absolute h-auto object-contain opacity-80"
+          className="absolute h-auto object-contain opacity-85"
           style={{ 
             animation: 'rainCloudLayer2 12s ease-in-out infinite',
-            filter: 'brightness(1.1) contrast(0.9)',
-            top: '-28%', left: '-20%', width: '220%', minWidth: '220%'
+            filter: isThunderstorm 
+              ? 'brightness(0.45) contrast(1.3) blur(1px)' 
+              : pop > 75
+                ? 'brightness(0.75) contrast(1.1) blur(1px)' // Gris intermedio para lluvia fuerte
+                : 'brightness(1.1) contrast(0.9)',
+            top: '-28%', left: '-43.5%', width: '187%', minWidth: '187%',
+            marginLeft: '30px'
           }}
         />
       </div>
