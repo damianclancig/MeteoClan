@@ -9,7 +9,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 type LegalTab = "terms" | "privacy";
 
@@ -51,14 +50,14 @@ export function LegalDialog({ initialTab = "terms", open, onOpenChange }: LegalD
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-lg p-4 sm:p-6 flex flex-col max-h-[85dvh]">
+      <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-lg p-4 sm:p-6 flex flex-col">
         <DialogHeader className="shrink-0">
           <DialogTitle className="text-lg sm:text-xl text-center">
             {t("legal.dialog_title")}
           </DialogTitle>
         </DialogHeader>
 
-        <Tabs defaultValue={initialTab} className="flex flex-col flex-1 min-h-0 mt-2">
+        <Tabs defaultValue={initialTab} className="mt-2">
           <TabsList className="grid grid-cols-2 shrink-0">
             <TabsTrigger value="terms" className="text-xs sm:text-sm">
               {t("legal.tab_terms")}
@@ -68,22 +67,22 @@ export function LegalDialog({ initialTab = "terms", open, onOpenChange }: LegalD
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="terms" className="flex-1 min-h-0 mt-3">
-            <ScrollArea className="h-full max-h-[55dvh] pr-2">
+          <TabsContent value="terms">
+            <div className="overflow-y-auto max-h-[55dvh] pr-2 mt-3">
               <p className="text-[10px] text-foreground/50 mb-4">{t("legal.last_updated")}</p>
               {termsSections.map((s) => (
                 <LegalSection key={s.title} title={s.title} content={s.content} />
               ))}
-            </ScrollArea>
+            </div>
           </TabsContent>
 
-          <TabsContent value="privacy" className="flex-1 min-h-0 mt-3">
-            <ScrollArea className="h-full max-h-[55dvh] pr-2">
+          <TabsContent value="privacy">
+            <div className="overflow-y-auto max-h-[55dvh] pr-2 mt-3">
               <p className="text-[10px] text-foreground/50 mb-4">{t("legal.last_updated")}</p>
               {privacySections.map((s) => (
                 <LegalSection key={s.title} title={s.title} content={s.content} />
               ))}
-            </ScrollArea>
+            </div>
           </TabsContent>
         </Tabs>
       </DialogContent>
