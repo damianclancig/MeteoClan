@@ -1,6 +1,6 @@
 'use client';
 
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import type { CurrentWeather as CurrentWeatherType, DailyForecast, HourlyForecast as HourlyForecastType } from '@/lib/types';
 import type { Locale } from '@/lib/i18n';
 import { useTranslation } from '@/hooks/use-translation';
@@ -12,6 +12,10 @@ import { SunriseSunset } from './sunrise-sunset';
 import { DetailItem } from './detail-item';
 import { WindArrow } from './wind-arrow';
 import { RainEffect } from './RainEffect';
+import { SunnyIcon } from './icons/SunnyIcon';
+import { PartlyCloudyIcon } from './icons/PartlyCloudyIcon';
+import { OvercastIcon } from './icons/OvercastIcon';
+import { RainyIcon } from './icons/RainyIcon';
 
 // This new type will hold the data for the main display card.
 // It must include all properties needed by child components.
@@ -39,11 +43,26 @@ const parseDateString = (dt: string | number) => {
 export const CurrentWeather = memo(function CurrentWeather({ data, hourlyData, locale, lastUpdated }: CurrentWeatherProps) {
   const { t } = useTranslation();
 
-  // MODO TEST (v3.01): Forzar soleado para probar sunny.webp
-  const isSunnyTest = true;
-  const currentCode = isSunnyTest ? 800 : data.weatherCode;
-  const currentDesc = isSunnyTest ? 'clear_sky' : data.description;
-  const currentPop = isSunnyTest ? 0 : data.pop;
+  // MODO TEST (v4.05): Selector manual de climas para probar iconos
+  const [testWeather, setTestWeather] = useState<string>('real');
+
+  const TEST_OPTIONS = [
+    { value: 'real', label: '--- Datos Reales ---', code: data.weatherCode, desc: data.description, pop: data.pop },
+    { value: '800', label: 'Soleado (Sunny)', code: 800, desc: 'clear_sky', pop: 0 },
+    { value: '802', label: 'Parcialmente Nublado', code: 802, desc: 'clouds_scattered', pop: 0 },
+    { value: '804', label: 'Totalmente Nublado', code: 804, desc: 'clouds_overcast', pop: 0 },
+    { value: '500', label: 'Lluvia Ligera (16%)', code: 500, desc: 'rain_light', pop: 16 },
+    { value: '501', label: 'Lluvia Moderada (50%)', code: 501, desc: 'rain_moderate', pop: 50 },
+    { value: '502', label: 'Lluvia Fuerte (80%)', code: 502, desc: 'rain_heavy', pop: 80 },
+    { value: '200', label: 'Tormenta Eléctrica', code: 200, desc: 'thunderstorm', pop: 95 },
+    { value: '600', label: 'Nieve', code: 600, desc: 'snow', pop: 0 },
+    { value: '741', label: 'Niebla', code: 741, desc: 'fog', pop: 0 },
+  ];
+
+  const currentOption = TEST_OPTIONS.find(o => o.value === testWeather) || TEST_OPTIONS[0];
+  const currentCode = currentOption.code;
+  const currentDesc = currentOption.desc;
+  const currentPop = currentOption.pop;
 
   const weatherDescriptionKey = `weather.${currentDesc}`;
   const date = parseDateString(data.dt);
@@ -94,7 +113,24 @@ export const CurrentWeather = memo(function CurrentWeather({ data, hourlyData, l
 
       {/* Temperature and Icon/Description */}
       <div className="flex flex-col items-center justify-center text-center">
-        <p className="text-2xl capitalize">{t(weatherDescriptionKey)}</p>
+        <div className="flex items-center gap-3">
+          <p className="text-2xl capitalize font-bold">
+            <span className={testWeather !== 'real' ? 'text-yellow-400 drop-shadow-sm' : ''}>
+              {t(weatherDescriptionKey)}
+            </span>
+          </p>
+          <select 
+            value={testWeather}
+            onChange={(e) => setTestWeather(e.target.value)}
+            className="bg-black/40 border border-white/30 rounded-lg px-2 py-1 text-xs font-bold outline-none focus:ring-2 focus:ring-yellow-400/50 transition-all cursor-pointer backdrop-blur-xl text-white shadow-xl hover:bg-black/60"
+          >
+            {TEST_OPTIONS.map(opt => (
+              <option key={opt.value} value={opt.value} className="bg-slate-900 text-white">
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
         <div className="flex items-center justify-center gap-4">
           <div className='flex flex-col items-center'>
             <div className="text-5xl md:text-7xl font-bold">{Math.round(temp)}°C</div>
@@ -106,23 +142,17 @@ export const CurrentWeather = memo(function CurrentWeather({ data, hourlyData, l
             (currentCode >= 300 && currentCode < 400) || 
             [200, 201, 202, 230, 231, 232].includes(currentCode)) && 
             currentPop > 15 ? (
-            <div className="w-24 h-24 md:w-32 md:h-32 relative overflow-hidden flex items-center justify-center rounded-2xl bg-white/5">
-               <RainEffect pop={currentPop} className="w-full h-full" />
-            </div>
+            <RainyIcon 
+              pop={currentPop} 
+              className="w-24 h-24 md:w-32 md:h-32" 
+              isThunderstorm={currentCode >= 200 && currentCode < 300} 
+            />
           ) : currentCode === 800 ? (
-            <div className="w-24 h-24 md:w-32 md:h-32 relative flex items-center justify-center">
-              {/* Brillo ambiental suave para el sol v3.01 */}
-              <div className="absolute inset-0 bg-yellow-400/20 blur-3xl animate-pulse rounded-full" />
-              <img 
-                src="/assets/weather/sunny.webp" 
-                alt="Soleado" 
-                className="w-full h-full object-contain drop-shadow-xl z-10"
-                style={{ 
-                  animation: 'spin 10s linear infinite',
-                  transformOrigin: 'center'
-                }}
-              />
-            </div>
+            <SunnyIcon className="w-24 h-24 md:w-32 md:h-32" />
+          ) : [801, 802, 803].includes(currentCode) ? (
+            <PartlyCloudyIcon className="w-24 h-24 md:w-32 md:h-32" />
+          ) : currentCode === 804 ? (
+            <OvercastIcon className="w-24 h-24 md:w-32 md:h-32" />
           ) : (
             <AnimatedWeatherIcon
               code={currentCode}

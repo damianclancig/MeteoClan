@@ -1,69 +1,52 @@
 'use client';
 
 import React from 'react';
-import styles from '@/styles/RainAnimation.module.css';
 
 interface RainEffectProps {
-  pop: number; // Probabilidad de lluvia (valor de 0 a 100)
-  className?: string; // Clases opcionales para control de dimensiones desde el padre
+  pop: number; 
+  className?: string;
 }
 
 /**
- * RainEffect - v2.01 (v2.02 adaptado para contenedor de icono)
- * Implementa una animación de lluvia visual basada en una textura WebP.
- * La velocidad escala con la probabilidad de precipitación (pop).
+ * RainEffect - v7.0 (Motor de Textura Sincronizado)
+ * Motor optimizado para lluvia ligera (16%+).
+ * Utiliza desplazamiento de fondo al 50% para coincidir exactamente con el mosaico.
  */
 export const RainEffect: React.FC<RainEffectProps> = ({ pop, className = "" }) => {
-  // 1. Guardia: Si la probabilidad es baja, no renderizamos nada para ahorrar recursos
-  // Nota: Aunque el padre decida llamarlo por weatherCode, respetamos la regla de pop > 15
   if (pop <= 15) return null;
+  // Ajuste de velocidades: Ligera (1.2s), Moderada (0.6s), Fuerte (0.35s)
+  const isHeavyRain = pop > 75;
+  const duration = isHeavyRain ? '0.35s' : pop > 40 ? '0.6s' : '1.2s';
 
-  // 2. Determinar duración de la animación según intensidad
-  const getDuration = () => {
-    if (pop > 75) return '0.8s';
-    if (pop > 40) return '2s';
-    return '4s';
-  };
-
-  // Determinar tamaño de bucle según pantalla para consistencia (v2.17)
-  const [loopSize, setLoopSize] = React.useState(200);
-
-  React.useEffect(() => {
-    const handleResize = () => {
-      setLoopSize(window.innerWidth < 768 ? 140 : 200);
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  // Estilo inline para asegurar que la máscara se aplique y evitar problemas de caché
+  // Aplicar rotación y escala para cubrir las esquinas si es lluvia fuerte
   const wrapperStyle: React.CSSProperties = {
-    WebkitMaskImage: 'radial-gradient(circle, black 30%, transparent 95%)',
-    maskImage: 'radial-gradient(circle, black 30%, transparent 95%)',
-    position: 'absolute',
-    inset: 0,
-    overflow: 'hidden'
-  };
-
-  const baseInnerStyle: any = { // Usamos any para permitir variables CSS custom
-    animationDuration: getDuration(),
-    // Cuádruple fondo por capa para ultra-densidad (v2.17)
-    backgroundImage: "url('/assets/weather/rain.webp'), url('/assets/weather/rain.webp')",
-    backgroundRepeat: 'repeat, repeat',
-    backgroundPosition: `0 0, 0 ${loopSize / 2}px`, 
-    backgroundSize: `${loopSize}px, ${loopSize}px`,
-    width: '180%',
-    left: '-40%',
-    '--rain-loop': `-${loopSize}px` // Variable sincronizada con el CSS v2.17
+    position: 'absolute', 
+    inset: 0, 
+    overflow: 'hidden',
+    transform: isHeavyRain ? 'scale(1.3) rotate(20deg)' : 'none',
+    transformOrigin: 'center center',
+    transition: 'transform 0.8s ease'
   };
 
   return (
-    <div className={`${styles.rainWrapper} ${className}`} style={wrapperStyle}>
-      {/* Triple Capa Adaptativa (v2.17) */}
-      <div className={styles.rainLayer} style={{ ...baseInnerStyle, opacity: 0.6, animationDelay: '0s' }} />
-      <div className={styles.rainLayer2} style={{ ...baseInnerStyle, opacity: 0.4, animationDelay: '-1s' }} />
-      <div className={styles.rainLayer3} style={{ ...baseInnerStyle, opacity: 0.3, animationDelay: '-2s' }} />
+    <div className={className} style={wrapperStyle}>
+      <style>{`
+        @keyframes rainFallCascade {
+          0% { transform: translateY(-75%); }
+          100% { transform: translateY(-50%); } /* Movimiento del 3 al 2 en una cascada de 4 */
+        }
+      `}</style>
+      <div 
+        className="absolute left-0 top-0 w-full z-0 opacity-60"
+        style={{ 
+          height: '400%',
+          backgroundImage: "url('/assets/weather/rain.webp')",
+          backgroundRepeat: 'repeat',
+          backgroundSize: '100% 25%', /* 4 imágenes exactas en el 400% de altura */
+          filter: 'brightness(1.5) contrast(1.1)',
+          animation: `rainFallCascade ${duration} linear infinite`
+        }}
+      />
     </div>
   );
 };
