@@ -118,7 +118,7 @@ Abre [http://localhost:9002](http://localhost:9002) en tu navegador para ver el 
 
 ## 📄 Licencia
 
-Este proyecto se distribuye bajo la Licencia MIT. Consulta el archivo `LICENSE` para más información.
+Este proyecto se distribuye bajo la Licencia ISC. Consulta el archivo `LICENSE` para más información.
 
 ---
 
