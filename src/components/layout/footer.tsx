@@ -1,11 +1,21 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslation } from "@/hooks/use-translation";
 import { SupportDialog } from "./support-dialog";
+import { LegalDialog } from "./legal-dialog";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
   const { t } = useTranslation();
+
+  const [legalOpen, setLegalOpen] = useState(false);
+  const [legalTab, setLegalTab] = useState<"terms" | "privacy">("terms");
+
+  const openLegal = (tab: "terms" | "privacy") => {
+    setLegalTab(tab);
+    setLegalOpen(true);
+  };
 
   return (
     <>
@@ -51,6 +61,21 @@ export function Footer() {
               </a>
               . {t('attribution.moon')}
             </p>
+            <p className="mt-1 flex items-center justify-center gap-3">
+              <button
+                onClick={() => openLegal("terms")}
+                className="underline hover:text-foreground/80 transition-colors"
+              >
+                {t("legal.link_terms")}
+              </button>
+              <span aria-hidden="true">·</span>
+              <button
+                onClick={() => openLegal("privacy")}
+                className="underline hover:text-foreground/80 transition-colors"
+              >
+                {t("legal.link_privacy")}
+              </button>
+            </p>
           </div>
 
           {/* Support - Right */}
@@ -60,6 +85,12 @@ export function Footer() {
 
         </div>
       </footer>
+
+      <LegalDialog
+        initialTab={legalTab}
+        open={legalOpen}
+        onOpenChange={setLegalOpen}
+      />
     </>
   );
 }
