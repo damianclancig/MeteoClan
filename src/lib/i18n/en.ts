@@ -136,7 +136,7 @@ const en = {
       s2_title: "2. Use of Location Data (GPS)",
       s2_content: "When you grant location permission, your geographic coordinates are sent directly to the OpenWeatherMap API to obtain the weather forecast. This information is not stored on our servers, is not recorded in any proprietary database, and is not shared with any third party beyond the weather data provider required for the App to function.",
       s3_title: "3. Third-Party Services",
-      s3_content: "The App uses the following external services, each with its own privacy policy:\n• OpenWeatherMap (weather data and geocoding): openweathermap.org/privacy-policy\n• Google Gemini AI (background image generation): ai.google.dev\n• Firebase / Google Cloud (hosting and backend functions): firebase.google.com/support/privacy\nWe encourage you to review the privacy policies of these services.",
+      s3_content: "The App uses the following external services, each with its own privacy policy:\n• OpenWeatherMap (weather data and geocoding): openweathermap.org/privacy-policy\n• Google Gemini AI (background image generation): ai.google.dev\n• Vercel (hosting and backend functions): vercel.com/legal/privacy-policy\nWe encourage you to review the privacy policies of these services.",
       s4_title: "4. Data Retention",
       s4_content: "MeteoClan does not own or operate any user databases. Language and temperature preferences are stored exclusively in your browser or device's local storage (localStorage/sessionStorage) and remain under your control. You can delete them at any time by clearing the site data in your browser settings.",
       s5_title: "5. Your Rights",
