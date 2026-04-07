@@ -87,7 +87,7 @@ const en = {
     moon: "Lunar data provided by OpenWeatherMap. Upcoming phases calculated locally."
   },
   footer: {
-    rights: "All rights reserved - MIT License",
+    rights: "All rights reserved - ISC License",
     designedBy: "Design and development by"
   },
   support: {

@@ -85,7 +85,7 @@ const pt = {
     moon: "Dados lunares fornecidos pela OpenWeatherMap. Próximas fases calculadas localmente."
   },
   footer: {
-    rights: "Todos os direitos reservados - Licença MIT",
+    rights: "Todos os direitos reservados - Licença ISC",
     designedBy: "Design e desenvolvimento por"
   },
   support: {
