@@ -7,36 +7,56 @@ interface SnowEffectProps {
   className?: string;
   delay?: string;
   isThunderstorm?: boolean;
+  weatherId?: number;
 }
 
-/**
- * Shared ZigZag Component for Frontal Snow (snow_02.webp)
- * Opacidad estandarizada al 80% (0.8) según solicitud del usuario.
- */
-const FrontalSnow: React.FC<{ delay: string; opacity: number; size: string; speed: string }> = ({ delay, opacity, size, speed }) => {
-  const finalAnimation = `snowZigZag ${speed} linear infinite calc(${delay} - 5s) both`;
+const getSnowIntensity = (weatherId?: number, pop: number = 0): 'light' | 'moderate' | 'heavy' | 'none' => {
+  if (weatherId) {
+    if ([602, 622].includes(weatherId)) return 'heavy';
+    if ([600, 611, 612, 615, 620].includes(weatherId)) return 'light';
+    if ((weatherId >= 600 && weatherId < 700)) return 'moderate';
+  }
   
+  if (pop <= 15 && pop !== 0) return 'none'; // Permitir pop=0 si es seleccionado como clima o default
+  if (pop > 75) return 'heavy';
+  if (pop > 40) return 'moderate';
+  return 'light';
+};
+
+/**
+ * Shared ZigZag Component for FrontalSnow (snow_02.webp)
+ * Opacidad estandarizada y personalización de keyframes
+ */
+const FrontalSnow: React.FC<{ delay: string; opacity: number; size: string; speed: string; animationName?: string }> = ({ delay, opacity, size, speed, animationName = "snowFallVertical" }) => {
   return (
     <div 
       style={{
         position: 'absolute',
         inset: 0,
-        height: '600%',
-        width: '100%',
-        backgroundImage: "url('/assets/weather/snow_02.webp')",
-        backgroundRepeat: 'repeat',
-        backgroundSize: size,
-        filter: 'brightness(1.4)', 
-        animation: finalAnimation,
-        opacity: 0.7, // Ajustado a 70% según solicitud
         zIndex: 20,
-        pointerEvents: 'none'
+        pointerEvents: 'none',
+        animation: `snowSwayHorizontal 3.5s ease-in-out infinite alternate calc(${delay} - 2s)`
       }}
-    />
+    >
+      <div 
+        style={{
+          position: 'absolute',
+          inset: 0,
+          height: '600%',
+          width: '100%',
+          backgroundImage: "url('/assets/weather/snow_02.webp')",
+          backgroundRepeat: 'repeat',
+          backgroundSize: size,
+          filter: 'brightness(1.4)', 
+          animation: `${animationName} ${speed} linear infinite calc(${delay} - 5s) both`,
+          opacity: 0.7, 
+        }}
+      />
+    </div>
   );
 };
 
-const LightSnow: React.FC<SnowEffectProps> = ({ className, delay = "0s" }) => {
+const LightSnow: React.FC<SnowEffectProps & { isSleet?: boolean }> = ({ className, delay = "0s", isSleet }) => {
   const wrapperStyle: React.CSSProperties = {
     position: 'absolute', width: '200%', left: '-15%', height: '100%',
     overflow: 'visible',
@@ -48,22 +68,26 @@ const LightSnow: React.FC<SnowEffectProps> = ({ className, delay = "0s" }) => {
     <div className={className} style={wrapperStyle}>
       <div className="flex w-full h-full relative">
         <div className="w-1/2 h-full" style={{ 
-          height: '400%', backgroundImage: "url('/assets/weather/snow_01.webp')", backgroundRepeat: 'repeat', backgroundSize: '135% 22.5%', filter: 'brightness(1.1) contrast(1.0)',
-          animation: `snowFallCascade 12s linear infinite calc(${delay} - 2s) both`, 
-          opacity: 0.6 
+          height: '400%', backgroundImage: "url('/assets/weather/snow_01.webp')", backgroundRepeat: 'repeat', 
+          backgroundSize: '150% 25%', // Agrandado y ahora matemáticamente perfecto en el loop (25%)
+          filter: 'brightness(1.3) contrast(1.1)', // Más brillante
+          animation: `snowFallVertical ${isSleet ? '3s' : '12s'} linear infinite calc(${delay} - 2s) both`, 
+          opacity: 0.8 
         }} />
         <div className="w-1/2 h-full scale-x-[-1]" style={{ 
-          height: '400%', backgroundImage: "url('/assets/weather/snow_01.webp')", backgroundRepeat: 'repeat', backgroundSize: '135% 22.5%', filter: 'brightness(1.1) contrast(1.0)',
-          animation: `snowFallCascade 12s linear infinite calc(${delay} - 8s) both`, 
-          opacity: 0.4 
+          height: '400%', backgroundImage: "url('/assets/weather/snow_01.webp')", backgroundRepeat: 'repeat', 
+          backgroundSize: '150% 25%', 
+          filter: 'brightness(1.3) contrast(1.1)', 
+          animation: `snowFallVertical ${isSleet ? '3s' : '12s'} linear infinite calc(${delay} - 8s) both`, 
+          opacity: 0.6 
         }} />
-        <FrontalSnow delay={delay} opacity={0.8} size="40% 10%" speed="25s" />
+        {/* Nieve ligera: Sólo usamos el fondo snow_01.webp, quitamos FrontalSnow para el efecto sutil */}
       </div>
     </div>
   );
 };
 
-const ModerateSnow: React.FC<SnowEffectProps> = ({ className, delay = "0s" }) => {
+const ModerateSnow: React.FC<SnowEffectProps & { isSleet?: boolean }> = ({ className, delay = "0s", isSleet }) => {
   const wrapperStyle: React.CSSProperties = {
     position: 'absolute', width: '200%', left: '-20%', height: '100%',
     overflow: 'visible',
@@ -76,72 +100,94 @@ const ModerateSnow: React.FC<SnowEffectProps> = ({ className, delay = "0s" }) =>
       <div className="flex w-full h-full relative">
         <div className="w-1/2 h-full" style={{ 
           height: '400%', backgroundImage: "url('/assets/weather/snow_01.webp')", backgroundRepeat: 'repeat', backgroundSize: '120% 25%', filter: 'brightness(1.2) contrast(1.1)',
-          animation: `snowFallCascade 8s linear infinite calc(${delay} - 1s) both`, 
+          animation: `snowFallVertical ${isSleet ? '2.5s' : '8s'} linear infinite calc(${delay} - 1s) both`, 
           opacity: 0.7 
         }} />
         <div className="w-1/2 h-full scale-x-[-1]" style={{ 
           height: '400%', backgroundImage: "url('/assets/weather/snow_01.webp')", backgroundRepeat: 'repeat', backgroundSize: '120% 25%', filter: 'brightness(1.2) contrast(1.1)',
-          animation: `snowFallCascade 8s linear infinite calc(${delay} - 4.5s) both`, 
+          animation: `snowFallVertical ${isSleet ? '2.5s' : '8s'} linear infinite calc(${delay} - 4.5s) both`, 
           opacity: 0.5 
         }} />
-        <FrontalSnow delay={delay} opacity={0.8} size="50% 12%" speed="20s" />
+        <FrontalSnow delay={delay} opacity={0.85} size="50% 12.5%" speed={isSleet ? "4s" : "14s"} />
       </div>
     </div>
   );
 };
 
-const HeavySnow: React.FC<SnowEffectProps> = ({ className, delay = "0s" }) => {
+const HeavySnow: React.FC<SnowEffectProps & { isSleet?: boolean }> = ({ className, delay = "0s", isSleet }) => {
   const wrapperStyle: React.CSSProperties = {
     position: 'absolute', width: '200%', left: '-20%', height: '100%',
-    transform: 'rotate(5deg) scale(1.1)',
-    overflow: 'visible',
-    maskImage: 'radial-gradient(ellipse at center, black 50%, transparent 95%)',
-    WebkitMaskImage: 'radial-gradient(ellipse at center, black 50%, transparent 95%)'
+    overflow: 'hidden',
+    maskImage: 'radial-gradient(ellipse at center, black 35%, transparent 80%)',
+    WebkitMaskImage: 'radial-gradient(ellipse at center, black 35%, transparent 80%)'
   };
 
   return (
     <div className={className} style={wrapperStyle}>
-      <div className="flex w-full h-full relative">
-        <div className="w-1/2 h-full" style={{ 
-          height: '400%', backgroundImage: "url('/assets/weather/snow_01.webp')", backgroundRepeat: 'repeat', backgroundSize: '165% 27.5%', filter: 'brightness(1.2) contrast(1.1)',
-          animation: `snowFallCascade 5s linear infinite calc(${delay} - 0.2s) both`, 
-          opacity: 0.8 
+      <div 
+        className="w-full h-full relative" 
+        style={{ transform: 'rotate(8deg) scale(1.3)', transformOrigin: 'center center' }}
+      >
+        {/* Capa fondo rápida */}
+        <div style={{ 
+          position: 'absolute', inset: 0, height: '400%', width: '100%',
+          backgroundImage: "url('/assets/weather/snow_01.webp')", backgroundRepeat: 'repeat', 
+          backgroundSize: '20% 25%',
+          filter: 'brightness(1.5) contrast(1.2)', 
+          animation: `snowHeavyDiagonalBg ${isSleet ? '1.5s' : '4s'} linear infinite calc(${delay} - 0.2s) both`, 
+          opacity: 0.9 
         }} />
-        <div className="w-1/2 h-full scale-x-[-1]" style={{ 
-          height: '400%', backgroundImage: "url('/assets/weather/snow_01.webp')", backgroundRepeat: 'repeat', backgroundSize: '165% 27.5%', filter: 'brightness(1.2) contrast(1.1)',
-          animation: `snowFallCascade 5s linear infinite calc(${delay} - 0.8s) both`, 
-          opacity: 0.6 
+        {/* Capa fondo secundaria desfasada */}
+        <div style={{ 
+          position: 'absolute', inset: 0, height: '400%', width: '100%',
+          backgroundImage: "url('/assets/weather/snow_01.webp')", backgroundRepeat: 'repeat', 
+          backgroundSize: '20% 25%', 
+          filter: 'brightness(1.3) contrast(1.2)', 
+          animation: `snowHeavyDiagonalBg ${isSleet ? '1.8s' : '4.5s'} linear infinite calc(${delay} - 2.8s) both`, 
+          opacity: 0.75 
         }} />
-        <FrontalSnow delay={delay} opacity={0.8} size="70% 15%" speed="15s" />
+        
+        {/* Nieve Frontal Veloz */}
+        <FrontalSnow delay={delay} opacity={0.95} size="12.5% 12.5%" speed={isSleet ? "1s" : "2.5s"} animationName="snowHeavyDiagonalFront" />
       </div>
     </div>
   );
 };
 
 export const SnowEffect: React.FC<SnowEffectProps> = (props) => {
-  if (props.pop <= 15 && props.pop !== 0) return null;
+  const intensity = getSnowIntensity(props.weatherId, props.pop);
+
+  // Determinamos explícitamente si se trata de "Aguanieve" (Sleet) para mayor peso en las partículas
+  const isSleet = props.weatherId ? [611, 612, 613, 615, 616].includes(props.weatherId) : false;
+
+  if (intensity === 'none') return null;
 
   return (
     <>
       <style>{`
-        @keyframes snowFallCascade {
-          0% { transform: translateY(-75%); }
-          100% { transform: translateY(-50%); } 
+        @keyframes snowFallVertical {
+          0% { transform: translateY(-83.33%); }
+          100% { transform: translateY(-58.33%); }
         }
-        @keyframes snowZigZag {
-          0% { transform: translateY(-83.33%) translateX(-5%); }
-          25% { transform: translateY(-79%) translateX(5%); }
-          50% { transform: translateY(-75%) translateX(-5%); }
-          75% { transform: translateY(-71%) translateX(5%); }
-          100% { transform: translateY(-66.66%) translateX(-5%); }
+        @keyframes snowSwayHorizontal {
+          0% { transform: translateX(-10%); }
+          100% { transform: translateX(10%); }
+        }
+        @keyframes snowHeavyDiagonalBg {
+          0% { transform: translateY(-75%) translateX(10%); }
+          100% { transform: translateY(-50%) translateX(-10%); } /* Total delta: -20%, keeps loop perfect */
+        }
+        @keyframes snowHeavyDiagonalFront {
+          0% { transform: translateY(-75%) translateX(12.5%); }
+          100% { transform: translateY(-50%) translateX(-12.5%); } /* Total delta: -25%, keeps loop perfect */
         }
       `}</style>
-      {props.pop > 75 ? (
-        <HeavySnow {...props} />
-      ) : props.pop > 40 ? (
-        <ModerateSnow {...props} />
+      {intensity === 'heavy' ? (
+        <HeavySnow {...props} isSleet={isSleet} />
+      ) : intensity === 'moderate' ? (
+        <ModerateSnow {...props} isSleet={isSleet} />
       ) : (
-        <LightSnow {...props} />
+        <LightSnow {...props} isSleet={isSleet} />
       )}
     </>
   );

@@ -5,13 +5,25 @@ import React from 'react';
 interface FogEffectProps {
   className?: string;
   delay?: string;
+  weatherId?: number;
 }
 
 /**
  * FogEffect - v16.6 (Aumento de Tamaño General +25%)
  * Triple Capa: Mirrored + Orbit + Mirrored
  */
-export const FogEffect: React.FC<FogEffectProps> = ({ className, delay = "0s" }) => {
+export const FogEffect: React.FC<FogEffectProps> = ({ className, delay = "0s", weatherId }) => {
+  // Ajuste de filtros de color a nivel principal para teñir las texturas.
+  // Es más efectivo forzar el color de renderizado de WebP que usar capas de blend-mode con máscaras.
+  let extraFilter = '';
+  if (weatherId === 721) {
+    // 721: Haze (Bruma Seca). Tono ámbar sucio/esmog. 
+    extraFilter = ' sepia(0.8) hue-rotate(-20deg) saturate(2.5) brightness(0.8)';
+  } else if (weatherId === 701) {
+    // 701: Mist (Neblina marina). Tono azul oscuro/frío.
+    extraFilter = ' sepia(0.6) hue-rotate(180deg) saturate(3) brightness(1.2)';
+  }
+
   const containerStyle: React.CSSProperties = {
     position: 'absolute', 
     width: '250%', // Aumentado de 200% (+25%)
@@ -26,7 +38,7 @@ export const FogEffect: React.FC<FogEffectProps> = ({ className, delay = "0s" })
     WebkitMaskComposite: 'source-in',
     // @ts-ignore
     maskComposite: 'intersect',
-    filter: 'blur(0.5px)'
+    filter: `blur(0.5px)${extraFilter}`
   };
 
   const MirroredFog: React.FC<{ url: string; duration: string; opacity: number; delay: string; anim: string; blur?: string; zIndex: number }> = ({ 

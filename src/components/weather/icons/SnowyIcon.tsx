@@ -1,9 +1,13 @@
 import React from 'react';
 import { SnowEffect } from '../SnowEffect';
+import { AstroHero } from './AstroHero';
+import { hasAstroPresence, isDayTime } from '@/utils/weather-utils';
 
 interface SnowyIconProps {
   pop: number;
   className?: string;
+  weatherId?: number;
+  iconCode?: string;
 }
 
 /**
@@ -12,7 +16,9 @@ interface SnowyIconProps {
  */
 export const SnowyIcon: React.FC<SnowyIconProps> = ({ 
   pop, 
-  className = "w-24 h-24 md:w-32 md:h-32" 
+  className = "w-24 h-24 md:w-32 md:h-32",
+  weatherId,
+  iconCode
 }) => {
   return (
     <div className={`${className} relative flex items-center justify-center transition-all duration-700 overflow-visible`}>
@@ -28,6 +34,13 @@ export const SnowyIcon: React.FC<SnowyIconProps> = ({
           100% { transform: translate(5%, 8%) scale(1.1); }
         }
       `}</style>
+      
+      {/* 0. ASTRO (Sol/Luna) — Aparece en nieve intermitente (IDs 600, 620, 621, 622) */}
+      {weatherId && hasAstroPresence(weatherId) && (
+        <div className="absolute top-[-5%] right-[25%] z-[25]">
+          <AstroHero isDay={isDayTime(iconCode)} className="w-16 h-16 md:w-20 md:h-20" />
+        </div>
+      )}
 
       {/* 1. Nube de Fondo (Capa Base) */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none drop-shadow-xl z-5">
@@ -45,7 +58,7 @@ export const SnowyIcon: React.FC<SnowyIconProps> = ({
 
       {/* 2. Capa de Nieve Integral (Sándwich Intermedio) */}
       <div className="absolute inset-0 z-10 pointer-events-none flex justify-center items-center overflow-visible">
-        <SnowEffect pop={pop} className="w-full h-full" delay="0s" />
+        <SnowEffect pop={pop} weatherId={weatherId} className="w-full h-full" delay="0s" />
       </div>
 
       {/* 3. Nube Frontal (Capa Superior) */}

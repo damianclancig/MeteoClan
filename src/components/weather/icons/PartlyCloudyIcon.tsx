@@ -2,13 +2,33 @@ import React from 'react';
 
 interface PartlyCloudyIconProps {
   className?: string;
+  weatherId?: number;
+  iconCode?: string;
 }
 
+import { AstroHero } from './AstroHero';
+import { isDayTime } from '@/utils/weather-utils';
+
 /**
- * PartlyCloudyIcon - v1.00
- * Composición 3D de Sol y Nube con animaciones de paralaje y rotación.
+ * PartlyCloudyIcon - v2.00
+ * Composición dinámica para 801 (Sol predominante, nube atrás) 
+ * y 802/803 (Nubes intercaladas y frontales).
  */
-export const PartlyCloudyIcon: React.FC<PartlyCloudyIconProps> = ({ className = "w-24 h-24 md:w-32 md:h-32" }) => {
+export const PartlyCloudyIcon: React.FC<PartlyCloudyIconProps> = ({ 
+  className = "w-24 h-24 md:w-32 md:h-32",
+  weatherId = 803,
+  iconCode
+}) => {
+  const isFewClouds = weatherId === 801;
+  const isScattered = weatherId === 802;
+  const isBroken = !isFewClouds && !isScattered; // Default (803)
+
+  // El sol va por detrás solo cuando es muy nublado (803)
+  const sunZIndex = isBroken ? 'z-0' : 'z-10';
+
+  // Solo hay nube frontal en 802 y 803
+  const showFrontCloud = isScattered || isBroken;
+
   return (
     <div className={`${className} relative flex items-center justify-center transition-all duration-700 ease-in-out`}>
       <style>{`
@@ -22,48 +42,48 @@ export const PartlyCloudyIcon: React.FC<PartlyCloudyIconProps> = ({ className = 
         }
       `}</style>
 
-      {/* Brillo ambiental fusionado */}
-      <div className="absolute inset-0 bg-yellow-400/10 blur-3xl rounded-full" />
-
-      {/* Sol Girando en el fondo (z-0) */}
-      <img
-        src="/assets/weather/sunny.webp"
-        alt="Sol de fondo"
-        className="absolute w-full h-full object-contain drop-shadow-lg z-0"
-        style={{
-          animation: 'spin 20s linear infinite',
-          transformOrigin: 'center'
-        }}
-      />
-
-      {/* Nube Posterior (Segunda copia - z-5) */}
+      {/* Nube Posterior - Z-5 */}
       <img
         src="/assets/weather/cloudy_02.webp"
-        alt="Nube decorativa"
-        className="absolute h-auto object-contain drop-shadow-xl z-[5] opacity-50"
+        alt="Nube posterior"
+        className={`absolute h-auto object-contain drop-shadow-xl z-[5] ${isBroken ? 'opacity-50' : 'opacity-90'}`}
         style={{
           animation: 'cloudPanAlt 10s ease-in-out infinite alternate',
-          bottom: '-10%',
-          left: '-40%',
-          width: '200%',
-          minWidth: '200%',
-          filter: 'brightness(0.9) blur(1px)'
+          bottom: isBroken ? '-10%' : '-15%',
+          left: isBroken ? '-40%' : '-20%',
+          width: isBroken ? '200%' : '160%',
+          minWidth: isBroken ? '200%' : '160%',
+          filter: isBroken ? 'brightness(0.9) blur(1px)' : 'brightness(0.95)'
         }}
       />
 
-      {/* Nube Frontal (Principal - z-10) */}
-      <img
-        src="/assets/weather/cloudy_02.webp"
-        alt="Nube principal"
-        className="absolute h-auto object-contain drop-shadow-2xl z-10 opacity-80"
+      {/* Astro Dinámico (Sol/Luna) */}
+      <div 
+        className={`absolute h-full w-full flex items-center justify-center transition-all duration-700 ${sunZIndex}`}
         style={{
-          animation: 'cloudPan 7s ease-in-out infinite alternate',
-          bottom: '-30%',
-          left: '-30%',
-          width: '250%',
-          minWidth: '250%'
+          transform: isFewClouds 
+            ? 'scale(1.1)' 
+            : 'scale(1.1) translate(15%, -15%)',
         }}
-      />
+      >
+        <AstroHero isDay={isDayTime(iconCode)} className="w-[85%] h-[85%]" />
+      </div>
+
+      {/* Nube Frontal - z-20. 802: Pequeña inferior | 803: Enorme tapando todo */}
+      {showFrontCloud && (
+        <img
+          src="/assets/weather/cloudy_02.webp"
+          alt="Nube principal"
+          className="absolute h-auto object-contain drop-shadow-2xl z-20 opacity-80"
+          style={{
+            animation: 'cloudPan 7s ease-in-out infinite alternate',
+            bottom: isScattered ? '-35%' : '-30%',
+            left: isScattered ? '-10%' : '-30%',
+            width: isScattered ? '160%' : '250%',
+            minWidth: isScattered ? '160%' : '250%'
+          }}
+        />
+      )}
     </div>
   );
 };

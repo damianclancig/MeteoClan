@@ -180,7 +180,7 @@ const CurrentMoonIcon = ({
 
         {/* 1. Imagen de la Luna Llena de fondo */}
         <image
-          href="/assets/moon.webp"
+          href="/assets/weather/moon.webp"
           x="0"
           y="0"
           width="100"

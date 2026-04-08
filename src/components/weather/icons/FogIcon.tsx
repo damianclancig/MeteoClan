@@ -3,14 +3,21 @@ import { FogEffect } from '../FogEffect';
 
 interface FogIconProps {
   className?: string;
+  weatherId?: number;
+  iconCode?: string;
 }
+
+import { AstroHero } from './AstroHero';
+import { isDayTime } from '@/utils/weather-utils';
 
 /**
  * FogIcon - v15.1 (Refinamiento de Capas para Niebla)
  * Ajuste: Se habilita overflow-visible para permitir óvalos anchos.
  */
 export const FogIcon: React.FC<FogIconProps> = ({ 
-  className = "w-24 h-24 md:w-32 md:h-32" 
+  className = "w-24 h-24 md:w-32 md:h-32",
+  weatherId,
+  iconCode
 }) => {
   return (
     <div className={`${className} relative flex items-center justify-center transition-all duration-700 overflow-visible`}>
@@ -26,10 +33,15 @@ export const FogIcon: React.FC<FogIconProps> = ({
           100% { transform: translate(3%, 5%) scale(1.1); }
         }
       `}</style>
+      
+      {/* Astro Difuminado tras la Niebla */}
+      <div className="absolute top-[5%] opacity-40 blur-sm z-0">
+        <AstroHero isDay={isDayTime(iconCode)} className="w-14 h-14 md:w-16 md:h-16" />
+      </div>
 
       {/* 1. Bruma de Fondo (Visible para test aislada) */}
       <div className="absolute inset-0 z-[5] pointer-events-none flex justify-center items-center overflow-visible opacity-80">
-        <FogEffect className="w-full h-full" delay="0s" />
+        <FogEffect className="w-full h-full" delay="0s" weatherId={weatherId} />
       </div>
 
       {/* 2. Capas de Neblina / Nubes Bajas (OCULTAS PARA TEST) */}
