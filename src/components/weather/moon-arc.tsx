@@ -8,6 +8,8 @@ interface MoonArcProps {
   moonrise: string; // ISO 8601 string
   moonset: string; // ISO 8601 string
   timezone: string; // IANA timezone string
+  riseSuffix?: 'yesterday' | 'tomorrow' | 'other' | null;
+  setSuffix?: 'yesterday' | 'tomorrow' | 'other' | null;
 }
 
 const formatTime = (date: Date, timezone: string) => {
@@ -25,7 +27,13 @@ const formatDuration = (durationMs: number) => {
   return `${hours}h ${minutes}m`;
 };
 
-export function MoonArc({ moonrise: moonriseStr, moonset: moonsetStr, timezone }: MoonArcProps) {
+export function MoonArc({ 
+  moonrise: moonriseStr, 
+  moonset: moonsetStr, 
+  timezone,
+  riseSuffix,
+  setSuffix
+}: MoonArcProps) {
   const { t } = useTranslation();
   const [moonPosition, setMoonPosition] = useState(0);
   const [isUp, setIsUp] = useState(false);
@@ -77,8 +85,8 @@ export function MoonArc({ moonrise: moonriseStr, moonset: moonsetStr, timezone }
     return () => clearInterval(interval);
   }, [moonrise, moonset]);
 
-  // Duración visible aproximada
-  const duration = moonrise < moonset ? moonset - moonrise : (moonset + 24 * 60 * 60 * 1000) - moonrise;
+  // Duración visible real basada en los timestamps
+  const duration = Math.abs(moonset - moonrise);
 
   return (
     <div className="flex flex-col items-center w-full px-0 pt-1 pb-2">
@@ -98,18 +106,34 @@ export function MoonArc({ moonrise: moonriseStr, moonset: moonsetStr, timezone }
       </div>
 
       {/* Moonrise and Moonset Times */}
-      <div className="w-full flex justify-between items-center mt-2">
-        <div className="flex items-center gap-1 text-sm text-foreground/80">
-          <span className="text-lg">🌕</span>
-          <span>{formatTime(moonriseDate, timezone)}</span>
+      <div className="w-full flex justify-between items-start mt-2 px-1">
+        <div className="flex flex-col items-start gap-0.5">
+          <div className="flex items-center gap-1 text-sm text-foreground/80">
+            <span className="text-lg">🌕</span>
+            <span className="font-medium">{formatTime(moonriseDate, timezone)}</span>
+          </div>
+          {riseSuffix && (
+            <span className="text-[10px] uppercase tracking-wider text-foreground/50 ml-6">
+              {t(riseSuffix)}
+            </span>
+          )}
         </div>
-        <div className="flex items-center gap-1 text-sm text-foreground/80">
-          <Clock className="h-4 w-4" />
-          <span>{formatDuration(duration)}</span>
+
+        <div className="flex flex-col items-center gap-1 text-sm text-foreground/60 pt-1">
+          <Clock className="h-3.5 w-3.5" />
+          <span className="text-[11px] font-medium">{formatDuration(duration)}</span>
         </div>
-        <div className="flex items-center gap-1 text-sm text-foreground/80">
-          <span className="text-lg">🌑</span>
-          <span>{formatTime(moonsetDate, timezone)}</span>
+
+        <div className="flex flex-col items-end gap-0.5">
+          <div className="flex items-center gap-1 text-sm text-foreground/80">
+            <span className="font-medium">{formatTime(moonsetDate, timezone)}</span>
+            <span className="text-lg">🌑</span>
+          </div>
+          {setSuffix && (
+            <span className="text-[10px] uppercase tracking-wider text-foreground/50 mr-6">
+              {t(setSuffix)}
+            </span>
+          )}
         </div>
       </div>
     </div>

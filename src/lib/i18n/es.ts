@@ -16,6 +16,8 @@ const es = {
   precipitation: "Precip.",
   forecastTitle: "Pronóstico 8 días",
   today: "Hoy",
+  tomorrow: "Mañana",
+  yesterday: "Ayer",
   sunrise: "Amanecer",
   sunset: "Atardecer",
   sunCycle: "Ciclo Solar",

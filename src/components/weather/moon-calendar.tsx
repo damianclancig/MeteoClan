@@ -232,9 +232,73 @@ export const MoonCalendar = memo(function MoonCalendar({
   const currentPhaseName = getMoonPhaseName(currentPhaseValue);
   const currentIllumination = getMoonIllumination(currentPhaseValue);
 
-  // Moonrise / moonset del día actual desde OWM (en segundos UNIX)
-  const moonriseISO = owmToday?.moonrise ? new Date(owmToday.moonrise * 1000).toISOString() : null;
-  const moonsetISO = owmToday?.moonset ? new Date(owmToday.moonset * 1000).toISOString() : null;
+  // Lógica refinada para encontrar el arco de salida/puesta más relevante
+  const getRelevantAstro = () => {
+    if (!owmRawDaily || owmRawDaily.length < 1) return { riseISO: null, setISO: null, riseSuffix: null, setSuffix: null };
+
+    const now = date.getTime();
+    const d0 = owmRawDaily[0];
+    const d1 = owmRawDaily[1];
+
+    const r0 = d0.moonrise * 1000;
+    const s0 = d0.moonset * 1000;
+
+    // Caso 1: La luna sale y se pone el mismo día (r < s)
+    if (r0 < s0) {
+      if (now > s0 && d1) {
+        // Ya se puso hoy, mostrar el próximo arco (mañana)
+        const r1 = d1.moonrise * 1000;
+        const s1 = d1.moonset * 1000;
+        return {
+          riseISO: new Date(r1).toISOString(),
+          setISO: new Date(r1 < s1 ? s1 : (owmRawDaily[2]?.moonset * 1000 || s1 + 12 * 3600 * 1000)).toISOString(),
+          riseSuffix: 'tomorrow',
+          setSuffix: r1 < s1 ? 'tomorrow' : 'other'
+        };
+      }
+      return {
+        riseISO: new Date(r0).toISOString(),
+        setISO: new Date(s0).toISOString(),
+        riseSuffix: null,
+        setSuffix: null
+      };
+    } 
+    
+    // Caso 2: La luna cruza la medianoche (s < r)
+    else {
+      // Si estamos después de la salida de hoy: el arco termina mañana
+      if (now > r0 && d1) {
+        return {
+          riseISO: new Date(r0).toISOString(),
+          setISO: new Date(d1.moonset * 1000).toISOString(),
+          riseSuffix: null,
+          setSuffix: 'tomorrow'
+        };
+      }
+      
+      // Si estamos antes de la puesta de hoy: el arco empezó ayer
+      if (now < s0) {
+        const rYesterday = r0 - (24 * 3600 + 3000) * 1000;
+        return {
+          riseISO: new Date(rYesterday).toISOString(),
+          setISO: new Date(s0).toISOString(),
+          riseSuffix: 'yesterday',
+          setSuffix: null
+        };
+      }
+
+      // Si estamos entre la puesta (13:22) y la salida (22:50): Luna abajo.
+      // Mostramos el próximo ciclo que empieza hoy tarde y termina mañana.
+      return {
+        riseISO: new Date(r0).toISOString(),
+        setISO: d1 ? new Date(d1.moonset * 1000).toISOString() : new Date(s0 + 24 * 3600 * 1000).toISOString(),
+        riseSuffix: null,
+        setSuffix: 'tomorrow'
+      };
+    }
+  };
+
+  const { riseISO: moonriseISO, setISO: moonsetISO, riseSuffix, setSuffix } = getRelevantAstro();
 
   const formatMoonTime = (isoString: string | null): string | null => {
     if (!isoString) return null;
@@ -272,6 +336,8 @@ export const MoonCalendar = memo(function MoonCalendar({
               moonrise={moonriseISO}
               moonset={moonsetISO}
               timezone={timezone}
+              riseSuffix={riseSuffix}
+              setSuffix={setSuffix}
             />
           </div>
         )}

@@ -16,6 +16,8 @@ const en = {
   precipitation: "Precip.",
   forecastTitle: "8-Day Forecast",
   today: "Today",
+  tomorrow: "Tomorrow",
+  yesterday: "Yesterday",
   sunrise: "Sunrise",
   sunset: "Sunset",
   sunCycle: "Sun Cycle",
