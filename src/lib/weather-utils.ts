@@ -196,7 +196,7 @@ export function processOWMData(apiData: OWMWeatherData, locationName: string): W
     forecast: forecastData,
     hourly: todayHourlyForecast,
     latitude: lat,
-    lastUpdated: new Date().toISOString(),
+    lastUpdated: unixToISO(current.dt),
     owmRawDaily: daily, // Array completo para el MoonCalendar
   };
 };
