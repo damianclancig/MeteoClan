@@ -1,127 +1,99 @@
+# MeteoClan - Pronóstico del Tiempo con Inteligencia Artificial
 
-# MeteoClan - Pronóstico del Tiempo en Tiempo Real con IA
-
-[![Captura de Pantalla de MeteoClan](https://res.cloudinary.com/dqh1coa3c/image/upload/v1772030429/MeteoClan/screenshot_dix6yd.webp)](https://clima.clancig.com.ar)
+[![Screenshot de MeteoClan](https://res.cloudinary.com/dqh1coa3c/image/upload/v1772030429/MeteoClan/screenshot_dix6yd.webp)](https://clima.clancig.com.ar)
 
 ### 🚀 [Ver Demo en Vivo](https://clima.clancig.com.ar) 🚀
 
-**MeteoClan** es una aplicación web moderna y elegante que proporciona pronósticos del tiempo en tiempo real para cualquier ciudad del mundo. Construida con tecnologías de vanguardia, ofrece una experiencia de usuario rápida, receptiva e inmersiva, destacando por sus **fondos de pantalla dinámicos generados por Inteligencia Artificial** que reflejan el clima actual de la ciudad consultada.
+**MeteoClan** es una aplicación climática de vanguardia diseñada para sumergir al usuario en el estado del tiempo. A diferencia de las apps convencionales, MeteoClan utiliza **Inteligencia Artificial (Google Gemini)** para generar paisajes dinámicos en tiempo real que reflejan no solo el clima, sino la esencia visual de la ciudad consultada.
 
-La aplicación detecta automáticamente la ubicación del usuario para proporcionar un pronóstico local instantáneo. La interfaz está diseñada para ser limpia e informativa, con iconos animados y un diseño futurista tipo "tarjeta de cristal".
-
----
-
-## ✨ Características
-
-- **Fondos Generados por IA:** Imágenes de fondo espectaculares y únicas, creadas en tiempo real por Google Gemini, que representan visualmente el clima y la ubicación buscada.
-- **Datos Meteorológicos en Tiempo Real:** Obtén información actualizada al minuto sobre temperatura, sensación térmica, humedad, velocidad y dirección del viento, y probabilidad de precipitación.
-- **Geolocalización:** Obtiene automáticamente el clima de tu ubicación actual al cargar la página.
-- **Búsqueda Multilingüe con Autocompletado:** Encuentra fácilmente cualquier ciudad del mundo. Puedes buscar "London", "Londres" o "Londra" y la aplicación entenderá tu búsqueda gracias a la detección de idioma.
-- **Pronóstico a 6 Días:** Planifica con antelación con un pronóstico detallado. Al seleccionar un día, la tarjeta principal se actualiza con la información completa de esa fecha.
-- **Pronóstico por Horas:** Visualiza el pronóstico para las próximas horas en un carrusel interactivo dentro de la tarjeta principal.
-- **Fases de la Luna:** Consulta la fase lunar actual, su porcentaje de iluminación y las fechas de las próximas fases principales, con un icono que se ajusta al hemisferio norte o sur.
-- **Dirección del Viento:** Un indicador visual muestra la dirección del viento con una flecha y la abreviatura cardinal localizada (N, SO, E, etc.).
-- **Diseño Receptivo:** Una interfaz totalmente receptiva que se ve genial en computadoras de escritorio, tabletas y dispositivos móviles.
-- **Interfaz de Usuario Dinámica:** Incluye iconos meteorológicos animados para cada condición climática y un moderno diseño de "tarjeta de cristal".
-- **Soporte Multilingüe:** Interfaz disponible en inglés, español y portugués, que se adapta al idioma del navegador.
-- **Huevo de Pascua Oculto:** ¡Descubre una función secreta para una experiencia más inmersiva!
+Construida con **Next.js 15**, **React 19** y una arquitectura de alto rendimiento, ofrece una experiencia fluida, inmersiva y visualmente impactante a través de un diseño "Glassmorphism" moderno.
 
 ---
 
-## 🛠️ Tecnologías Utilizadas
+## ✨ Características Destacadas
 
-Este proyecto está construido con un stack tecnológico moderno y listo para producción:
+### 🤖 Paisajes Dinámicos con IA (Google Gemini)
+Cada búsqueda genera una imagen de fondo única y espectacular. La IA interpreta la condición climática (lluvia, nieve, tormenta, niebla) y la ubicación geográfica para crear una atmósfera visual personalizada que cambia en tiempo real.
 
-- **Framework:** [Next.js](https://nextjs.org/) (App Router)
-- **Lenguaje:** [TypeScript](https://www.typescriptlang.org/)
-- **Estilos:** [Tailwind CSS](https://tailwindcss.com/)
-- **Componentes de UI:** [ShadCN UI](https://ui.shadcn.com/)
-- **Iconos:** [Lucide React](https://lucide.dev/guide/packages/lucide-react)
-- **Inteligencia Artificial:** [Google Gemini](https://ai.google.dev/) a través de [Genkit](https://firebase.google.com/docs/genkit) para la generación de imágenes.
+### 🎭 Animaciones Atmosféricas de Alta Fidelidad
+No solo ves el clima, lo sientes. Hemos implementado capas de animación avanzadas:
+- **Tormentas Eléctricas**: Destellos ambientales sincronizados con rayos realistas.
+- **Nevadas Dinámicas**: Partículas de nieve con movimiento zigzag y acumulación visual.
+- **Lluvia Inmersiva**: Efectos de gotas y niebla ambiental para una sensación de humedad real.
+- **Ciclo Solar y Lunar**: Seguimiento visual en tiempo real del arco del sol y las fases de la luna con emojis dinámicos.
+
+### 📱 Experiencia PWA (Progressive Web App)
+Instala MeteoClan en tu smartphone o escritorio. Soporta modo offline básico, iconos adaptativos y una experiencia de navegación a pantalla completa sin barras de navegador.
+
+### 🌐 Datos Precisos y Globales
+- **Powered by OpenWeatherMap**: Datos actualizados al minuto con el One Call API.
+- **Detalles Exhaustivos**: Humedad, viento (velocidad y dirección), presión, visibilidad, nubosidad, Índice UV y probabilidad de precipitación.
+- **Pronóstico de 8 Días**: Planificación a largo plazo con detalles granulares por día.
+- **Línea de Tiempo Horaria**: Visualiza la evolución del clima en las próximas 24 horas y eventos astronómicos (salida/puesta de sol y luna).
+
+### 🌍 Multi-idioma Nativo
+Soporte completo e integrado para **Español, Inglés y Portugués**, incluyendo la localización de unidades y formatos de fecha.
 
 ---
 
-## 🔌 APIs
+## 🛠️ Stack Tecnológico
 
-- **[API de Open-Meteo](https://open-meteo.com/):** Utilizada para obtener datos del tiempo actual y pronósticos. ¡Es gratuita y no requiere API Key!
-- **[Google AI (Gemini)](https://ai.google.dev/):** Para la generación de imágenes de fondo dinámicas.
-- **[BigDataCloud Reverse Geocoding](https://www.bigdatacloud.com/):** Para obtener el nombre de la ciudad a partir de coordenadas.
+- **Framework:** [Next.js 15](https://nextjs.org/) (App Router & Server Actions)
+- **Frontend:** [React 19](https://react.dev/), [Tailwind CSS](https://tailwindcss.com/)
+- **Backend Serverless:** [Firebase Functions](https://firebase.google.com/docs/functions) con [Genkit](https://firebase.google.com/docs/genkit)
+- **IA:** [Google Gemini 2.0 Flash](https://ai.google.dev/) (Generación de fondos)
+- **Estado y UI:** [Framer Motion](https://www.framer.com/motion/) para transiciones suaves y [Lucide React](https://lucide.dev/) para iconografía.
+- **Almacenamiento:** [Firebase Storage](https://firebase.google.com/docs/storage) para el caché de imágenes generadas.
 
 ---
 
-## 🚀 Cómo Empezar
-
-Sigue estas instrucciones para obtener una copia local del proyecto y ponerla en funcionamiento.
+## 🚀 Instalación y Configuración
 
 ### Prerrequisitos
+- Node.js 20.x o superior.
+- Una cuenta en [Google AI Studio](https://aistudio.google.com/) para la API Key de Gemini.
+- Un proyecto en [Firebase](https://console.firebase.google.com/) (opcional para funciones locales, requerido para desplegar).
 
-- [Node.js](https://nodejs.org/) (versión 18.x o superior)
-- [npm](https://www.npmjs.com/) o [yarn](https://yarnpkg.com/)
+### Pasos
+1. **Clonar el repositorio:**
+   ```bash
+   git clone https://github.com/damianclancig/MeteoClan.git
+   cd MeteoClan
+   ```
 
-### Instalación
+2. **Instalar dependencias:**
+   ```bash
+   npm install
+   cd functions && npm install && cd ..
+   ```
 
-1.  **Clona el repositorio:**
-    ```bash
-    git clone https://github.com/damianclancig/MeteoClan.git
-    cd MeteoClan
-    ```
+3. **Variables de Entorno:**
+   Crea un archivo `.env.local` con las siguientes claves:
+   ```env
+   # API Keys
+   GEMINI_API_KEY=tu_clave_de_gemini
+   NEXT_PUBLIC_APP_URL=http://localhost:3000
 
-2.  **Instala las dependencias:**
-    ```bash
-    npm install
-    ```
+   # Firebase (Requerido para el backend de fondos)
+   NEXT_PUBLIC_FIREBASE_API_KEY=...
+   NEXT_PUBLIC_FIREBASE_PROJECT_ID=...
+   # (Ver .env.local.example para la lista completa)
+   ```
 
-3.  **Configura las variables de entorno:**
-    Crea un archivo llamado `.env.local` en la raíz de tu proyecto y copia el contenido de `.env.local.example`. Necesitarás una API Key de Google AI para la generación de imágenes y tus credenciales de Google AdSense si deseas monetizar la aplicación.
-
-    ```.env.local
-    # Clave de API de Google AI Studio para Gemini
-    GEMINI_API_KEY=tu_api_key_aqui
-
-    # URL de tu aplicación (opcional para desarrollo, recomendado para producción)
-    # Por defecto, se usará http://localhost:9002 si no se especifica.
-    # Para producción, cámbiala a tu dominio. Ejemplo:
-    NEXT_PUBLIC_APP_URL=https://clima.clancig.com.ar
-
-    # URLs for the support dialog
-    NEXT_PUBLIC_DONATION_URL=https://cafecito.app/damianclancig
-    NEXT_PUBLIC_PAYPAL_URL=https://paypal.me/tu_usuario
-    NEXT_PUBLIC_PORTFOLIO_URL=https://www.clancig.com.ar
-    NEXT_PUBLIC_GITHUB_URL=https://github.com/damianclancig/MeteoClan
-    
-    # Credenciales de Google AdSense (Opcional)
-    # Tu ID de editor de AdSense
-    NEXT_PUBLIC_GOOGLE_ADSENSE_PUB_ID=ca-pub-XXXXXXXXXXXXXXXX
-    # Tu ID de bloque de anuncios de AdSense
-    NEXT_PUBLIC_GOOGLE_ADSENSE_AD_SLOT_ID=XXXXXXXXXX
-
-    # Configuración de Firebase (Opcional si NO se usa el backend/storage, Requerido si vas a guardar datos)
-    NEXT_PUBLIC_FIREBASE_API_KEY=tu_api_key_de_firebase
-    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=tu_proyecto.firebaseapp.com
-    NEXT_PUBLIC_FIREBASE_PROJECT_ID=tu_proyecto_id
-    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=tu_proyecto.appspot.com
-    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=1234567890
-    NEXT_PUBLIC_FIREBASE_APP_ID=1:1234567890:web:abcdef123456
-    ```
-
-### Ejecutar la Aplicación
-
-Para iniciar el servidor de desarrollo:
-
-```bash
-npm run dev
-```
-
-Abre [http://localhost:9002](http://localhost:9002) en tu navegador para ver el resultado.
+4. **Ejecutar en desarrollo:**
+   ```bash
+   npm run dev
+   ```
 
 ---
 
 ## 📄 Licencia
 
-Este proyecto se distribuye bajo la Licencia ISC. Consulta el archivo `LICENSE` para más información.
-
----
+Este proyecto se distribuye bajo la licencia **ISC**. Siéntete libre de explorar, aprender y construir sobre él.
 
 ## 👨‍💻 Autor
 
-- **Clancig FullstackDev** - [Sitio Web](https://www.clancig.com.ar) | [GitHub](https://github.com/damianclancig)
+**Damián Clancig** - Fullstack Developer especializado en experiencias interactivas y escalables.
+- [Portfolio](https://www.clancig.com.ar)
+- [GitHub](https://github.com/damianclancig)
+- [LinkedIn](https://www.linkedin.com/in/damianclancig/)

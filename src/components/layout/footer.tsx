@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "@/hooks/use-translation";
 import { SupportDialog } from "./support-dialog";
 import { LegalDialog } from "./legal-dialog";
+import { cn } from "@/lib/utils";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -11,15 +12,41 @@ export function Footer() {
 
   const [legalOpen, setLegalOpen] = useState(false);
   const [legalTab, setLegalTab] = useState<"terms" | "privacy">("terms");
+  const [footerVisible, setFooterVisible] = useState(false);
+  const footerRef = useRef<HTMLElement>(null);
 
   const openLegal = (tab: "terms" | "privacy") => {
     setLegalTab(tab);
     setLegalOpen(true);
   };
 
+  useEffect(() => {
+    const el = footerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setFooterVisible(entry.isIntersecting),
+      { threshold: 0.1 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <>
-      <footer className="w-full text-foreground/60 border-t border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      {/* Sticky mini-footer — visible only when the real footer is off-screen */}
+      <div
+        className={cn(
+          "fixed bottom-0 left-0 right-0 z-50 flex justify-center py-2",
+          "bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t border-border/40",
+          "transition-transform duration-300 ease-in-out",
+          footerVisible ? "translate-y-full" : "translate-y-0"
+        )}
+        aria-hidden={footerVisible}
+      >
+        <SupportDialog />
+      </div>
+
+      <footer ref={footerRef} className="w-full text-foreground/60 border-t border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 items-center gap-4 py-6 px-4">
 
           {/* Copyright & Brand - Left */}
