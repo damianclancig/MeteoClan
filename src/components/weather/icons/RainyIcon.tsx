@@ -109,7 +109,8 @@ export const RainyIcon: React.FC<RainyIconProps> = ({
         />
       )}
 
-      <div className="absolute inset-0 z-[20] pointer-events-none flex justify-center items-center overflow-visible">
+      {/* LLUVIA — Sándwich intermedio a z-10 */}
+      <div className="absolute inset-0 z-[10] pointer-events-none flex justify-center items-center overflow-visible">
         <RainEffect
           pop={pop}
           isThunderstorm={false}
@@ -144,8 +145,8 @@ export const RainyIcon: React.FC<RainyIconProps> = ({
         </div>
       )}
 
-      {/* NUBES — brightness reactivo a cloudFlash y atmosFlash */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none drop-shadow-2xl z-10">
+      {/* NUBE BASE — Z-5 (Detrás de la lluvia) */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none drop-shadow-xl z-[5]">
         <img
           src="/assets/weather/cloudy_02.webp"
           alt="Tormenta"
@@ -160,6 +161,10 @@ export const RainyIcon: React.FC<RainyIconProps> = ({
             marginLeft: '30px',
           }}
         />
+      </div>
+
+      {/* NUBE FRONTAL — Z-20 (Delante de la lluvia) */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none drop-shadow-2xl z-[20]">
         <img
           src="/assets/weather/cloudy_02.webp"
           alt="Nublado"
