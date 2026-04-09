@@ -109,7 +109,7 @@ export const RainyIcon: React.FC<RainyIconProps> = ({
         />
       )}
 
-      <div className="absolute inset-0 z-[5] pointer-events-none flex justify-center items-center overflow-visible">
+      <div className="absolute inset-0 z-[20] pointer-events-none flex justify-center items-center overflow-visible">
         <RainEffect
           pop={pop}
           isThunderstorm={false}
@@ -139,7 +139,7 @@ export const RainyIcon: React.FC<RainyIconProps> = ({
 
       {/* ASTRO (Sol/Luna) — Aparece en lluvias intermitentes (IDs 500, 520, 521, 522) */}
       {weatherId && hasAstroPresence(weatherId) && (
-        <div className="absolute top-[-5%] right-[25%] z-[25]">
+        <div className="absolute top-[-5%] right-[25%] z-0">
           <AstroHero isDay={isDayTime(iconCode)} className="w-16 h-16 md:w-20 md:h-20" />
         </div>
       )}

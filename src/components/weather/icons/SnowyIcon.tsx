@@ -37,7 +37,7 @@ export const SnowyIcon: React.FC<SnowyIconProps> = ({
       
       {/* 0. ASTRO (Sol/Luna) — Aparece en nieve intermitente (IDs 600, 620, 621, 622) */}
       {weatherId && hasAstroPresence(weatherId) && (
-        <div className="absolute top-[-5%] right-[25%] z-[25]">
+        <div className="absolute top-[-5%] right-[25%] z-0">
           <AstroHero isDay={isDayTime(iconCode)} className="w-16 h-16 md:w-20 md:h-20" />
         </div>
       )}
