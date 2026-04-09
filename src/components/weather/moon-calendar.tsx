@@ -233,7 +233,12 @@ export const MoonCalendar = memo(function MoonCalendar({
   const currentIllumination = getMoonIllumination(currentPhaseValue);
 
   // Lógica refinada para encontrar el arco de salida/puesta más relevante
-  const getRelevantAstro = () => {
+  const getRelevantAstro = (): { 
+    riseISO: string | null; 
+    setISO: string | null; 
+    riseSuffix: 'yesterday' | 'tomorrow' | 'other' | null; 
+    setSuffix: 'yesterday' | 'tomorrow' | 'other' | null; 
+  } => {
     if (!owmRawDaily || owmRawDaily.length < 1) return { riseISO: null, setISO: null, riseSuffix: null, setSuffix: null };
 
     const now = date.getTime();

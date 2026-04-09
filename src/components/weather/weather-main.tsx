@@ -42,6 +42,54 @@ const initialState: FormState = {
   success: false,
 };
 
+const TEST_OPTIONS = [
+  { value: 'real', label: '--- DATOS REALES ---' },
+  // Tormentas (2xx)
+  { value: '200', label: '200: Tormenta Lluvia Ligera' },
+  { value: '201', label: '201: Tormenta Lluvia' },
+  { value: '202', label: '202: Tormenta Lluvia Fuerte' },
+  { value: '210', label: '210: Tormenta Ligera' },
+  { value: '211', label: '211: Tormenta' },
+  { value: '212', label: '212: Tormenta Fuerte' },
+  { value: '230', label: '230: Tormenta Llovizna Ligera' },
+  { value: '231', label: '231: Tormenta Llovizna' },
+  { value: '232', label: '232: Tormenta Llovizna Fuerte' },
+  // Llovizna (3xx)
+  { value: '300', label: '300: Llovizna Ligera' },
+  { value: '301', label: '301: Llovizna' },
+  { value: '310', label: '310: Llovizna Lluvia Ligera' },
+  { value: '313', label: '313: Llovizna/Lluvia' },
+  // Lluvia (5xx)
+  { value: '500', label: '500: Lluvia Ligera' },
+  { value: '501', label: '501: Lluvia Moderada' },
+  { value: '502', label: '502: Lluvia Fuerte' },
+  { value: '503', label: '503: Lluvia Muy Fuerte' },
+  { value: '504', label: '504: Lluvia Extrema' },
+  { value: '511', label: '511: Lluvia Gélida' },
+  { value: '520', label: '520: Chubascos Ligeros' },
+  { value: '521', label: '521: Chubascos' },
+  // Nieve (6xx)
+  { value: '600', label: '600: Nieve Ligera' },
+  { value: '601', label: '601: Nieve' },
+  { value: '602', label: '602: Nieve Fuerte' },
+  { value: '611', label: '611: Aguanieve' },
+  { value: '612', label: '612: Chubascos Aguanieve' },
+  { value: '615', label: '615: Lluvia y Nieve' },
+  { value: '620', label: '620: Chubascos Nieve' },
+  // Atmósfera (7xx)
+  { value: '701', label: '701: Neblina' },
+  { value: '711', label: '711: Humo' },
+  { value: '721', label: '721: Calima' },
+  { value: '741', label: '741: Niebla' },
+  { value: '781', label: '781: TORNADO 🌪️' },
+  // Nubes (8xx)
+  { value: '800', label: '800: Cielo Despejado' },
+  { value: '801', label: '801: Pocas Nubes' },
+  { value: '802', label: '802: Nubes Dispersas' },
+  { value: '803', label: '803: Nuboso' },
+  { value: '804', label: '804: Cubierto' },
+];
+
 // Combina propiedades para la tarjeta de display principal
 type DisplayWeather = CurrentWeather | (DailyForecast & Pick<CurrentWeather, 'location' | 'timezone' | 'latitude'>);
 
@@ -87,6 +135,17 @@ export function WeatherMain({ initialLocale }: { initialLocale?: Locale }) {
   const [currentDate, setCurrentDate] = useState<Date | null>(null);
   const [lastUpdated, setLastUpdated] = useState<string>('');
   const [contentVisible, setContentVisible] = useState(true);
+
+  // MODO TEST (v5.0): Centralizado en weather-main
+  const [testMode, setTestMode] = useState<{
+    weather: string;
+    astro: 'auto' | 'day' | 'night';
+  }>({
+    weather: 'real',
+    astro: 'auto'
+  });
+
+  const showDevToolbar = process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_VERCEL_ENV === 'preview';
 
   const initialFetchFormRef = useRef<HTMLFormElement>(null);
   const isInitialFetchDone = useRef(false);
@@ -243,7 +302,7 @@ export function WeatherMain({ initialLocale }: { initialLocale?: Locale }) {
     const location = weatherData?.current?.location;
     const condition = weatherData?.current?.description; // Clave de traducción (ej: 'clear_sky')
     const main = weatherData?.current?.main; // Categoría principal (ej: 'Clear')
-    
+
     if (location && condition) {
       const generate = async () => {
         setIsBackgroundLoading(true);
@@ -258,7 +317,7 @@ export function WeatherMain({ initialLocale }: { initialLocale?: Locale }) {
 
           const response = await fetch(`/api/ai-background?${params.toString()}`);
           const data = await response.json();
-          
+
           if (data.imageBase64) {
             setBackgroundImage(data.imageBase64);
           } else {
@@ -285,15 +344,15 @@ export function WeatherMain({ initialLocale }: { initialLocale?: Locale }) {
       <div className="fixed inset-0 z-0 bg-background" onClick={toggleContent}>
         {/* Skeleton de Gradiente Dinámico */}
         {isBackgroundLoading && (
-          <div 
+          <div
             className={cn(
               "absolute inset-0 transition-opacity duration-1000 animate-pulse bg-gradient-to-br",
               weatherData?.current?.main === 'Clear' ? "from-amber-400 to-blue-500" :
-              weatherData?.current?.main === 'Clouds' ? "from-gray-400 to-slate-600" :
-              weatherData?.current?.main === 'Rain' ? "from-blue-700 to-slate-900" :
-              weatherData?.current?.main === 'Thunderstorm' ? "from-purple-900 to-black" :
-              weatherData?.current?.main === 'Snow' ? "from-blue-100 to-white" :
-              "from-slate-700 to-slate-900"
+                weatherData?.current?.main === 'Clouds' ? "from-gray-400 to-slate-600" :
+                  weatherData?.current?.main === 'Rain' ? "from-blue-700 to-slate-900" :
+                    weatherData?.current?.main === 'Thunderstorm' ? "from-purple-900 to-black" :
+                      weatherData?.current?.main === 'Snow' ? "from-blue-100 to-white" :
+                        "from-slate-700 to-slate-900"
             )}
           />
         )}
@@ -370,14 +429,58 @@ export function WeatherMain({ initialLocale }: { initialLocale?: Locale }) {
               ) : weatherData && displayData ? (
                 <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-8 animate-in fade-in">
                   <div className="lg:col-span-3" onClick={e => e.stopPropagation()}>
-                    <GlassCard id="current-weather" className="scroll-mt-20 lg:scroll-mt-24">
-                      <CurrentWeatherComponent
-                        data={displayData}
-                        hourlyData={hourlyData}
-                        locale={locale}
-                        lastUpdated={lastUpdated}
-                      />
-                    </GlassCard>
+                    {/* DEV TOOLBAR (v5.0): Entre buscador y card */}
+                    {showDevToolbar && (
+                      <div className="w-full flex flex-wrap items-center justify-center gap-3 mt-2 mb-2 animate-in fade-in duration-300">
+                        <div className="flex bg-white/5 backdrop-blur-md rounded-full border border-white/10 p-0.5">
+                          {[
+                            { id: 'auto', label: 'Auto' },
+                            { id: 'day', label: '☀️' },
+                            { id: 'night', label: '🌙' }
+                          ].map((mode) => (
+                            <button
+                              key={mode.id}
+                              onClick={() => setTestMode(prev => ({ ...prev, astro: mode.id as any }))}
+                              className={cn(
+                                "px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase transition-all duration-300",
+                                testMode.astro === mode.id 
+                                  ? "bg-primary text-white scale-105" 
+                                  : "text-white/30 hover:text-white/60"
+                              )}
+                            >
+                              {mode.label}
+                            </button>
+                          ))}
+                        </div>
+
+                        <select
+                          value={testMode.weather}
+                          onChange={(e) => setTestMode(prev => ({ ...prev, weather: e.target.value }))}
+                          className="bg-white/5 backdrop-blur-sm text-white/60 border border-white/10 text-[9px] rounded-full px-3 py-1 cursor-pointer outline-none hover:bg-white/10 transition-colors uppercase font-black"
+                        >
+                          {TEST_OPTIONS.map(opt => (
+                            <option key={opt.value} value={opt.value} className="bg-slate-900 text-white">
+                              {opt.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+
+                    <div className={cn(
+                      "transition-all duration-700 ease-in-out",
+                      contentVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10 pointer-events-none"
+                    )}>
+                      <GlassCard id="current-weather" className="w-full overflow-hidden relative">
+                        <CurrentWeatherComponent
+                          data={displayData}
+                          hourlyData={hourlyData}
+                          locale={locale}
+                          lastUpdated={lastUpdated}
+                          testMode={testMode}
+                        />
+                      </GlassCard>
+                    </div>
                   </div>
 
                   <div className="lg:col-span-3 border-none" onClick={e => e.stopPropagation()}>
@@ -385,7 +488,7 @@ export function WeatherMain({ initialLocale }: { initialLocale?: Locale }) {
                   </div>
 
                   <div className="lg:col-span-3" onClick={e => e.stopPropagation()}>
-                    <GlassCard id="forecast" className="scroll-mt-20 lg:scroll-mt-24">
+                    <GlassCard id="forecast" className="scroll-mt-20 lg:scroll-mt-24 overflow-hidden w-full relative">
                       <Forecast
                         data={weatherData.forecast}
                         onDaySelect={handleDaySelect}

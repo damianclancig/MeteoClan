@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, memo } from 'react';
+import { useEffect, useRef, memo, useState } from 'react';
 import type { HourlyForecast as HourlyForecastType } from '@/lib/types';
 import { useTranslation } from '@/hooks/use-translation';
 import { AnimatedWeatherIcon } from '@/components/icons/animated-weather-icon';
@@ -32,6 +32,11 @@ export const HourlyForecast = memo(function HourlyForecast({ data, sunrise, suns
   const { t } = useTranslation();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const currentEventRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (currentEventRef.current && scrollContainerRef.current) {
@@ -76,9 +81,9 @@ export const HourlyForecast = memo(function HourlyForecast({ data, sunrise, suns
   // Sort all events chronologically
   timelineEvents.sort((a, b) => a.dt - b.dt);
 
-  const now = new Date().getTime();
+  const now = mounted ? new Date().getTime() : 0;
   // Find the index of the last hourly event that is less than or equal to the current time.
-  const currentEventIndex = timelineEvents.findLastIndex(event => event.type === 'hour' && event.dt <= now);
+  const currentEventIndex = mounted ? timelineEvents.findLastIndex(event => event.type === 'hour' && event.dt <= now) : -1;
 
 
   return (
@@ -106,7 +111,13 @@ export const HourlyForecast = memo(function HourlyForecast({ data, sunrise, suns
 
               {item.type === 'hour' && (
                 <>
-                  <AnimatedWeatherIcon code={item.weatherCode} className="w-10 h-10" isNight={isNight} />
+                  <div className="flex justify-center items-center w-full">
+                    <AnimatedWeatherIcon
+                      code={item.weatherCode}
+                      className="w-10 h-10 sm:w-11 lg:w-10 lg:h-10"
+                      isNight={item.weatherIcon?.endsWith('n')}
+                    />
+                  </div>
                   <p className="font-bold">{item.temp}°</p>
                   <div className="flex items-center gap-1 text-foreground/80" title={t('precipitation')}>
                     <Umbrella className="w-3 h-3" />

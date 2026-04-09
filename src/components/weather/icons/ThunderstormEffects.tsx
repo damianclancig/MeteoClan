@@ -92,8 +92,8 @@ export const LightStorm: React.FC<StormProps> = ({ onCloudFlash }) => {
   const flashCloud = () => {
     if (cloudActiveRef.current) return;
     cloudActiveRef.current = true;
-    cloudCb.current(true);
-    setTimeout(() => { cloudCb.current(false); cloudActiveRef.current = false; }, 130);
+    cloudCb.current?.(true);
+    setTimeout(() => { cloudCb.current?.(false); cloudActiveRef.current = false; }, 130);
   };
 
   useEffect(() => {
@@ -158,8 +158,8 @@ export const ModerateStorm: React.FC<StormProps> = ({ onCloudFlash }) => {
       cloudRef.current = setTimeout(() => {
         if (!cloudActiveRef.current) {
           cloudActiveRef.current = true;
-          cloudCb.current(true);
-          setTimeout(() => { cloudCb.current(false); cloudActiveRef.current = false; }, 130);
+          cloudCb.current?.(true);
+          setTimeout(() => { cloudCb.current?.(false); cloudActiveRef.current = false; }, 130);
         }
         schedule();
       }, rnd(3500, 7000));
@@ -209,8 +209,8 @@ export const HeavyStorm: React.FC<StormProps> = ({ onCloudFlash }) => {
       cloudRef.current = setTimeout(() => {
         if (!cloudActiveRef.current) {
           cloudActiveRef.current = true;
-          cloudCb.current(true);
-          setTimeout(() => { cloudCb.current(false); cloudActiveRef.current = false; }, 130);
+          cloudCb.current?.(true);
+          setTimeout(() => { cloudCb.current?.(false); cloudActiveRef.current = false; }, 130);
         }
         schedule();
       }, rnd(900, 1600));
@@ -247,8 +247,8 @@ export const ExtremeStorm: React.FC<StormProps> = ({ onCloudFlash }) => {
   const flashCloud = () => {
     if (cloudActiveRef.current) return;
     cloudActiveRef.current = true;
-    cloudCb.current(true);
-    setTimeout(() => { cloudCb.current(false); cloudActiveRef.current = false; }, 120);
+    cloudCb.current?.(true);
+    setTimeout(() => { cloudCb.current?.(false); cloudActiveRef.current = false; }, 120);
   };
 
   // Loop de Rayos en Secuencias (3-5 disparos + pausa breve)

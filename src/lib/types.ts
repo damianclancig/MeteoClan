@@ -23,6 +23,10 @@ export interface CurrentWeather {
   weatherCode: number; // OWM weather condition ID (ej: 800)
   weatherIcon: string; // OWM icon code (ej: '01d')
   latitude: number;
+  pressure: number;
+  visibility: number;
+  clouds: number;
+  uvi: number;
 }
 
 /** Pronóstico para un día específico. */
@@ -47,6 +51,10 @@ export interface DailyForecast {
   moonrise?: string;  // ISO 8601 Date string
   moonset?: string;   // ISO 8601 Date string
   moon_phase?: number; // Valor 0-1 (OWM)
+  pressure: number;
+  visibility: number;
+  clouds: number;
+  uvi: number;
 }
 
 /** Pronóstico para una hora específica. */
@@ -123,6 +131,9 @@ export interface OWMWeatherData {
     wind_speed: number;
     wind_deg: number;
     pop?: number;
+    visibility: number;
+    clouds: number;
+    uvi: number;
     weather: Array<{ id: number; main: string; description: string; icon: string }>;
   };
   hourly: Array<{
@@ -150,6 +161,8 @@ export interface OWMWeatherData {
     wind_speed: number;
     wind_deg: number;
     pop: number; // 0 a 1
+    clouds: number;
+    uvi: number;
     weather: Array<{ id: number; main: string; description: string; icon: string }>;
   }>;
 }

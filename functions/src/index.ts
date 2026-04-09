@@ -12,6 +12,11 @@ const auth = new GoogleAuth({
     scopes: "https://www.googleapis.com/auth/cloud-platform",
 });
 
+interface GenerateBackgroundData {
+    city: string;
+    weatherDescription: string;
+}
+
 export const generateCityBackground = onCall(
     {
         memory: "512MiB",

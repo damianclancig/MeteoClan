@@ -69,18 +69,21 @@ export const getMoonIllumination = (phase: number): number => {
 // ============================================================
 
 /**
- * Determina si la hora actual es de noche según amanecer y atardecer.
+ * Determina si es de noche según amanecer, atardecer y un tiempo de referencia.
  * @param sunrise - ISO string del amanecer.
  * @param sunset - ISO string del atardecer.
+ * @param currentTime - Opcional. ISO string del momento actual (usualmente data.dt).
  * @returns true si es de noche.
  */
-export const isNightTime = (sunrise?: string, sunset?: string): boolean => {
+export const isNightTime = (sunrise?: string, sunset?: string, currentTime?: string): boolean => {
   if (!sunrise || !sunset) return false;
-  const nowTimestamp = Date.now();
-  return (
-    nowTimestamp < new Date(sunrise).getTime() ||
-    nowTimestamp > new Date(sunset).getTime()
-  );
+
+  // Usamos el tiempo de la API si existe, si no el del sistema (fallback)
+  const referenceTimestamp = currentTime ? new Date(currentTime).getTime() : Date.now();
+  const sunriseTime = new Date(sunrise).getTime();
+  const sunsetTime = new Date(sunset).getTime();
+
+  return referenceTimestamp < sunriseTime || referenceTimestamp > sunsetTime;
 };
 
 // ============================================================
@@ -115,7 +118,7 @@ export function processOWMData(apiData: OWMWeatherData, locationName: string): W
     description: getWeatherKeyFromOwmId(currentWeatherId),
     main: getMainCategoryFromOwmId(currentWeatherId),
     pop: currentPop,
-    dt: new Date().toISOString(),
+    dt: unixToISO(current.dt),
     temp_min: daily[0]?.temp.min ?? current.temp,
     temp_max: daily[0]?.temp.max ?? current.temp,
     sunrise: unixToISO(current.sunrise),
@@ -124,6 +127,10 @@ export function processOWMData(apiData: OWMWeatherData, locationName: string): W
     weatherCode: currentWeatherId,
     weatherIcon: currentWeatherIcon,
     latitude: lat,
+    pressure: current.pressure,
+    visibility: current.visibility,
+    clouds: current.clouds,
+    uvi: current.uvi,
   };
 
   // ── Hourly forecast (horas del día actual, hasta 24h) ────────
@@ -177,6 +184,10 @@ export function processOWMData(apiData: OWMWeatherData, locationName: string): W
       moonrise: day.moonrise ? unixToISO(day.moonrise) : undefined,
       moonset: day.moonset ? unixToISO(day.moonset) : undefined,
       moon_phase: day.moon_phase,
+      pressure: day.pressure,
+      visibility: day.clouds > 80 ? 5000 : 10000, // OWM Daily no da visibility, usamos estimado
+      clouds: day.clouds,
+      uvi: day.uvi,
     };
   });
 
@@ -188,4 +199,4 @@ export function processOWMData(apiData: OWMWeatherData, locationName: string): W
     lastUpdated: new Date().toISOString(),
     owmRawDaily: daily, // Array completo para el MoonCalendar
   };
-}
+};
