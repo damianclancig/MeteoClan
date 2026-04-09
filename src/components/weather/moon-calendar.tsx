@@ -66,42 +66,19 @@ function getUpcomingMajorPhases(currentDate: Date): { name: string; date: Date }
 // Componentes de iconos lunares
 // ============================================================
 
-const PhaseIcon = ({ phaseName, latitude }: { phaseName: string; latitude: number }) => {
-  const isSouthernHemisphere = latitude < 0;
-  let path;
-
+const PhaseIcon = ({ phaseName }: { phaseName: string; latitude: number }) => {
   switch (phaseName) {
     case 'new_moon':
-      path = <circle cx="12" cy="12" r="10" fill="black" stroke="currentColor" strokeWidth="0.5" />;
-      break;
+      return <span className="text-2xl leading-none">🌑</span>;
     case 'first_quarter':
-      path = (
-        <path
-          d={isSouthernHemisphere ? 'M12 2 a 10 10 0 0 0 0 20 V2z' : 'M12 2 a 10 10 0 0 1 0 20 V2z'}
-          fill="currentColor"
-        />
-      );
-      break;
+      return <span className="text-2xl leading-none">🌓</span>;
     case 'full_moon':
-      path = <circle cx="12" cy="12" r="10" fill="currentColor" />;
-      break;
+      return <span className="text-2xl leading-none font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">🌕</span>;
     case 'third_quarter':
-      path = (
-        <path
-          d={isSouthernHemisphere ? 'M12 2 a 10 10 0 0 1 0 20 V2z' : 'M12 2 a 10 10 0 0 0 0 20 V2z'}
-          fill="currentColor"
-        />
-      );
-      break;
+      return <span className="text-2xl leading-none">🌗</span>;
     default:
-      path = <circle cx="12" cy="12" r="10" fill="black" stroke="currentColor" strokeWidth="0.5" />;
+      return <span className="text-2xl leading-none">🌑</span>;
   }
-
-  return (
-    <svg viewBox="0 0 24 24" className="w-8 h-8 text-foreground/80">
-      {path}
-    </svg>
-  );
 };
 
 /**
