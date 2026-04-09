@@ -20,6 +20,7 @@ import {
 } from '@/lib/types';
 import { Locale } from '@/lib/i18n';
 import { SunriseSunset } from '@/components/weather/sunrise-sunset';
+import { HourlyForecast } from '@/components/weather/hourly-forecast';
 import { DetailItem } from '@/components/weather/detail-item';
 import { WeatherIconResolver } from '@/components/weather-icons/WeatherIconResolver';
 import { SunnyIcon } from '@/components/weather/icons/SunnyIcon';
@@ -213,6 +214,18 @@ export const CurrentWeather = memo(function CurrentWeather({
           timezone={data.timezone as any} 
         />
       )}
+      
+      {hourlyData && hourlyData.length > 0 && (
+        <div className="w-full mt-4">
+          <HourlyForecast 
+            data={hourlyData} 
+            sunrise={data.sunrise} 
+            sunset={data.sunset} 
+            timezone={data.timezone} 
+          />
+        </div>
+      )}
+
       <DetailsGrid data={data} t={t} />
     </div>
   );
