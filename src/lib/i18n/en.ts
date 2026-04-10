@@ -166,6 +166,7 @@ const en = {
     copied: "Copied!",
     copy_link: "Copy App Link",
     button_donate: "Buy me a 'Cafecito'",
+    button_mercadopago: "Donate with Mercado Pago",
     button_paypal: "Support with PayPal",
     button_portfolio: "Visit my Portfolio",
     button_github: "See on GitHub",

@@ -161,6 +161,7 @@ const es = {
     copied: "¡Copiado!",
     copy_link: "Copiar Enlace de la App",
     button_donate: "Invitame un 'Cafecito'",
+    button_mercadopago: "Donar con Mercado Pago",
     button_paypal: "Colaborar con PayPal",
     button_portfolio: "Visitar mi Portfolio",
     button_github: "Ver en GitHub",

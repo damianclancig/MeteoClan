@@ -22,7 +22,7 @@ const PayPalIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <path fill="#009cde" d="M19.986 6.41c-.048.269-.107.527-.177.777-.646 3.583-2.853 5.174-5.677 5.174h-2.81c-.364 0-.676.267-.732.63l-1.08 6.916c-.056.36-.367.629-.732.629H5.85l.314-1.98 1.002-6.426.063-.395a.64.64 0 0 1 .631-.54h3.972c2.287 0 4.07-.493 5.103-1.6a4.77 4.77 0 0 0 1.051-2.185c.048-.268.082-.541.099-.816a4.63 4.63 0 0 0-.102-1.214Z"/>
   </svg>
 );
-  
+
 export function SupportDialog() {
   const { t } = useTranslation();
 
@@ -31,6 +31,7 @@ export function SupportDialog() {
   
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:9002";
   const donationUrl = process.env.NEXT_PUBLIC_DONATION_URL;
+  const mercadopagoUrl = process.env.NEXT_PUBLIC_MERCADOPAGO_URL;
   const paypalUrl = process.env.NEXT_PUBLIC_PAYPAL_URL;
   const portfolioUrl = process.env.NEXT_PUBLIC_PORTFOLIO_URL;
   const githubUrl = process.env.NEXT_PUBLIC_GITHUB_URL;
@@ -83,8 +84,25 @@ export function SupportDialog() {
               </a>
             </Button>
           )}
+          {mercadopagoUrl && (
+            <Button asChild className="w-full text-base h-auto py-1 sm:py-2 px-2" size="lg">
+              <a href={mercadopagoUrl} target="_blank" rel="noopener noreferrer">
+                <div className="flex items-center justify-center w-full">
+                  <div className="w-24 sm:w-28 -ml-4 sm:-ml-5 mr-1 flex justify-center">
+                    <img 
+                      src="/assets/mp.svg" 
+                      alt="Mercado Pago" 
+                      className="w-full h-auto min-w-[96px] sm:min-w-[132px]" 
+                      style={{ height: 'auto' }}
+                    />
+                  </div>
+                  <span className="text-left">{t('support.button_mercadopago')}</span>
+                </div>
+              </a>
+            </Button>
+          )}
            {paypalUrl && (
-            <Button asChild className="w-full text-base bg-[#003087] hover:bg-[#00205b] h-auto py-2 sm:py-3" size="lg">
+            <Button asChild className="w-full text-base bg-[#003087] hover:bg-[#00205b] text-white h-auto py-2 sm:py-3" size="lg">
               <a href={paypalUrl} target="_blank" rel="noopener noreferrer">
                 <div className="flex items-center justify-center w-full">
                   <div className="w-10 mr-2 flex justify-center">
