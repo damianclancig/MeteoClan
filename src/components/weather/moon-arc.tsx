@@ -22,10 +22,12 @@ const formatTime = (date: Date, timezone: string) => {
 };
 
 const formatDuration = (durationMs: number) => {
+  if (!durationMs || isNaN(durationMs) || durationMs < 0) return '--h --m';
   const hours = Math.floor(durationMs / (1000 * 60 * 60));
   const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
   return `${hours}h ${minutes}m`;
 };
+
 
 export function MoonArc({ 
   moonrise: moonriseStr, 
@@ -86,7 +88,9 @@ export function MoonArc({
   }, [moonrise, moonset]);
 
   // Duración visible real basada en los timestamps
-  const duration = Math.abs(moonset - moonrise);
+  // Si moonrise < moonset, usamos la resta. Si no, algo salió mal en el orquestador (pero ya lo arreglamos ahí)
+  const duration = moonrise && moonset && moonset > moonrise ? moonset - moonrise : 0;
+
 
   return (
     <div className="flex flex-col items-center w-full px-0 pt-1 pb-2">

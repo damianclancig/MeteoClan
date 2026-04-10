@@ -22,6 +22,7 @@ const en = {
   today: "Today",
   tomorrow: "Tomorrow",
   yesterday: "Yesterday",
+  other: "Upcoming",
   sunrise: "Sunrise",
   sunset: "Sunset",
   sunCycle: "Sun Cycle",

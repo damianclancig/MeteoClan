@@ -22,6 +22,7 @@ const es = {
   today: "Hoy",
   tomorrow: "Mañana",
   yesterday: "Ayer",
+  other: "Próximamente",
   sunrise: "Amanecer",
   sunset: "Atardecer",
   sunCycle: "Ciclo Solar",

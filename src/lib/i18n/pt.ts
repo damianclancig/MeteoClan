@@ -22,6 +22,7 @@ const pt = {
   today: "Hoje",
   tomorrow: "Amanhã",
   yesterday: "Ontem",
+  other: "Em breve",
   sunrise: "Nascer do Sol",
   sunset: "Pôr do Sol",
   sunCycle: "Ciclo Solar",
