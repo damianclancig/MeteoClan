@@ -203,11 +203,20 @@ export const MoonCalendar = memo(function MoonCalendar({
 
   const upcomingPhases = getUpcomingMajorPhases(date);
 
-  // Usar moon_phase de OWM si está disponible (más preciso que el cálculo local)
-  const owmToday = owmRawDaily?.[0];
-  const currentPhaseValue = owmToday?.moon_phase ?? 0;
+  // Encontrar la entrada diaria de OWM que corresponde al día REAL de hoy (sistema)
+  const systemNow = new Date();
+  const todayDateStr = systemNow.toISOString().split('T')[0];
+  
+  // Buscar en owmRawDaily la entrada que coincida con hoy (basado en su dt convertido a YYYY-MM-DD)
+  const todayOwmEntry = owmRawDaily?.find(day => {
+    const dayDate = new Date(day.dt * 1000);
+    return dayDate.toISOString().split('T')[0] === todayDateStr;
+  }) || owmRawDaily?.[0];
+
+  const currentPhaseValue = todayOwmEntry?.moon_phase ?? 0;
   const currentPhaseName = getMoonPhaseName(currentPhaseValue);
   const currentIllumination = getMoonIllumination(currentPhaseValue);
+
 
   // Lógica refinada para encontrar el arco de salida/puesta más relevante
   const getRelevantAstro = (): { 
@@ -219,65 +228,76 @@ export const MoonCalendar = memo(function MoonCalendar({
     if (!owmRawDaily || owmRawDaily.length < 1) return { riseISO: null, setISO: null, riseSuffix: null, setSuffix: null };
 
     const now = date.getTime();
-    const d0 = owmRawDaily[0];
-    const d1 = owmRawDaily[1];
-
-    const r0 = d0.moonrise * 1000;
-    const s0 = d0.moonset * 1000;
-
-    // Caso 1: La luna sale y se pone el mismo día (r < s)
-    if (r0 < s0) {
-      if (now > s0 && d1) {
-        // Ya se puso hoy, mostrar el próximo arco (mañana)
-        const r1 = d1.moonrise * 1000;
-        const s1 = d1.moonset * 1000;
-        return {
-          riseISO: new Date(r1).toISOString(),
-          setISO: new Date(r1 < s1 ? s1 : (owmRawDaily[2]?.moonset * 1000 || s1 + 12 * 3600 * 1000)).toISOString(),
-          riseSuffix: 'tomorrow',
-          setSuffix: r1 < s1 ? 'tomorrow' : 'other'
-        };
-      }
-      return {
-        riseISO: new Date(r0).toISOString(),
-        setISO: new Date(s0).toISOString(),
-        riseSuffix: null,
-        setSuffix: null
-      };
-    } 
     
-    // Caso 2: La luna cruza la medianoche (s < r)
-    else {
-      // Si estamos después de la salida de hoy: el arco termina mañana
-      if (now > r0 && d1) {
-        return {
-          riseISO: new Date(r0).toISOString(),
-          setISO: new Date(d1.moonset * 1000).toISOString(),
-          riseSuffix: null,
-          setSuffix: 'tomorrow'
-        };
-      }
-      
-      // Si estamos antes de la puesta de hoy: el arco empezó ayer
-      if (now < s0) {
-        const rYesterday = r0 - (24 * 3600 + 3000) * 1000;
-        return {
-          riseISO: new Date(rYesterday).toISOString(),
-          setISO: new Date(s0).toISOString(),
-          riseSuffix: 'yesterday',
-          setSuffix: null
-        };
-      }
+    // Recolectamos todos los eventos de la semana para tener un pool completo y resistente a data vieja
+    const events: { type: 'rise' | 'set', ts: number, day: number }[] = [];
+    owmRawDaily.forEach((day, i) => {
+      if (day.moonrise) events.push({ type: 'rise', ts: day.moonrise * 1000, day: i });
+      if (day.moonset) events.push({ type: 'set', ts: day.moonset * 1000, day: i });
+    });
 
-      // Si estamos entre la puesta (13:22) y la salida (22:50): Luna abajo.
-      // Mostramos el próximo ciclo que empieza hoy tarde y termina mañana.
+
+    // Ordenamos por tiempo cronológico real
+    events.sort((a, b) => a.ts - b.ts);
+
+    // Buscamos el arco actual o el próximo
+    // Un arco es un par (rise, set) consecutivo donde rise < set
+    for (let i = 0; i < events.length - 1; i++) {
+      const current = events[i];
+      const next = events[i + 1];
+
+      if (current.type === 'rise' && next.type === 'set') {
+        const isCurrent = now >= current.ts && now <= next.ts;
+        const isUpcoming = now < current.ts;
+
+        if (isCurrent || isUpcoming) {
+          // Determinar sufijos basados en la diferencia de días calendario reales con 'now'
+          const getDaySuffix = (ts: number): 'yesterday' | 'tomorrow' | 'other' | null => {
+            const eventDate = new Date(ts);
+            const nowDate = new Date(now);
+            
+            // Reset hours to compare only days
+            const d1 = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
+            const d2 = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate());
+            
+            const diffDays = Math.round((d1.getTime() - d2.getTime()) / (24 * 3600 * 1000));
+            
+            if (diffDays === 0) return null;
+            if (diffDays === 1) return 'tomorrow';
+            if (diffDays === -1) return 'yesterday';
+            return 'other';
+          };
+
+          return {
+            riseISO: new Date(current.ts).toISOString(),
+            setISO: new Date(next.ts).toISOString(),
+            riseSuffix: getDaySuffix(current.ts),
+            setSuffix: getDaySuffix(next.ts)
+          };
+        }
+      }
+    }
+
+    // Fallback: Si no estamos en ningún arco, mostrar el primero disponible (futuro)
+    const firstRise = events.find(e => e.type === 'rise' && e.ts > now);
+    const firstSetAfterRise = firstRise ? events.find(e => e.type === 'set' && e.ts > firstRise.ts) : null;
+
+    if (firstRise && firstSetAfterRise) {
+      const eventDate = new Date(firstRise.ts);
+      const nowDate = new Date(now);
+      const diffDays = Math.round((new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate()).getTime() - 
+                                  new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate()).getTime()) / (24 * 3600 * 1000));
+
       return {
-        riseISO: new Date(r0).toISOString(),
-        setISO: d1 ? new Date(d1.moonset * 1000).toISOString() : new Date(s0 + 24 * 3600 * 1000).toISOString(),
-        riseSuffix: null,
-        setSuffix: 'tomorrow'
+        riseISO: new Date(firstRise.ts).toISOString(),
+        setISO: new Date(firstSetAfterRise.ts).toISOString(),
+        riseSuffix: diffDays === 1 ? 'tomorrow' : (diffDays === 0 ? null : 'other'),
+        setSuffix: 'other' // Probablemente sea el día siguiente o más
       };
     }
+
+
+    return { riseISO: null, setISO: null, riseSuffix: null, setSuffix: null };
   };
 
   const { riseISO: moonriseISO, setISO: moonsetISO, riseSuffix, setSuffix } = getRelevantAstro();

@@ -102,6 +102,11 @@ export const CurrentWeather = memo(function CurrentWeather({
 }: CurrentWeatherProps) {
   const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
+  
+  // Determinar si estamos mostrando un día de pronóstico seleccionado o el clima actual real
+  // Si data.dt es un string sin 'T', es un día de pronóstico (YYYY-MM-DD)
+  const displayDataIsForecast = typeof data.dt === 'string' && !data.dt.includes('T');
+
 
   useEffect(() => {
     setMounted(true);
@@ -120,17 +125,18 @@ export const CurrentWeather = memo(function CurrentWeather({
     ? data.weatherIcon 
     : `${currentCode >= 800 ? '01' : '09'}${isNight ? 'n' : 'd'}`;
 
-  const date = parseDateString(data.dt);
+  const isForecastDay = (typeof data.dt === 'string' && !data.dt.includes('T')) || displayDataIsForecast;
+  const date = isForecastDay ? parseDateString(data.dt) : new Date();
   const updatedDate = new Date(lastUpdated);
 
   const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
   const timeOptions: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit' };
 
   if ('timezone' in data && data.timezone) {
-    const isForecastDay = typeof data.dt === 'string' && !data.dt.includes('T');
     dateOptions.timeZone = isForecastDay ? 'UTC' : data.timezone;
     timeOptions.timeZone = data.timezone;
   }
+
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">

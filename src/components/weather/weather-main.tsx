@@ -132,8 +132,17 @@ export function WeatherMain({ initialLocale }: { initialLocale?: Locale }) {
   const [error, setError] = useState<FormState | null>(null);
   const [backgroundImage, setBackgroundImage] = useState<string>('');
 
-  const [currentDate, setCurrentDate] = useState<Date | null>(null);
+
+  const parseDateStringForMoon = (dt: string | number) => {
+    const dtStr = String(dt);
+    if (!dtStr.includes('T')) {
+      return new Date(`${dtStr}T12:00:00Z`);
+    }
+    return new Date(dtStr);
+  };
+
   const [lastUpdated, setLastUpdated] = useState<string>('');
+
   const [contentVisible, setContentVisible] = useState(true);
 
   // MODO TEST (v5.0): Centralizado en weather-main
@@ -155,9 +164,6 @@ export function WeatherMain({ initialLocale }: { initialLocale?: Locale }) {
     setContentVisible(prev => !prev);
   }, []);
 
-  useEffect(() => {
-    setCurrentDate(new Date());
-  }, []);
 
   /**
    * Submite el formulario oculto para iniciar la carga de datos.
@@ -498,18 +504,20 @@ export function WeatherMain({ initialLocale }: { initialLocale?: Locale }) {
                     </GlassCard>
                   </div>
 
-                  {currentDate && latitudeForMoon !== undefined && !isNaN(currentDate.getTime()) && (
+                  {latitudeForMoon !== undefined && (
                     <div className="lg:col-span-3" onClick={e => e.stopPropagation()}>
                       <GlassCard id="moon-calendar" className="scroll-mt-20 lg:scroll-mt-24">
                         <MoonCalendar
-                          date={currentDate}
+                          date={new Date()}
                           latitude={latitudeForMoon}
                           owmRawDaily={owmRawDaily}
-                          timezone={displayData?.timezone}
+                          timezone={weatherData.current.timezone}
                         />
                       </GlassCard>
                     </div>
                   )}
+
+
                 </div>
               ) : null}
             </div>
