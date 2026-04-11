@@ -91,7 +91,7 @@ export function SupportDialog() {
                   <div className="w-24 sm:w-28 -ml-4 sm:-ml-5 mr-1 flex justify-center">
                     <img 
                       src="/assets/mp.svg" 
-                      alt="Mercado Pago" 
+                      alt={t('ui.mercadopago_logo')} 
                       className="w-full h-auto min-w-[96px] sm:min-w-[132px]" 
                       style={{ height: 'auto' }}
                     />

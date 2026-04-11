@@ -223,6 +223,13 @@ const en = {
       s6_content: "The App is not directed at children under 13 years of age, and we do not intentionally collect information from minors. Location data is transmitted over secure connections (HTTPS). While we implement reasonable security measures, no Internet transmission system is 100% secure.",
     },
   },
+  ui: {
+    close: "Close",
+    previous: "Previous",
+    next: "Next",
+    toggle_sidebar: "Toggle Sidebar",
+    mercadopago_logo: "Mercado Pago Logo",
+  },
 };
 
 export default en;

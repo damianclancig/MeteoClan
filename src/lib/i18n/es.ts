@@ -218,6 +218,13 @@ const es = {
       s6_content: "La Aplicación no está dirigida a menores de 13 años y no recopilamos intencionalmente información de menores. La transmisión de datos de ubicación se realiza a través de conexiones seguras (HTTPS). Aunque implementamos medidas razonables de seguridad, ningún sistema de transmisión por Internet es 100% seguro.",
     },
   },
+  ui: {
+    close: "Cerrar",
+    previous: "Anterior",
+    next: "Siguiente",
+    toggle_sidebar: "Alternar barra lateral",
+    mercadopago_logo: "Logotipo de Mercado Pago",
+  },
 };
 
 export default es;
