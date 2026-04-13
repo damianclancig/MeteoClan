@@ -26,20 +26,7 @@ async function fetchRawDataFromOWM(lat: number, lon: number, apiKey: string): Pr
   return await res.json();
 }
 
-/**
- * Función cacheada que obtiene los datos crudos de OWM.
- * Se indexa por cityKey para que todos los usuarios de la ciudad compartan el mismo dato.
- */
-const getCachedOWMData = unstable_cache(
-  async (lat: number, lon: number, apiKey: string) => {
-    return await fetchRawDataFromOWM(lat, lon, apiKey);
-  },
-  ['owm-weather-data'],
-  {
-    revalidate: 1800, // 30 minutos
-    tags: ['weather'],
-  }
-);
+// (unstable_cache se inicializará dinámicamente dentro de getWeatherData)
 
 /**
  * Obtiene los datos meteorológicos completos.
@@ -58,7 +45,21 @@ export async function getWeatherData(location: NormalizedLocation): Promise<Weat
 
   console.log(`[getWeatherData] Consultando clima compartido para: ${cityKey}`);
 
-  // Llamar a la versión cacheada usando la cityKey como parte de la clave de revalidación implícita
+  // 1. Instanciar la función cacheada dinámicamente para inyectar la cityKey
+  // en la clave maestra y en los 'tags' que Next.js maneja en sus internals.
+  const getCachedOWMData = unstable_cache(
+    async (latNum: number, lonNum: number, apiStr: string) => {
+      return await fetchRawDataFromOWM(latNum, lonNum, apiStr);
+    },
+    // La clave oficial para Next.js (esto aísla a Wilde de Bernal, por ejemplo)
+    ['owm-weather-data', cityKey],
+    {
+      revalidate: 1800, // 30 minutos
+      tags: ['weather', `weather-${cityKey}`],
+    }
+  );
+
+  // Llamar a la versión cacheada
   let rawData = await getCachedOWMData(lat, lon, apiKey);
 
   // Anti-Stale (Bloqueo de Stale-While-Revalidate)
