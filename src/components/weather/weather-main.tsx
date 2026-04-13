@@ -301,6 +301,36 @@ export function WeatherMain({ initialLocale }: { initialLocale?: Locale }) {
     }
   }, [state]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Auto-refresh al volver del segundo plano (PWA / Tab Background)
+  useEffect(() => {
+    const handleAutoRefresh = () => {
+      if (document.visibilityState === 'visible' && weatherData && !isLoading) {
+        const lastUpdate = new Date(weatherData.lastUpdated).getTime();
+        const now = Date.now();
+        const diffMins = (now - lastUpdate) / (1000 * 60);
+
+        if (diffMins > 30) {
+          console.log(`[WeatherMain] Datos expirados (${Math.round(diffMins)} min). Refrescando...`);
+          setIsLoading(true);
+          const cachedLocation = getCachedLocation();
+          if (cachedLocation) {
+            submitInitialForm({ normalizedLocation: cachedLocation });
+          } else {
+            handleRefreshLocation();
+          }
+        }
+      }
+    };
+
+    window.addEventListener('visibilitychange', handleAutoRefresh);
+    window.addEventListener('focus', handleAutoRefresh);
+
+    return () => {
+      window.removeEventListener('visibilitychange', handleAutoRefresh);
+      window.removeEventListener('focus', handleAutoRefresh);
+    };
+  }, [weatherData, isLoading, submitInitialForm, handleRefreshLocation]);
+
   const [isBackgroundLoading, setIsBackgroundLoading] = useState(false);
 
   // Generar imagen de fondo con IA cuando cambia la ciudad o el clima

@@ -126,7 +126,12 @@ export const CurrentWeather = memo(function CurrentWeather({
     : `${currentCode >= 800 ? '01' : '09'}${isNight ? 'n' : 'd'}`;
 
   const isForecastDay = (typeof data.dt === 'string' && !data.dt.includes('T')) || displayDataIsForecast;
-  const date = isForecastDay ? parseDateString(data.dt) : new Date();
+  
+  // Usar el timestamp real de los datos (dt) si está disponible, si no fallback a la hora del cliente
+  const date = isForecastDay 
+    ? parseDateString(data.dt) 
+    : (data.dt ? new Date(data.dt) : new Date());
+    
   const updatedDate = new Date(lastUpdated);
 
   const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };

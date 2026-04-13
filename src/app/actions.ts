@@ -41,18 +41,21 @@ export async function getWeather(prevState: any, formData: FormData): Promise<an
     }
     // Caso B: Coordenadas GPS crudas → normalizar con OWM Reverse Geocoding
     else if (latStr && lonStr && !locationQuery) {
-      normalizedLocation = await getLocationFromCoords(
-        parseFloat(latStr),
-        parseFloat(lonStr)
-      );
+      // Redondear a 4 decimales (~11m) para estabilizar el caché de geocoding
+      const rawLat = parseFloat(latStr);
+      const rawLon = parseFloat(lonStr);
+      const stableLat = Math.round(rawLat * 10000) / 10000;
+      const stableLon = Math.round(rawLon * 10000) / 10000;
+
+      normalizedLocation = await getLocationFromCoords(stableLat, stableLon);
 
       if (!normalizedLocation) {
         // Fallback: construir una location básica si OWM falla
         normalizedLocation = {
-          cityKey: `location-${Math.round(parseFloat(latStr))}-${Math.round(parseFloat(lonStr))}`,
+          cityKey: `location-${Math.round(stableLat)}-${Math.round(stableLon)}`,
           displayName: 'Mi ubicación',
-          lat: parseFloat(latStr),
-          lon: parseFloat(lonStr),
+          lat: stableLat,
+          lon: stableLon,
         };
       }
     }

@@ -113,8 +113,6 @@ export default function RootLayout({
     <html lang="es" className="dark" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         {GOOGLE_ADSENSE_PUB_ID && (
           <Script
             async
