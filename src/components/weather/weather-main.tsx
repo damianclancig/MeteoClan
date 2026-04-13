@@ -519,6 +519,7 @@ export function WeatherMain({ initialLocale }: { initialLocale?: Locale }) {
                     </div>
                   </div>
 
+                  {/* Banner Principal (Square/Grande - desde .env.local) */}
                   <div className="lg:col-span-3 border-none" onClick={e => e.stopPropagation()}>
                     <AdBanner />
                   </div>
@@ -547,6 +548,13 @@ export function WeatherMain({ initialLocale }: { initialLocale?: Locale }) {
                     </div>
                   )}
 
+                  {/* Banner MeteoClan (Nuevo Horizontal/Pequeño) */}
+                  <div className="lg:col-span-3 border-none" onClick={e => e.stopPropagation()}>
+                    <AdBanner 
+                      slotId={process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_AD_SLOT_ID_2} 
+                      className="min-h-[100px]"
+                    />
+                  </div>
 
                 </div>
               ) : null}

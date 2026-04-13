@@ -12,7 +12,14 @@ declare global {
   }
 }
 
-export const AdBanner = () => {
+interface AdBannerProps {
+  slotId?: string;
+  format?: 'auto' | 'fluid' | 'rectangle';
+  style?: React.CSSProperties;
+  className?: string;
+}
+
+export const AdBanner = ({ slotId, format = 'auto', style = { display: 'block' }, className = 'min-h-[280px] sm:min-h-[100px]' }: AdBannerProps) => {
   const pathname = usePathname();
 
   useEffect(() => {
@@ -33,20 +40,23 @@ export const AdBanner = () => {
     return () => clearTimeout(timer);
   }, [pathname]);
 
-  if (!AD_SLOT_ID || !PUB_ID) {
+  const currentSlotId = slotId || AD_SLOT_ID;
+
+  if (!currentSlotId || !PUB_ID) {
     // Don't render anything if the IDs are not configured
     // You can also render a placeholder in development
     return null;
   }
 
   return (
-    <div key={pathname} className="flex justify-center my-4 w-full min-h-[280px] sm:min-h-[100px] transition-all">
+    <div key={pathname} className={`flex justify-center my-4 w-full transition-all ${className}`}>
+      {/* Banner MeteoClan */}
       <ins
         className="adsbygoogle"
-        style={{ display: 'block', width: '100%' }}
+        style={style}
         data-ad-client={PUB_ID}
-        data-ad-slot={AD_SLOT_ID}
-        data-ad-format="auto"
+        data-ad-slot={currentSlotId}
+        data-ad-format={format}
         data-full-width-responsive="true"
       ></ins>
     </div>
