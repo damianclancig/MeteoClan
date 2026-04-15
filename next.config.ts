@@ -48,7 +48,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "img-src 'self' data: blob: https://image.pollinations.ai https://placehold.co https://picsum.photos https://fastly.picsum.photos;",
+            value: "img-src 'self' data: blob: https://image.pollinations.ai https://placehold.co https://picsum.photos https://fastly.picsum.photos https://pagead2.googlesyndication.com https://ad.doubleclick.net; frame-src 'self' https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pagead2.googlesyndication.com https://adservice.google.com;",
           },
         ],
       },
@@ -94,6 +94,7 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_GITHUB_URL: process.env.NEXT_PUBLIC_GITHUB_URL,
     NEXT_PUBLIC_GOOGLE_ADSENSE_PUB_ID: process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_PUB_ID,
     NEXT_PUBLIC_GOOGLE_ADSENSE_AD_SLOT_ID: process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_AD_SLOT_ID,
+    NEXT_PUBLIC_GOOGLE_ADSENSE_AD_SLOT_ID_2: process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_AD_SLOT_ID_2,
   }
 };
 
