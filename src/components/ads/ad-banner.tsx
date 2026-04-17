@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import { GlassCard } from '@/components/ui/glass-card';
 
 const AD_SLOT_ID = process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_AD_SLOT_ID;
 const PUB_ID = process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_PUB_ID;
@@ -49,16 +50,18 @@ export const AdBanner = ({ slotId, format = 'auto', style = { display: 'block', 
   }
 
   return (
-    <div key={pathname} className={`flex justify-center my-4 w-full overflow-hidden transition-all ${className}`}>
-      {/* Banner MeteoClan */}
-      <ins
-        className="adsbygoogle"
-        style={style}
-        data-ad-client={PUB_ID}
-        data-ad-slot={currentSlotId}
-        data-ad-format={format}
-        data-full-width-responsive="true"
-      ></ins>
+    <div key={pathname} className={`flex justify-center my-4 w-full transition-all ${className}`}>
+      <GlassCard className="p-0 overflow-hidden flex items-center justify-center w-full">
+        {/* Banner MeteoClan */}
+        <ins
+          className="adsbygoogle"
+          style={style}
+          data-ad-client={PUB_ID}
+          data-ad-slot={currentSlotId}
+          data-ad-format={format}
+          data-full-width-responsive="true"
+        ></ins>
+      </GlassCard>
     </div>
   );
 };
