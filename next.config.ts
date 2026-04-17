@@ -48,7 +48,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "img-src 'self' data: blob: https://image.pollinations.ai https://placehold.co https://picsum.photos https://fastly.picsum.photos https://pagead2.googlesyndication.com https://ad.doubleclick.net; frame-src 'self' https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pagead2.googlesyndication.com https://adservice.google.com;",
+            value: "img-src 'self' data: blob: https://image.pollinations.ai https://placehold.co https://picsum.photos https://fastly.picsum.photos https://pagead2.googlesyndication.com https://ad.doubleclick.net https://*.google.com https://*.doubleclick.net; frame-src 'self' https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com https://*.doubleclick.net; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pagead2.googlesyndication.com https://adservice.google.com https://*.googlesyndication.com https://*.google.com https://*.doubleclick.net https://ep2.adtrafficquality.google;",
           },
         ],
       },

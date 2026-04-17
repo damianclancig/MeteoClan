@@ -19,7 +19,7 @@ interface AdBannerProps {
   className?: string;
 }
 
-export const AdBanner = ({ slotId, format = 'auto', style = { display: 'block' }, className = 'min-h-[280px] sm:min-h-[100px]' }: AdBannerProps) => {
+export const AdBanner = ({ slotId, format = 'auto', style = { display: 'block', width: '100%' }, className = 'min-h-[280px] sm:min-h-[100px]' }: AdBannerProps) => {
   const currentSlotId = slotId || AD_SLOT_ID;
   const pathname = usePathname();
 
@@ -27,16 +27,19 @@ export const AdBanner = ({ slotId, format = 'auto', style = { display: 'block' }
     // Si no hay IDs, no hacemos nada
     if (!PUB_ID || !currentSlotId) return;
 
-    try {
-      // Verificamos que el script de AdSense esté cargado y enviamos el push
-      if (typeof window !== 'undefined') {
-        // CORRECCIÓN: Asignamos explícitamente a window.adsbygoogle
-        (window as any).adsbygoogle = (window as any).adsbygoogle || [];
-        (window as any).adsbygoogle.push({});
+    // Pequeño delay para asegurar que el DOM calculó los anchos (evita availableWidth=0)
+    const timer = setTimeout(() => {
+      try {
+        if (typeof window !== 'undefined') {
+          (window as any).adsbygoogle = (window as any).adsbygoogle || [];
+          (window as any).adsbygoogle.push({});
+        }
+      } catch (err) {
+        console.error('AdSense error:', err);
       }
-    } catch (err) {
-      console.error('AdSense error:', err);
-    }
+    }, 150);
+
+    return () => clearTimeout(timer);
   }, [pathname, currentSlotId]); 
 
   if (!currentSlotId || !PUB_ID) {
@@ -46,7 +49,7 @@ export const AdBanner = ({ slotId, format = 'auto', style = { display: 'block' }
   }
 
   return (
-    <div key={pathname} className={`flex justify-center my-4 w-full transition-all ${className}`}>
+    <div key={pathname} className={`flex justify-center my-4 w-full overflow-hidden transition-all ${className}`}>
       {/* Banner MeteoClan */}
       <ins
         className="adsbygoogle"

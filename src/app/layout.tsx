@@ -114,11 +114,10 @@ export default function RootLayout({
       <head>
         <link rel="manifest" href="/manifest.json" />
         {GOOGLE_ADSENSE_PUB_ID && (
-          <Script
+          <script
             async
             src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${GOOGLE_ADSENSE_PUB_ID}`}
             crossOrigin="anonymous"
-            strategy="afterInteractive"
           />
         )}
       </head>
