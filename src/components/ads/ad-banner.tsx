@@ -30,8 +30,9 @@ export const AdBanner = ({ slotId, format = 'auto', style = { display: 'block' }
     try {
       // Verificamos que el script de AdSense esté cargado y enviamos el push
       if (typeof window !== 'undefined') {
-        const adsbygoogle = (window as any).adsbygoogle || [];
-        adsbygoogle.push({});
+        // CORRECCIÓN: Asignamos explícitamente a window.adsbygoogle
+        (window as any).adsbygoogle = (window as any).adsbygoogle || [];
+        (window as any).adsbygoogle.push({});
       }
     } catch (err) {
       console.error('AdSense error:', err);
