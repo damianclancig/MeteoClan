@@ -190,13 +190,54 @@ export const MoonCalendar = memo(function MoonCalendar({
 
   const upcomingPhases = getUpcomingMajorPhases(date);
 
-  // Obtener datos astronómicos del día actual (índice 0 en daily de OWM)
+  // Obtener datos astronómicos del día actual y siguiente
   const owmToday = owmRawDaily?.[0];
+  const owmTomorrow = owmRawDaily?.[1];
   
   // Usar moon_phase de OWM (dato diario exacto de la API)
   const currentPhaseValue = owmToday?.moon_phase ?? calculateMoonPhase(date);
   const currentPhaseName = getMoonPhaseName(currentPhaseValue);
   const currentIllumination = getMoonIllumination(currentPhaseValue);
+
+  // Lógica para emparejar la salida con la puesta correcta
+  let rawRise = owmToday?.moonrise;
+  let rawSet = owmToday?.moonset;
+  let riseSuffix: 'tomorrow' | 'yesterday' | 'other' | null = null;
+  let setSuffix: 'tomorrow' | 'yesterday' | 'other' | null = null;
+
+  if (rawRise && rawSet) {
+    if (rawSet < rawRise) {
+      // La puesta de hoy ocurre antes que la salida de hoy en la misma fecha.
+      // Significa que entre las 00:00 y la hora de `rawSet`, la luna que vemos es la de "Ayer".
+      const nowSec = Math.floor(Date.now() / 1000);
+      
+      if (nowSec <= rawSet) {
+        // La luna todavía no se puso! Estamos en esos "8 minutos" posteriores a las 00:00.
+        // OWM no manda datos del día anterior. Así que reconstruimos matemáticamente 
+        // la salida de ayer restando ~24 horas y 50 minutos (89400 segundos) a la de hoy.
+        rawRise = rawRise - 89400;
+        riseSuffix = 'yesterday';
+        // rawSet queda intacto, es la puesta de hoy a la madrugada.
+      } else {
+        // La luna ya se puso. Saltamos verdaderamente al *próximo* ciclo:
+        // Salida hoy a la tarde y su puesta MAÑANA.
+        rawSet = owmTomorrow?.moonset;
+        setSuffix = 'tomorrow';
+      }
+    }
+  } else if (!rawRise && rawSet) {
+    // Si la luna no sale hoy, mostramos el arco de mañana para no perder la tarjeta
+    rawRise = owmTomorrow?.moonrise;
+    rawSet = owmTomorrow?.moonset;
+    riseSuffix = 'tomorrow';
+    if (rawSet && rawRise && rawSet < rawRise) {
+       rawSet = owmRawDaily?.[2]?.moonset;
+    }
+  } else if (rawRise && !rawSet) {
+    // Sale hoy pero se pone recién mañana
+    rawSet = owmTomorrow?.moonset;
+    setSuffix = 'tomorrow';
+  }
 
   // Timestamps de salida y puesta con detección de tipo (número vs string ISO)
   const parseOWMTime = (val: any) => {
@@ -205,8 +246,8 @@ export const MoonCalendar = memo(function MoonCalendar({
     return val; // Asumir que ya es ISO
   };
 
-  const moonriseISO = parseOWMTime(owmToday?.moonrise);
-  const moonsetISO = parseOWMTime(owmToday?.moonset);
+  const moonriseISO = parseOWMTime(rawRise);
+  const moonsetISO = parseOWMTime(rawSet);
 
   return (
     <div className="p-1">
@@ -232,6 +273,8 @@ export const MoonCalendar = memo(function MoonCalendar({
               moonrise={moonriseISO}
               moonset={moonsetISO}
               timezone={timezone || 'UTC'}
+              riseSuffix={riseSuffix}
+              setSuffix={setSuffix}
             />
           </div>
         )}
