@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 Clancig FullstackWeb
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 
 
 import type {
@@ -32,8 +48,64 @@ const unixToDateString = (unixSeconds: number, timezoneOffset: number = 0): stri
 };
 
 // ============================================================
-// Helpers de fase lunar (para fallback si no hay datos de OWM)
+// Helpers de fase lunar
 // ============================================================
+
+/** Duración del mes sinódico en días */
+export const SYNODIC_MONTH = 29.530588853;
+/** Número de día juliano de una Luna Nueva conocida (6 Ene 2000) */
+export const KNOWN_NEW_MOON_JD = 2451549.5;
+export const MAJOR_PHASES = ['new_moon', 'first_quarter', 'full_moon', 'third_quarter'];
+
+export function toJulian(date: Date): number {
+  if (!date || isNaN(date.getTime())) return 0;
+  const time = date.getTime();
+  const tzoffset = date.getTimezoneOffset() * 60000;
+  return (time - tzoffset) / 86400000 + 2440587.5;
+}
+
+export function fromJulian(jd: number): Date {
+  if (jd === 0) return new Date();
+  return new Date((jd - 2440587.5) * 86400000);
+}
+
+/**
+ * Calcula la fase lunar (0-1) para una fecha específica.
+ */
+export function calculateMoonPhase(date: Date): number {
+  const jd = toJulian(date);
+  const cycles = (jd - KNOWN_NEW_MOON_JD) / SYNODIC_MONTH;
+  return ((cycles % 1) + 1) % 1;
+}
+
+/**
+ * Calcula las próximas 4 fases lunares mayores a partir de una fecha.
+ */
+export function getUpcomingMajorPhases(currentDate: Date): { name: string; date: Date }[] {
+  if (!currentDate || isNaN(currentDate.getTime())) return [];
+
+  const currentJD = toJulian(currentDate);
+  const cycles = (currentJD - KNOWN_NEW_MOON_JD) / SYNODIC_MONTH;
+  const currentCycle = Math.floor(cycles);
+  const results: { name: string; date: Date }[] = [];
+
+  for (let cycle = 0; cycle < 3 && results.length < 4; cycle++) {
+    for (let i = 0; i < MAJOR_PHASES.length; i++) {
+      const phaseOffset = i * 0.25;
+      const phaseJD =
+        KNOWN_NEW_MOON_JD + (currentCycle + cycle + phaseOffset) * SYNODIC_MONTH;
+
+      if (phaseJD >= currentJD) {
+        const phaseName = MAJOR_PHASES[i];
+        if (!results.some(p => p.name === phaseName)) {
+          results.push({ name: phaseName, date: fromJulian(phaseJD) });
+        }
+      }
+    }
+  }
+
+  return results.sort((a, b) => a.date.getTime() - b.date.getTime()).slice(0, 4);
+}
 
 /**
  * Devuelve el nombre de la fase lunar a partir del valor de OWM (0-1).

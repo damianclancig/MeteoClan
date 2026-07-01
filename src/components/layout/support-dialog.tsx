@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 Clancig FullstackWeb
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -91,7 +107,7 @@ export function SupportDialog() {
                   <div className="w-24 sm:w-28 -ml-4 sm:-ml-5 mr-1 flex justify-center">
                     <img 
                       src="/assets/mp.svg" 
-                      alt="Mercado Pago" 
+                      alt={t('ui.mercadopago_logo')} 
                       className="w-full h-auto min-w-[96px] sm:min-w-[132px]" 
                       style={{ height: 'auto' }}
                     />

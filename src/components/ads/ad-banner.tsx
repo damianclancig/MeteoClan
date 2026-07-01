@@ -1,7 +1,24 @@
+/*
+ * Copyright 2026 Clancig FullstackWeb
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 'use client';
 
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import { GlassCard } from '@/components/ui/glass-card';
 
 const AD_SLOT_ID = process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_AD_SLOT_ID;
 const PUB_ID = process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_PUB_ID;
@@ -12,43 +29,55 @@ declare global {
   }
 }
 
-export const AdBanner = () => {
+interface AdBannerProps {
+  slotId?: string;
+  format?: 'auto' | 'fluid' | 'rectangle';
+  style?: React.CSSProperties;
+  className?: string;
+}
+
+export const AdBanner = ({ slotId, format = 'auto', style = { display: 'block', width: '100%' }, className = 'min-h-[280px] sm:min-h-[100px]' }: AdBannerProps) => {
+  const currentSlotId = slotId || AD_SLOT_ID;
   const pathname = usePathname();
 
   useEffect(() => {
-    // Pequeño retardo para asegurar que el DOM esté listo y evitar colisiones en Next.js
+    // Si no hay IDs, no hacemos nada
+    if (!PUB_ID || !currentSlotId) return;
+
+    // Pequeño delay para asegurar que el DOM calculó los anchos (evita availableWidth=0)
     const timer = setTimeout(() => {
       try {
-        // Verificamos si hay algún elemento 'ins' que aún no tenga el atributo de estado de AdSense
-        const adsContainer = document.querySelectorAll('.adsbygoogle:not([data-adsbygoogle-status])');
-
-        if (adsContainer.length > 0) {
-          (window.adsbygoogle = window.adsbygoogle || []).push({});
+        if (typeof window !== 'undefined') {
+          (window as any).adsbygoogle = (window as any).adsbygoogle || [];
+          (window as any).adsbygoogle.push({});
         }
       } catch (err) {
         console.error('AdSense error:', err);
       }
-    }, 100);
+    }, 150);
 
     return () => clearTimeout(timer);
-  }, [pathname]);
+  }, [pathname, currentSlotId]); 
 
-  if (!AD_SLOT_ID || !PUB_ID) {
+  if (!currentSlotId || !PUB_ID) {
     // Don't render anything if the IDs are not configured
     // You can also render a placeholder in development
     return null;
   }
 
   return (
-    <div key={pathname} className="flex justify-center my-4 w-full min-h-[280px] sm:min-h-[100px] transition-all">
-      <ins
-        className="adsbygoogle"
-        style={{ display: 'block', width: '100%' }}
-        data-ad-client={PUB_ID}
-        data-ad-slot={AD_SLOT_ID}
-        data-ad-format="auto"
-        data-full-width-responsive="true"
-      ></ins>
+    <div key={pathname} className={`flex justify-center my-4 w-full transition-all ${className}`}>
+      <GlassCard className="p-0 overflow-hidden flex items-center justify-center w-full">
+        {/* Banner MeteoClan */}
+        <ins
+          className="adsbygoogle"
+          style={style}
+          data-ad-client={PUB_ID}
+          data-ad-slot={currentSlotId}
+          data-ad-format={format}
+          data-full-width-responsive="true"
+        ></ins>
+      </GlassCard>
     </div>
   );
 };

@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 Clancig FullstackWeb
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 const es = {
   appName: "MeteoClan",
   appTitle: "MeteoClan - Pronóstico del Tiempo con IA",
@@ -151,7 +167,7 @@ const es = {
     moon: "Datos lunares provistos por OpenWeatherMap. Próximas fases calculadas localmente."
   },
   footer: {
-    rights: "Todos los derechos reservados - Licencia ISC",
+    rights: "Clancig FullstackWeb. Distribuido bajo Licencia Apache 2.0.",
     designedBy: "Diseño y desarrollo por"
   },
   support: {
@@ -186,7 +202,7 @@ const es = {
     dialog_title: "Información Legal",
     tab_terms: "Términos y Condiciones",
     tab_privacy: "Política de Privacidad",
-    last_updated: "Última actualización: Abril 2025",
+    last_updated: "Última actualización: Julio 2026",
     link_terms: "Términos y Condiciones",
     link_privacy: "Política de Privacidad",
     terms: {
@@ -197,7 +213,7 @@ const es = {
       s3_title: "3. Uso de Servicios de Ubicación (GPS)",
       s3_content: "La Aplicación puede solicitar acceso a tu ubicación geográfica (GPS) con el único propósito de mostrarte el pronóstico meteorológico de tu zona actual. El uso de esta funcionalidad es completamente voluntario. Si no autorizás el acceso a tu ubicación, podés igualmente usar la Aplicación ingresando una ciudad manualmente. La Aplicación no almacena, transmite a terceros ni utiliza tu ubicación para ningún fin distinto al pronóstico del tiempo.",
       s4_title: "4. Propiedad Intelectual",
-      s4_content: "El código fuente de MeteoClan se encuentra bajo Licencia ISC. Las imágenes de fondo son generadas en tiempo real por la API de Google Gemini y están sujetas a los términos de uso de dicho servicio. Los datos meteorológicos son provistos por OpenWeatherMap y se rigen por sus propios términos. La marca \"MeteoClan\" y su identidad visual son propiedad de Damián Clancig.",
+      s4_content: "El código fuente de MeteoClan se distribuye de forma pública bajo la Licencia Apache 2.0. Las imágenes de fondo son generadas en tiempo real por la API de Google Gemini y están sujetas a los términos de uso de dicho servicio. Los datos meteorológicos son provistos por OpenWeatherMap y se rigen por sus propios términos. La marca \"MeteoClan\" y su identidad visual son propiedad de Clancig FullstackWeb, manteniendo los datos de usuario o marcas comerciales asociadas sus respectivas políticas de privacidad.",
       s5_title: "5. Limitación de Responsabilidad",
       s5_content: "Los pronósticos meteorológicos son informativos y se basan en datos de terceros. MeteoClan no garantiza la exactitud, completitud o actualidad de la información provista. El desarrollador no será responsable por daños directos, indirectos, incidentales o consecuentes derivados del uso o la imposibilidad de uso de la Aplicación, incluyendo decisiones tomadas en base a los datos meteorológicos mostrados.",
       s6_title: "6. Modificaciones",
@@ -217,6 +233,13 @@ const es = {
       s6_title: "6. Seguridad y Menores de Edad",
       s6_content: "La Aplicación no está dirigida a menores de 13 años y no recopilamos intencionalmente información de menores. La transmisión de datos de ubicación se realiza a través de conexiones seguras (HTTPS). Aunque implementamos medidas razonables de seguridad, ningún sistema de transmisión por Internet es 100% seguro.",
     },
+  },
+  ui: {
+    close: "Cerrar",
+    previous: "Anterior",
+    next: "Siguiente",
+    toggle_sidebar: "Alternar barra lateral",
+    mercadopago_logo: "Logotipo de Mercado Pago",
   },
 };
 

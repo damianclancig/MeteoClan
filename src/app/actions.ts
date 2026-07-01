@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 Clancig FullstackWeb
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 
 'use server';
 
@@ -41,18 +57,21 @@ export async function getWeather(prevState: any, formData: FormData): Promise<an
     }
     // Caso B: Coordenadas GPS crudas → normalizar con OWM Reverse Geocoding
     else if (latStr && lonStr && !locationQuery) {
-      normalizedLocation = await getLocationFromCoords(
-        parseFloat(latStr),
-        parseFloat(lonStr)
-      );
+      // Redondear a 4 decimales (~11m) para estabilizar el caché de geocoding
+      const rawLat = parseFloat(latStr);
+      const rawLon = parseFloat(lonStr);
+      const stableLat = Math.round(rawLat * 10000) / 10000;
+      const stableLon = Math.round(rawLon * 10000) / 10000;
+
+      normalizedLocation = await getLocationFromCoords(stableLat, stableLon);
 
       if (!normalizedLocation) {
         // Fallback: construir una location básica si OWM falla
         normalizedLocation = {
-          cityKey: `location-${Math.round(parseFloat(latStr))}-${Math.round(parseFloat(lonStr))}`,
+          cityKey: `location-${Math.round(stableLat)}-${Math.round(stableLon)}`,
           displayName: 'Mi ubicación',
-          lat: parseFloat(latStr),
-          lon: parseFloat(lonStr),
+          lat: stableLat,
+          lon: stableLon,
         };
       }
     }

@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 Clancig FullstackWeb
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 'use client';
 
 import type { WeatherData, DailyForecast, CurrentWeather, HourlyForecast, NormalizedLocation } from '@/lib/types';
@@ -301,6 +317,36 @@ export function WeatherMain({ initialLocale }: { initialLocale?: Locale }) {
     }
   }, [state]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Auto-refresh al volver del segundo plano (PWA / Tab Background)
+  useEffect(() => {
+    const handleAutoRefresh = () => {
+      if (document.visibilityState === 'visible' && weatherData && !isLoading) {
+        const lastUpdate = new Date(weatherData.lastUpdated).getTime();
+        const now = Date.now();
+        const diffMins = (now - lastUpdate) / (1000 * 60);
+
+        if (diffMins > 30) {
+          console.log(`[WeatherMain] Datos expirados (${Math.round(diffMins)} min). Refrescando...`);
+          setIsLoading(true);
+          const cachedLocation = getCachedLocation();
+          if (cachedLocation) {
+            submitInitialForm({ normalizedLocation: cachedLocation });
+          } else {
+            handleRefreshLocation();
+          }
+        }
+      }
+    };
+
+    window.addEventListener('visibilitychange', handleAutoRefresh);
+    window.addEventListener('focus', handleAutoRefresh);
+
+    return () => {
+      window.removeEventListener('visibilitychange', handleAutoRefresh);
+      window.removeEventListener('focus', handleAutoRefresh);
+    };
+  }, [weatherData, isLoading, submitInitialForm, handleRefreshLocation]);
+
   const [isBackgroundLoading, setIsBackgroundLoading] = useState(false);
 
   // Generar imagen de fondo con IA cuando cambia la ciudad o el clima
@@ -489,6 +535,7 @@ export function WeatherMain({ initialLocale }: { initialLocale?: Locale }) {
                     </div>
                   </div>
 
+                  {/* Banner Principal (Square/Grande - desde .env.local) */}
                   <div className="lg:col-span-3 border-none" onClick={e => e.stopPropagation()}>
                     <AdBanner />
                   </div>
@@ -517,6 +564,13 @@ export function WeatherMain({ initialLocale }: { initialLocale?: Locale }) {
                     </div>
                   )}
 
+                  {/* Banner MeteoClan (Nuevo Horizontal/Pequeño) */}
+                  <div className="lg:col-span-3 border-none" onClick={e => e.stopPropagation()}>
+                    <AdBanner 
+                      slotId={process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_AD_SLOT_ID_2} 
+                      className="min-h-[100px]"
+                    />
+                  </div>
 
                 </div>
               ) : null}

@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 Clancig FullstackWeb
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 const pt = {
   appName: "MeteoClan",
   appTitle: "MeteoClan - Previsão do Tempo com IA",
@@ -151,7 +167,7 @@ const pt = {
     moon: "Dados lunares fornecidos pela OpenWeatherMap. Próximas fases calculadas localmente."
   },
   footer: {
-    rights: "Todos os direitos reservados - Licença ISC",
+    rights: "Clancig FullstackWeb. Distribuído sob Licença Apache 2.0.",
     designedBy: "Design e desenvolvimento por"
   },
   support: {
@@ -186,7 +202,7 @@ const pt = {
     dialog_title: "Informações Legais",
     tab_terms: "Termos e Condições",
     tab_privacy: "Política de Privacidade",
-    last_updated: "Última atualização: Abril de 2025",
+    last_updated: "Última atualização: Julho de 2026",
     link_terms: "Termos e Condições",
     link_privacy: "Política de Privacidade",
     terms: {
@@ -197,7 +213,7 @@ const pt = {
       s3_title: "3. Uso de Serviços de Localização (GPS)",
       s3_content: "O Aplicativo pode solicitar acesso à sua localização geográfica (GPS) com o único objetivo de exibir a previsão do tempo para sua área atual. O uso deste recurso é completamente voluntário. Se você não autorizar o acesso à sua localização, ainda poderá usar o Aplicativo inserindo uma cidade manualmente. O Aplicativo não armazena, transmite a terceiros nem utiliza sua localização para nenhum fim além da previsão do tempo.",
       s4_title: "4. Propriedade Intelectual",
-      s4_content: "O código-fonte do MeteoClan está disponível sob a Licença ISC. As imagens de fundo são geradas em tempo real pela API do Google Gemini e estão sujeitas aos termos de uso desse serviço. Os dados meteorológicos são fornecidos pela OpenWeatherMap e regidos por seus próprios termos. A marca \"MeteoClan\" e sua identidade visual são propriedade de Damián Clancig.",
+      s4_content: "O código-fonte do MeteoClan é distribuído publicamente sob a Licença Apache 2.0. As imagens de fundo são geradas em tempo real pela API do Google Gemini e estão sujeitas aos termos de uso desse serviço. Os dados meteorológicos são fornecidos pela OpenWeatherMap e regidos por seus próprios termos. A marca \"MeteoClan\" e sua identidade visual são propriedade da Clancig FullstackWeb, mantendo os dados do usuário ou marcas comerciais associadas suas respectivas políticas de privacidade.",
       s5_title: "5. Limitação de Responsabilidade",
       s5_content: "As previsões meteorológicas são informativas e baseadas em dados de terceiros. O MeteoClan não garante a precisão, integridade ou atualidade das informações fornecidas. O desenvolvedor não será responsável por quaisquer danos diretos, indiretos, incidentais ou consequentes decorrentes do uso ou da impossibilidade de uso do Aplicativo, incluindo decisões tomadas com base nos dados meteorológicos exibidos.",
       s6_title: "6. Modificações",
@@ -217,6 +233,13 @@ const pt = {
       s6_title: "6. Segurança e Menores de Idade",
       s6_content: "O Aplicativo não é direcionado a menores de 13 anos e não coletamos intencionalmente informações de menores. A transmissão de dados de localização é realizada por meio de conexões seguras (HTTPS). Embora implementemos medidas razoáveis de segurança, nenhum sistema de transmissão pela Internet é 100% seguro.",
     },
+  },
+  ui: {
+    close: "Fechar",
+    previous: "Anterior",
+    next: "Próximo",
+    toggle_sidebar: "Alternar barra lateral",
+    mercadopago_logo: "Logotipo do Mercado Pago",
   },
 };
 

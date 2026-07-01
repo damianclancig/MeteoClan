@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 Clancig FullstackWeb
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 'use client';
 
 import { memo, useState, useEffect } from 'react';
@@ -126,7 +142,12 @@ export const CurrentWeather = memo(function CurrentWeather({
     : `${currentCode >= 800 ? '01' : '09'}${isNight ? 'n' : 'd'}`;
 
   const isForecastDay = (typeof data.dt === 'string' && !data.dt.includes('T')) || displayDataIsForecast;
-  const date = isForecastDay ? parseDateString(data.dt) : new Date();
+  
+  // Usar el timestamp real de los datos (dt) si está disponible, si no fallback a la hora del cliente
+  const date = isForecastDay 
+    ? parseDateString(data.dt) 
+    : (data.dt ? new Date(data.dt) : new Date());
+    
   const updatedDate = new Date(lastUpdated);
 
   const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };

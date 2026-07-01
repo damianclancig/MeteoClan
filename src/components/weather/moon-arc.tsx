@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 Clancig FullstackWeb
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -52,8 +68,9 @@ export function MoonArc({
     const calculateMoonPosition = () => {
       const now = Date.now();
 
-      // Caso 1: Salida antes que la puesta (Luna sale y se pone el mismo día)
-      if (moonrise < moonset) {
+      // Como el componente superior ahora empareja correctamente la salida con
+      // su respectiva puesta (incluso si es al día siguiente), moonset SIEMPRE será > moonrise
+      if (moonrise && moonset && moonset > moonrise) {
         if (now >= moonrise && now <= moonset) {
           setIsUp(true);
           const totalMoonlight = moonset - moonrise;
@@ -61,23 +78,11 @@ export function MoonArc({
           setMoonPosition((timeSinceRise / totalMoonlight) * 100);
         } else {
           setIsUp(false);
+          if (now > moonset) setMoonPosition(100);
+          if (now < moonrise) setMoonPosition(0);
         }
-      } 
-      // Caso 2: Puesta antes que la salida (Luna salió ayer y se pone hoy, o sale hoy y se pone mañana)
-      else {
-        // Estamos en el intervalo entre la salida de hoy y la puesta de mañana (estimada)
-        // O entre la salida de ayer y la puesta de hoy
-        if (now >= moonrise || now <= moonset) {
-          setIsUp(true);
-          // Para simplificar el progreso en este caso de cruce de día, 
-          // calculamos el progreso relativo al intervalo más cercano
-          const dayMs = 24 * 60 * 60 * 1000;
-          const totalInterval = moonrise > moonset ? (moonset + dayMs) - moonrise : moonset - moonrise;
-          const elapsed = now < moonrise ? (now + dayMs) - moonrise : now - moonrise;
-          setMoonPosition(Math.min((elapsed / totalInterval) * 100, 100));
-        } else {
-          setIsUp(false);
-        }
+      } else {
+        setIsUp(false);
       }
     };
 
@@ -88,7 +93,6 @@ export function MoonArc({
   }, [moonrise, moonset]);
 
   // Duración visible real basada en los timestamps
-  // Si moonrise < moonset, usamos la resta. Si no, algo salió mal en el orquestador (pero ya lo arreglamos ahí)
   const duration = moonrise && moonset && moonset > moonrise ? moonset - moonrise : 0;
 
 
