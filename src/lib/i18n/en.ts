@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 Clancig FullstackWeb
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 const en = {
   appName: "MeteoClan",
   appTitle: "MeteoClan - AI Weather Forecast",
@@ -156,7 +172,7 @@ const en = {
     moon: "Lunar data provided by OpenWeatherMap. Upcoming phases calculated locally."
   },
   footer: {
-    rights: "All rights reserved - ISC License",
+    rights: "Clancig FullstackWeb. Distributed under Apache License 2.0.",
     designedBy: "Design and development by"
   },
   support: {
@@ -191,7 +207,7 @@ const en = {
     dialog_title: "Legal Information",
     tab_terms: "Terms & Conditions",
     tab_privacy: "Privacy Policy",
-    last_updated: "Last updated: April 2025",
+    last_updated: "Last updated: July 2026",
     link_terms: "Terms & Conditions",
     link_privacy: "Privacy Policy",
     terms: {
@@ -202,7 +218,7 @@ const en = {
       s3_title: "3. Use of Location Services (GPS)",
       s3_content: "The App may request access to your geographic location (GPS) solely for the purpose of displaying the weather forecast for your current area. Use of this feature is entirely voluntary. If you do not authorize location access, you can still use the App by entering a city manually. The App does not store, transmit to third parties, or use your location for any purpose other than weather forecasting.",
       s4_title: "4. Intellectual Property",
-      s4_content: "MeteoClan's source code is available under the ISC License. Background images are generated in real time by the Google Gemini API and are subject to that service's terms of use. Weather data is provided by OpenWeatherMap and governed by their own terms. The \"MeteoClan\" brand and visual identity are the property of Damián Clancig.",
+      s4_content: "MeteoClan's source code is publicly distributed under the Apache License 2.0. Background images are generated in real time by the Google Gemini API and are subject to that service's terms of use. Weather data is provided by OpenWeatherMap and governed by their own terms. The \"MeteoClan\" brand and visual identity are the property of Clancig FullstackWeb, while user data or associated trademarks maintain their respective privacy policies.",
       s5_title: "5. Limitation of Liability",
       s5_content: "Weather forecasts are informational and based on third-party data. MeteoClan does not guarantee the accuracy, completeness, or timeliness of the information provided. The developer shall not be liable for any direct, indirect, incidental, or consequential damages arising from the use or inability to use the App, including decisions made based on the weather data displayed.",
       s6_title: "6. Modifications",
